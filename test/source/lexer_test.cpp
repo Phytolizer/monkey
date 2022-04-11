@@ -1,5 +1,9 @@
 #include <catch2/catch.hpp>
+
+extern "C" {
+#include <monkey/lexer.h>
 #include <monkey/token.h>
+}
 
 TEST_CASE("Lexer lexes tokens", "[lexer]") {
 	constexpr const char input[] = "=+(){},;";
@@ -21,9 +25,9 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 			{TOKEN_TYPE_END_OF_FILE, ""},
 	}};
 
-	auto lexer = create_lexer(input);
+	auto lexer = CreateLexer(input);
 	for (const auto tt : tests) {
-		auto tok = lexer_next_token(&lexer);
+		auto tok = LexerNextToken(&lexer);
 		REQUIRE(tt.expectedType == tok.type);
 		REQUIRE(std::string(tt.expectedLiteral) == tok.literal);
 	}

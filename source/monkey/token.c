@@ -1,4 +1,4 @@
-#include "token.h"
+#include "monkey/token.h"
 
 #include <stdio.h>
 #include <stdlib.h>

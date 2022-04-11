@@ -1,0 +1,5 @@
+If:
+    PathMatch: .*\.h
+CompileFlags:
+    Add: [-xc, -Wno-empty-translation-unit]
+    Remove: -std=c++11

@@ -1,5 +1,4 @@
-#ifndef MONKEY_TOKEN_H_
-#define MONKEY_TOKEN_H_
+#pragma once
 
 #define TOKEN_TYPES_X \
 	X(ILLEGAL, "ILLEGAL") \
@@ -39,5 +38,3 @@ typedef struct {
  * @brief Returns the string representation of the given token type.
  */
 const char* TokenTypeText(TokenType type);
-
-#endif // MONKEY_TOKEN_H_
