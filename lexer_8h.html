@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>source/ directory | monkey</title>
+  <title>source/monkey/lexer.h file | monkey</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -48,7 +48,7 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          source<span class="m-breadcrumb">/</span> <span class="m-thin">directory</span>
+          <span class="m-breadcrumb"><a href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html">source</a>/</span><span class="m-breadcrumb"><a href="dir_e63aed17ca12ecf13a4ba395ed06a5b5.html">monkey</a>/</span>lexer.h <span class="m-thin">file</span>
         </h1>
         <p><span></span></p>
         <div class="m-block m-default">
@@ -57,29 +57,104 @@
             <li>
               Reference
               <ul>
-                <li><a href="#subdirs">Directories</a></li>
-                <li><a href="#files">Files</a></li>
+                <li><a href="#nested-classes">Classes</a></li>
+                <li><a href="#func-members">Functions</a></li>
               </ul>
             </li>
           </ul>
         </div>
-        <section id="subdirs">
-          <h2><a href="#subdirs">Directories</a></h2>
+        <section id="nested-classes">
+          <h2><a href="#nested-classes">Classes</a></h2>
           <dl class="m-doc">
-            <dt>directory <a href="dir_e63aed17ca12ecf13a4ba395ed06a5b5.html" class="m-doc">monkey</a>/</dt>
-            <dd><span></span></dd>
+            <dt>
+              struct <a href="structLexer.html" class="m-doc">Lexer</a>
+            </dt>
+            <dd><a href="structLexer.html" class="m-doc">Lexer</a> is a struct that stores state related to the lexing of <a href="structMonkey.html" class="m-doc">Monkey</a>.</dd>
           </dl>
         </section>
-        <section id="files">
-          <h2><a href="#files">Files</a></h2>
+        <section id="func-members">
+          <h2><a href="#func-members">Functions</a></h2>
           <dl class="m-doc">
-            <dt>file <a href="main_8c.html" class="m-doc">main.c</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="monkey_8c.html" class="m-doc">monkey.c</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="monkey_8h.html" class="m-doc">monkey.h</a></dt>
-            <dd><span></span></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a8ba3c49982ee8417c4f6dbffb2ee2240" class="m-doc">CreateLexer</a>(</span><span class="m-doc-wrap">const char* input) -&gt; <a href="structLexer.html" class="m-doc">Lexer</a></span>
+            </dt>
+            <dd>Creates a new lexer.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a52062687a209ed347144c7aa0e2f8d57" class="m-doc">LexerNextToken</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer) -&gt; <a href="structToken.html" class="m-doc">Token</a></span>
+            </dt>
+            <dd>Gets the next token from the lexer.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#a916c379cff6e88e6f00b64a38a00beb0" class="m-doc">DestroyLexer</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer)</span>
+            </dt>
+            <dd>Destroys a lexer.</dd>
           </dl>
+        </section>
+        <section>
+          <h2>Function documentation</h2>
+          <section class="m-doc-details" id="a8ba3c49982ee8417c4f6dbffb2ee2240"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a href="structLexer.html" class="m-doc">Lexer</a> </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a8ba3c49982ee8417c4f6dbffb2ee2240" class="m-doc-self">CreateLexer</a>(</span><span class="m-doc-wrap">const char* input)</span></span>
+            </h3>
+            <p>Creates a new lexer.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">input</td>
+                  <td>The input string to lex.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>A new lexer.</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a52062687a209ed347144c7aa0e2f8d57"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><a href="structToken.html" class="m-doc">Token</a> </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a52062687a209ed347144c7aa0e2f8d57" class="m-doc-self">LexerNextToken</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer)</span></span>
+            </h3>
+            <p>Gets the next token from the lexer.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">lexer</td>
+                  <td>The lexer to get the next token from.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>The next token from the lexer.</td>
+                </tr>
+              </tfoot>
+            </table>
+<p>LexerNextToken</p>
+          </div></section>
+          <section class="m-doc-details" id="a916c379cff6e88e6f00b64a38a00beb0"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a916c379cff6e88e6f00b64a38a00beb0" class="m-doc-self">DestroyLexer</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer)</span></span>
+            </h3>
+            <p>Destroys a lexer.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">lexer</td>
+                  <td>The lexer to destroy.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></section>
         </section>
       </div>
     </div>
