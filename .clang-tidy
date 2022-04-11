@@ -11,7 +11,7 @@ Checks: |
 	portability-*,
 	openmp-*,
 	readability-*,
-	clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+	-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
 WarningsAsErrors: ''
 CheckOptions:
   - key: 'bugprone-argument-comment.StrictMode'

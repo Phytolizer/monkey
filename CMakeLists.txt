@@ -17,7 +17,7 @@ include(cmake/variables.cmake)
 
 add_library(
     monkey_lib OBJECT
-    source/lib.c
+    source/monkey.c
 )
 
 target_include_directories(
@@ -27,9 +27,6 @@ target_include_directories(
 )
 
 target_compile_features(monkey_lib PUBLIC c_std_11)
-
-find_package(json-c REQUIRED)
-target_link_libraries(monkey_lib PRIVATE json-c::json-c)
 
 find_path(HEDLEY_INCLUDE_DIR hedley.h)
 if(NOT HEDLEY_INCLUDE_DIR)
