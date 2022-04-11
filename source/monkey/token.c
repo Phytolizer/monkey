@@ -15,3 +15,7 @@ const char* TokenTypeText(TokenType type) {
 			return NULL;
 	}
 }
+
+void DestroyToken(Token* token) {
+	free(token->literal);
+}

@@ -38,3 +38,8 @@ typedef struct {
  * @brief Returns the string representation of the given token type.
  */
 const char* TokenTypeText(TokenType type);
+
+/**
+ * @brief Destroys the resources held by the given token.
+ */
+void DestroyToken(Token* token);

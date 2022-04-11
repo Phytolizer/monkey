@@ -28,6 +28,7 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 	auto lexer = CreateLexer(input);
 	for (const auto tt : tests) {
 		auto tok = LexerNextToken(&lexer);
+		auto ptr = std::unique_ptr<Token, void (*)(Token*)>(&tok, &DestroyToken);
 		REQUIRE(tt.expectedType == tok.type);
 		REQUIRE(std::string(tt.expectedLiteral) == tok.literal);
 	}
