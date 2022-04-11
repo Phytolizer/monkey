@@ -1,0 +1,27 @@
+{
+	"name": "monkey",
+	"version-semver": "0.1.0",
+	"dependencies": [
+		{
+			"name": "json-c",
+			"version>=": "2019-09-10"
+		},
+		{
+			"name": "hedley",
+			"version>=": "15"
+		}
+	],
+	"default-features": [],
+	"features": {
+		"test": {
+			"description": "Dependencies for testing",
+			"dependencies": [
+				{
+					"name": "catch2",
+					"version>=": "2.13.8"
+				}
+			]
+		}
+	},
+	"builtin-baseline": "5cf60186a241e84e8232641ee973395d4fde90e1"
+}

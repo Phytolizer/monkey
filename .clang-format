@@ -1,0 +1,14 @@
+---
+BasedOnStyle: LLVM
+PointerAlignment: Left
+AllowShortFunctionsOnASingleLine: Empty
+IndentWidth: 4
+ContinuationIndentWidth: 8
+TabWidth: 4
+UseTab: AlignWithSpaces
+ColumnLimit: 100
+AlignOperands: false
+AlignAfterOpenBracket: false
+IncludeBlocks: Regroup
+AlignEscapedNewlines: DontAlign
+IndentCaseLabels: true
