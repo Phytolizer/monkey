@@ -12,6 +12,7 @@ Checks: |
     openmp-*,
     readability-*,
     -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+    -readability-identifier-length,
 WarningsAsErrors: ""
 CheckOptions:
     - key: "bugprone-argument-comment.StrictMode"
