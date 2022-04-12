@@ -76,7 +76,8 @@
           <h2><a href="#func-members">Functions</a></h2>
           <dl class="m-doc">
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a8ba3c49982ee8417c4f6dbffb2ee2240" class="m-doc">CreateLexer</a>(</span><span class="m-doc-wrap">const char* input) -&gt; <a href="structLexer.html" class="m-doc">Lexer</a></span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a6e5954a916c4805efd7ab2c09e71e483" class="m-doc">CreateLexer</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
+              const char* input) -&gt; <a href="structLexer.html" class="m-doc">Lexer</a></span>
             </dt>
             <dd>Creates a new lexer.</dd>
             <dt>
@@ -91,9 +92,10 @@
         </section>
         <section>
           <h2>Function documentation</h2>
-          <section class="m-doc-details" id="a8ba3c49982ee8417c4f6dbffb2ee2240"><div>
+          <section class="m-doc-details" id="a6e5954a916c4805efd7ab2c09e71e483"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><a href="structLexer.html" class="m-doc">Lexer</a> </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a8ba3c49982ee8417c4f6dbffb2ee2240" class="m-doc-self">CreateLexer</a>(</span><span class="m-doc-wrap">const char* input)</span></span>
+              <span class="m-doc-wrap-bumper"><a href="structLexer.html" class="m-doc">Lexer</a> </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a6e5954a916c4805efd7ab2c09e71e483" class="m-doc-self">CreateLexer</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
+              const char* input)</span></span>
             </h3>
             <p>Creates a new lexer.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -102,7 +104,11 @@
               </thead>
               <tbody>
                 <tr>
-                  <td style="width: 1%">input</td>
+                  <td style="width: 1%">monkey</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>input</td>
                   <td>The input string to lex.</td>
                 </tr>
               </tbody>

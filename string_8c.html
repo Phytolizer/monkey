@@ -69,6 +69,11 @@
               <span class="m-doc-wrap-bumper">auto <a href="#a3bf0f56b8b413ffc2d61d32211b6ee63" class="m-doc">MonkeyStrdup</a>(</span><span class="m-doc-wrap">const char* str) -&gt; char*</span>
             </dt>
             <dd>Allocates a new string and copies the given string into it.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a59ef667300d4c9d07373e42a9dc2c208" class="m-doc">MonkeyStrndup</a>(</span><span class="m-doc-wrap">const char* str,
+              size_t n) -&gt; char*</span>
+            </dt>
+            <dd>Allocates a new string and copies the given characters into it.</dd>
           </dl>
         </section>
         <section>
@@ -95,7 +100,34 @@
                 </tr>
               </tfoot>
             </table>
-<p>MonkeyStrdup</p>
+          </div></section>
+          <section class="m-doc-details" id="a59ef667300d4c9d07373e42a9dc2c208"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">char* </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a59ef667300d4c9d07373e42a9dc2c208" class="m-doc-self">MonkeyStrndup</a>(</span><span class="m-doc-wrap">const char* str,
+              size_t n)</span></span>
+            </h3>
+            <p>Allocates a new string and copies the given characters into it.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">str</td>
+                  <td>The start of the characters to copy.</td>
+                </tr>
+                <tr>
+                  <td>n</td>
+                  <td>The number of characters to copy.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>A new string.</td>
+                </tr>
+              </tfoot>
+            </table>
           </div></section>
         </section>
       </div>
