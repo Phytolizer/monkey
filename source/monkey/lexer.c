@@ -105,6 +105,24 @@ Token LexerNextToken(Lexer* lexer) {
 		case '}':
 			tok = NEW_TOKEN(.type = TOKEN_TYPE_RBRACE, .literal = lexer->ch);
 			break;
+		case '!':
+			tok = NEW_TOKEN(.type = TOKEN_TYPE_BANG, .literal = lexer->ch);
+			break;
+		case '-':
+			tok = NEW_TOKEN(.type = TOKEN_TYPE_MINUS, .literal = lexer->ch);
+			break;
+		case '*':
+			tok = NEW_TOKEN(.type = TOKEN_TYPE_ASTERISK, .literal = lexer->ch);
+			break;
+		case '/':
+			tok = NEW_TOKEN(.type = TOKEN_TYPE_SLASH, .literal = lexer->ch);
+			break;
+		case '<':
+			tok = NEW_TOKEN(.type = TOKEN_TYPE_LT, .literal = lexer->ch);
+			break;
+		case '>':
+			tok = NEW_TOKEN(.type = TOKEN_TYPE_GT, .literal = lexer->ch);
+			break;
 		case 0:
 			tok.type = TOKEN_TYPE_END_OF_FILE;
 			tok.literal = MonkeyStrdup("");

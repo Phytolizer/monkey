@@ -53,7 +53,7 @@ const char* TokenTypeText(TokenType type) {
 		TOKEN_TYPES_X
 #undef X
 		default:
-			fprintf(stderr, "Unknown token type: %d\n", type);
+			(void)fprintf(stderr, "Unknown token type: %d\n", type);
 			return NULL;
 	}
 }
