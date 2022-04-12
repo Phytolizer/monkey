@@ -4,16 +4,16 @@
 #include <stdio.h>
 
 int main(int argc, const char* argv[]) {
-	Monkey lib = CreateMonkey();
+	Monkey* lib = CreateMonkey();
 
 	(void)argc;
 	(void)argv;
 
-	if (lib.name == NULL) {
+	if (lib->name == NULL) {
 		(void)puts("Hello from unknown! (Memory allocation failed in library)");
 	} else {
-		(void)printf("Hello from %s!", lib.name);
+		(void)printf("Hello from %s!", lib->name);
 	}
-	DestroyMonkey(&lib);
+	DestroyMonkey(lib);
 	return 0;
 }

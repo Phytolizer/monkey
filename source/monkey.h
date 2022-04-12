@@ -4,20 +4,25 @@
  * @brief MonkeyTokenState is an opaque struct that holds the state of the
  * token module.
  */
+#include "monkey/macros.h"
 typedef struct MonkeyTokenState MonkeyTokenState;
 
 /**
- * @brief Simply initializes the name member to the name of the project
+ * @brief Monkey is a struct that holds the public state of the Monkey library.
  */
 typedef struct {
 	const char* name;
-	MonkeyTokenState* token;
 } Monkey;
 
 /**
- * @brief Creates an instance of library with the name of the project
+ * @brief CreateMonkey creates an instance of the library and returns it.
  */
-Monkey CreateMonkey(void);
+Monkey* CreateMonkey(void);
+
+/**
+ * @private
+ */
+MONKEY_INTERNAL MonkeyTokenState* MonkeyGetTokenState(Monkey* monkey);
 
 /**
  * @brief Destroys resources held by the library

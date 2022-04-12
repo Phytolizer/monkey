@@ -70,7 +70,7 @@ void DestroyToken(Token* token) {
 }
 
 TokenType LookupIdent(Monkey* monkey, const char* identifier) {
-	MonkeyTokenState* state = monkey->token;
+	MonkeyTokenState* state = MonkeyGetTokenState(monkey);
 	void* raw = g_hash_table_lookup(state->keywords, identifier);
 	if (raw == NULL) {
 		return TOKEN_TYPE_IDENT;

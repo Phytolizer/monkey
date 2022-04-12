@@ -8,10 +8,10 @@ extern "C" {
 
 TEST_CASE("Lexer reports problem for illegal tokens", "[lexer]") {
 	constexpr const char input[] = "@";
-	Monkey monkey = CreateMonkey();
-	auto monkey_ptr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(&monkey, &DestroyMonkey);
+	Monkey* monkey = CreateMonkey();
+	auto monkey_ptr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(monkey, &DestroyMonkey);
 
-	Lexer lexer = CreateLexer(&monkey, input);
+	Lexer lexer = CreateLexer(monkey, input);
 	auto lexer_ptr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(&lexer, &DestroyLexer);
 
 	Token token = LexerNextToken(&lexer);
@@ -22,7 +22,7 @@ TEST_CASE("Lexer reports problem for illegal tokens", "[lexer]") {
 
 TEST_CASE("Lexer lexes tokens", "[lexer]") {
 	constexpr const char input[] = R"mk(
-		let five = 5;
+		let five = 6;
 		let ten = 10;
 
 		let add = fn(x, y) {
@@ -52,7 +52,7 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 			{TOKEN_TYPE_LET, "let"},
 			{TOKEN_TYPE_IDENT, "five"},
 			{TOKEN_TYPE_ASSIGN, "="},
-			{TOKEN_TYPE_INT, "5"},
+			{TOKEN_TYPE_INT, "6"},
 			{TOKEN_TYPE_SEMICOLON, ";"},
 			{TOKEN_TYPE_LET, "let"},
 			{TOKEN_TYPE_IDENT, "ten"},
@@ -125,10 +125,10 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 			{TOKEN_TYPE_END_OF_FILE, ""},
 	};
 
-	Monkey monkey = CreateMonkey();
-	auto monkey_ptr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(&monkey, &DestroyMonkey);
+	Monkey* monkey = CreateMonkey();
+	auto monkey_ptr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(monkey, &DestroyMonkey);
 
-	auto lexer = CreateLexer(&monkey, input);
+	auto lexer = CreateLexer(monkey, input);
 	auto lexer_ptr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(&lexer, &DestroyLexer);
 
 	for (const auto tt : tests) {

@@ -10,16 +10,28 @@
 
 MONKEY_INTERNAL const char library_name[] = "Monkey";
 
-Monkey CreateMonkey() {
-	Monkey lib;
+typedef struct {
+	Monkey base;
+	MonkeyTokenState* token;
+} MonkeyImpl;
+
+Monkey* CreateMonkey() {
+	MonkeyImpl* impl = malloc(sizeof(MonkeyImpl));
 	char* name = malloc(sizeof library_name);
 	(void)memcpy(name, library_name, sizeof library_name);
-	lib.name = name;
-	lib.token = CreateTokenState();
-	return lib;
+	impl->base.name = name;
+	impl->token = CreateTokenState();
+	return (Monkey*)impl;
+}
+
+MonkeyTokenState* MonkeyGetTokenState(Monkey* monkey) {
+	MonkeyImpl* impl = (MonkeyImpl*)monkey;
+	return impl->token;
 }
 
 void DestroyMonkey(Monkey* lib) {
+	MonkeyImpl* impl = (MonkeyImpl*)lib;
 	free(HEDLEY_CONST_CAST(void*, lib->name));
-	DestroyTokenState(lib->token);
+	DestroyTokenState(impl->token);
+	free(impl);
 }
