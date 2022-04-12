@@ -51,7 +51,7 @@ void MonkeyRepl(MonkeyReplArgs args) {
 	size_t lineCapacity = 0;
 	Monkey* monkey = CreateMonkey();
 	while (true) {
-		printf("> ");
+		(void)fprintf(args.writer, "> ");
 		long lineLength = GetLine(&line, &lineCapacity, args.reader);
 		if (lineLength == -1) {
 			(void)fputc('\n', args.writer);
