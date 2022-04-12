@@ -18,6 +18,12 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 		let result = add(five, ten);
 		!-/*5;
 		5 < 10 > 5;
+
+		if (5 < 10) {
+			return true;
+		} else {
+			return false;
+		}
 	)mk";
 
 	struct test {
@@ -74,6 +80,23 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 			{TOKEN_TYPE_GT, ">"},
 			{TOKEN_TYPE_INT, "5"},
 			{TOKEN_TYPE_SEMICOLON, ";"},
+			{TOKEN_TYPE_IF, "if"},
+			{TOKEN_TYPE_LPAREN, "("},
+			{TOKEN_TYPE_INT, "5"},
+			{TOKEN_TYPE_LT, "<"},
+			{TOKEN_TYPE_INT, "10"},
+			{TOKEN_TYPE_RPAREN, ")"},
+			{TOKEN_TYPE_LBRACE, "{"},
+			{TOKEN_TYPE_RETURN, "return"},
+			{TOKEN_TYPE_TRUE, "true"},
+			{TOKEN_TYPE_SEMICOLON, ";"},
+			{TOKEN_TYPE_RBRACE, "}"},
+			{TOKEN_TYPE_ELSE, "else"},
+			{TOKEN_TYPE_LBRACE, "{"},
+			{TOKEN_TYPE_RETURN, "return"},
+			{TOKEN_TYPE_FALSE, "false"},
+			{TOKEN_TYPE_SEMICOLON, ";"},
+			{TOKEN_TYPE_RBRACE, "}"},
 			{TOKEN_TYPE_END_OF_FILE, ""},
 	};
 

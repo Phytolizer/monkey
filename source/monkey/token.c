@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define KEYWORD_COUNT 2
+#define KEYWORD_COUNT 7
 
 struct MonkeyTokenState {
 	char* keywords_text[KEYWORD_COUNT];
@@ -22,8 +22,13 @@ MONKEY_INTERNAL void fillKeywords(MonkeyTokenState* state) {
 		const char* text;
 	} Keyword;
 	Keyword keywords[KEYWORD_COUNT] = {
-			{TOKEN_TYPE_LET, "let"},
+			{TOKEN_TYPE_ELSE, "else"},
+			{TOKEN_TYPE_FALSE, "false"},
 			{TOKEN_TYPE_FUNCTION, "fn"},
+			{TOKEN_TYPE_IF, "if"},
+			{TOKEN_TYPE_LET, "let"},
+			{TOKEN_TYPE_RETURN, "return"},
+			{TOKEN_TYPE_TRUE, "true"},
 	};
 	state->keywords = g_hash_table_new(g_str_hash, g_str_equal);
 	for (int i = 0; i < KEYWORD_COUNT; i++) {
@@ -57,6 +62,7 @@ const char* TokenTypeText(TokenType type) {
 		default:
 			(void)fprintf(stderr, "Unknown token type: %d\n", type);
 			assert(false);
+			return NULL;
 	}
 }
 

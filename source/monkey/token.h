@@ -21,8 +21,13 @@
 	X(RPAREN, ")") \
 	X(LBRACE, "{") \
 	X(RBRACE, "}") \
+	X(ELSE, "ELSE") \
+	X(FALSE, "FALSE") \
 	X(FUNCTION, "FUNCTION") \
-	X(LET, "LET")
+	X(IF, "IF") \
+	X(LET, "LET") \
+	X(RETURN, "RETURN") \
+	X(TRUE, "TRUE")
 
 /**
  * @brief TokenType is an enumeration of all the different types of tokens
