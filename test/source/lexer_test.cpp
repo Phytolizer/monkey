@@ -6,6 +6,19 @@ extern "C" {
 #include <monkey/token.h>
 }
 
+TEST_CASE("Lexer reports problem for illegal tokens", "[lexer]") {
+	constexpr const char input[] = "@";
+	Monkey monkey = CreateMonkey();
+	auto monkey_ptr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(&monkey, &DestroyMonkey);
+
+	Lexer lexer = CreateLexer(&monkey, input);
+	auto lexer_ptr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(&lexer, &DestroyLexer);
+
+	Token token = LexerNextToken(&lexer);
+	REQUIRE(std::string(TokenTypeText(token.type)) ==
+			std::string(TokenTypeText(TOKEN_TYPE_ILLEGAL)));
+}
+
 TEST_CASE("Lexer lexes tokens", "[lexer]") {
 	constexpr const char input[] = R"mk(
 		let five = 5;
