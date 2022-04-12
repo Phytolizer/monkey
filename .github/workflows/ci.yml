@@ -125,6 +125,7 @@ jobs:
               with:
                   committish: ${{ env.VCPKG_COMMIT }}
                   cache: true
+				  cache-version: 2
 
             - name: Configure
               shell: pwsh
