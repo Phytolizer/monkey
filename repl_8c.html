@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>monkey</title>
+  <title>source/monkey/repl.c file | monkey</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -32,7 +32,7 @@
             </li>
           </ol>
           <ol class="m-col-t-6 m-col-m-none" start="2">
-            <li><a href="annotated.html" id="m-navbar-current">Classes</a></li>
+            <li><a href="annotated.html">Classes</a></li>
             <li><a href="files.html">Files</a></li>
             <li class="m-show-m"><a href="#search" class="m-doc-search-icon" title="Search" onclick="return showSearch()"><svg style="height: 0.9rem;" viewBox="0 0 16 16">
               <use href="#m-doc-search-icon-path" />
@@ -47,32 +47,46 @@
   <div class="m-container m-container-inflatable">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <h1>Classes</h1>
-        <ul class="m-doc">
-          <li>struct <a href="structLexer.html" class="m-doc">Lexer</a> <span class="m-doc"><a href="structLexer.html" class="m-doc">Lexer</a> is a struct that stores state related to the lexing of <a href="structMonkey.html" class="m-doc">Monkey</a>.</span></li>
-          <li>struct <a href="structMonkey.html" class="m-doc">Monkey</a> <span class="m-doc"><a href="structMonkey.html" class="m-doc">Monkey</a> is a struct that holds the public state of the <a href="structMonkey.html" class="m-doc">Monkey</a> library.</span></li>
-          <li>struct <a href="structMonkeyImpl.html" class="m-doc">MonkeyImpl</a> <span class="m-doc"><span></span></span></li>
-          <li>struct <a href="structMonkeyReplArgs.html" class="m-doc">MonkeyReplArgs</a> <span class="m-doc"><span></span></span></li>
-          <li>struct <a href="structMonkeyTokenState.html" class="m-doc">MonkeyTokenState</a> <span class="m-doc"><span></span></span></li>
-          <li>struct <a href="structNewTokenArgs.html" class="m-doc">NewTokenArgs</a> <span class="m-doc"><span></span></span></li>
-          <li>struct <a href="structToken.html" class="m-doc">Token</a> <span class="m-doc"><a href="structToken.html" class="m-doc">Token</a> is a struct that holds information about a token.</span></li>
-        </ul>
-        <script>
-        function toggle(e) {
-            e.parentElement.className = e.parentElement.className == 'm-doc-collapsible' ?
-                'm-doc-expansible' : 'm-doc-collapsible';
-            return false;
-        }
-        /* Collapse all nodes marked as such. Doing it via JS instead of
-           directly in markup so disabling it doesn't harm usability. The list
-           is somehow regenerated on every iteration and shrinks as I change
-           the classes. It's not documented anywhere and I'm not sure if this
-           is the same across browsers, so I am going backwards in that list to
-           be sure. */
-        var collapsed = document.getElementsByClassName("collapsed");
-        for(var i = collapsed.length - 1; i >= 0; --i)
-            collapsed[i].className = 'm-doc-expansible';
-        </script>
+        <h1>
+          <span class="m-breadcrumb"><a href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html">source</a>/</span><span class="m-breadcrumb"><a href="dir_e63aed17ca12ecf13a4ba395ed06a5b5.html">monkey</a>/</span>repl.c <span class="m-thin">file</span>
+        </h1>
+        <p><span></span></p>
+        <div class="m-block m-default">
+          <h3>Contents</h3>
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#func-members">Functions</a></li>
+                <li><a href="#define-members">Defines</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <section id="func-members">
+          <h2><a href="#func-members">Functions</a></h2>
+          <dl class="m-doc">
+            <dt id="a46f1fa661acdc96368b86075263105db">
+              <span class="m-doc-wrap-bumper">auto <a href="#a46f1fa661acdc96368b86075263105db" class="m-doc-self">GetLine</a>(</span><span class="m-doc-wrap">char** linep,
+              size_t* lenp,
+              FILE* reader) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> long</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a04c2a9226144adbd5917d741d2bfbb49">
+              <span class="m-doc-wrap-bumper">void <a href="#a04c2a9226144adbd5917d741d2bfbb49" class="m-doc-self">MonkeyRepl</a>(</span><span class="m-doc-wrap"><a href="structMonkeyReplArgs.html" class="m-doc">MonkeyReplArgs</a> args)</span>
+            </dt>
+            <dd>MonkeyRepl will start a REPL for the <a href="structMonkey.html" class="m-doc">Monkey</a> language.</dd>
+          </dl>
+        </section>
+        <section id="define-members">
+          <h2><a href="#define-members">Defines</a></h2>
+          <dl class="m-doc">
+            <dt id="a81d754689cd538cf54a1886c355840b1">
+              <span class="m-doc-wrap-bumper">#define <a href="#a81d754689cd538cf54a1886c355840b1" class="m-doc-self">GETLINE_INITIAL_LENGTH</a></span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
       </div>
     </div>
   </div>
