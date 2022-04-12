@@ -149,8 +149,7 @@
 				"ci-build",
 				"ci-win64",
 				"dev-mode",
-				"vcpkg",
-				"vcpkg-win64-static"
+				"vcpkg"
 			]
 		}
 	]
