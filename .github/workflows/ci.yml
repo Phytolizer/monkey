@@ -124,7 +124,7 @@ jobs:
               uses: friendlyanon/setup-vcpkg@v1
               with:
                   committish: ${{ env.VCPKG_COMMIT }}
-                  cache: false
+                  cache: true
 
             - name: Configure
               shell: pwsh
