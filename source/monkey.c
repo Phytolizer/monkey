@@ -26,4 +26,5 @@ exit:
 
 void DestroyMonkey(Monkey* lib) {
 	free(HEDLEY_CONST_CAST(void*, lib->name));
+	DestroyTokenState(lib->token);
 }
