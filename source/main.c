@@ -8,6 +8,6 @@ int main(int argc, const char* argv[]) {
 	(void)argc;
 	(void)argv;
 
-	MONKEY_REPL(.reader = stdin, .writer = stdout);
+	MONKEY_REPL(.reader = StreamFromFile(stdin), .writer = StreamFromFile(stdout));
 	return 0;
 }

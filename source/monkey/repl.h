@@ -1,13 +1,15 @@
 #pragma once
 
+#include "monkey/stream.h"
+
 #include <stdio.h>
 
 /**
  * @brief MonkeyReplArgs is a struct that holds the arguments for the REPL.
  */
 typedef struct {
-	FILE* reader;
-	FILE* writer;
+	Stream* reader;
+	Stream* writer;
 } MonkeyReplArgs;
 
 /**

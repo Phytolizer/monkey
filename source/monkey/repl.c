@@ -7,54 +7,15 @@
 
 #define GETLINE_INITIAL_LENGTH 256
 
-MONKEY_FILE_LOCAL long GetLine(char** linep, size_t* lenp, FILE* reader) {
-	if (feof(reader)) {
-		return -1;
-	}
-
-	if (*linep == NULL) {
-		*lenp = GETLINE_INITIAL_LENGTH;
-		*linep = malloc(*lenp);
-	}
-
-	char* line = *linep;
-	size_t len = *lenp;
-	size_t pos = 0;
-
-	while (true) {
-		int c = fgetc(reader);
-		if (c == EOF) {
-			if (pos == 0) {
-				return -1;
-			}
-			break;
-		}
-
-		if (c == '\n') {
-			break;
-		}
-
-		if (pos == len) {
-			len *= 2;
-			line = realloc(line, len);
-		}
-
-		line[pos++] = (char)c;
-	}
-
-	line[pos] = '\0';
-	return (long)pos;
-}
-
 void MonkeyRepl(MonkeyReplArgs args) {
 	char* line = NULL;
 	size_t lineCapacity = 0;
 	Monkey* monkey = CreateMonkey();
 	while (true) {
-		(void)fprintf(args.writer, "> ");
-		long lineLength = GetLine(&line, &lineCapacity, args.reader);
+		WriteStream(args.writer, "> ", 2);
+		int64_t lineLength = ReadStreamLine(&line, &lineCapacity, args.reader);
 		if (lineLength == -1) {
-			(void)fputc('\n', args.writer);
+			WriteStream(args.writer, "\n", 1);
 			break;
 		}
 
@@ -62,7 +23,7 @@ void MonkeyRepl(MonkeyReplArgs args) {
 		while (true) {
 			Token token = LexerNextToken(&lexer);
 
-			(void)fprintf(args.writer, "{%s, %s}\n", TokenTypeText(token.type), token.literal);
+			(void)StreamPrintf(args.writer, "{%s, %s}\n", TokenTypeText(token.type), token.literal);
 			DestroyToken(&token);
 			if (token.type == TOKEN_TYPE_END_OF_FILE) {
 				break;
