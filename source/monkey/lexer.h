@@ -26,16 +26,14 @@ typedef struct {
 Lexer CreateLexer(Monkey* monkey, const char* input);
 
 /**
- * LexerNextToken
- *
- * @brief Gets the next token from the lexer.
+ * @brief LexerNextToken gets the next token from the lexer.
  * @param lexer The lexer to get the next token from.
  * @return The next token from the lexer.
  */
 Token LexerNextToken(Lexer* lexer);
 
 /**
- * @brief Destroys a lexer.
+ * @brief DestroyLexer destroys a lexer.
  * @param lexer The lexer to destroy.
  */
 void DestroyLexer(Lexer* lexer);

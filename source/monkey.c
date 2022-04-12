@@ -1,5 +1,6 @@
 #include "monkey.h"
 
+#include "monkey/macros.h"
 #include "monkey/token.h"
 
 #include <hedley.h>
@@ -7,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const char library_name[] = "Monkey";
+MONKEY_INTERNAL const char library_name[] = "Monkey";
 
 Monkey CreateMonkey() {
 	Monkey lib;

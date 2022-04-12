@@ -7,16 +7,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-MONKEY_INTERNAL void readChar(Lexer* lexer) {
+MONKEY_INTERNAL char peekChar(Lexer* lexer) {
 	if (lexer->readPosition >= lexer->inputLength) {
-		lexer->ch = 0;
-	} else {
-		lexer->ch = lexer->input[lexer->readPosition];
+		return 0;
 	}
+	return lexer->input[lexer->readPosition];
+}
+
+MONKEY_INTERNAL void readChar(Lexer* lexer) {
+	lexer->ch = peekChar(lexer);
 	lexer->position = lexer->readPosition;
 	lexer->readPosition += 1;
 }
 
+/**
+ * @private
+ */
 typedef struct {
 	TokenType type;
 	char literal;
@@ -82,7 +88,20 @@ Token LexerNextToken(Lexer* lexer) {
 
 	switch (lexer->ch) {
 		case '=':
-			tok = NEW_TOKEN(.type = TOKEN_TYPE_ASSIGN, .literal = lexer->ch);
+			if (peekChar(lexer) == '=') {
+				readChar(lexer);
+				tok = (Token){.type = TOKEN_TYPE_EQ, .literal = MonkeyStrdup("==")};
+			} else {
+				tok = NEW_TOKEN(.type = TOKEN_TYPE_ASSIGN, .literal = lexer->ch);
+			}
+			break;
+		case '!':
+			if (peekChar(lexer) == '=') {
+				readChar(lexer);
+				tok = (Token){.type = TOKEN_TYPE_NOT_EQ, .literal = MonkeyStrdup("!=")};
+			} else {
+				tok = NEW_TOKEN(.type = TOKEN_TYPE_BANG, .literal = lexer->ch);
+			}
 			break;
 		case ';':
 			tok = NEW_TOKEN(.type = TOKEN_TYPE_SEMICOLON, .literal = lexer->ch);
@@ -104,9 +123,6 @@ Token LexerNextToken(Lexer* lexer) {
 			break;
 		case '}':
 			tok = NEW_TOKEN(.type = TOKEN_TYPE_RBRACE, .literal = lexer->ch);
-			break;
-		case '!':
-			tok = NEW_TOKEN(.type = TOKEN_TYPE_BANG, .literal = lexer->ch);
 			break;
 		case '-':
 			tok = NEW_TOKEN(.type = TOKEN_TYPE_MINUS, .literal = lexer->ch);

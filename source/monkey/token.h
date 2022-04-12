@@ -2,6 +2,9 @@
 
 #include "monkey.h"
 
+/**
+ * @brief TOKEN_TYPES_X is a list of all the token types.
+ */
 #define TOKEN_TYPES_X \
 	X(ILLEGAL, "ILLEGAL") \
 	X(END_OF_FILE, "EOF") \
@@ -15,6 +18,8 @@
 	X(SLASH, "/") \
 	X(LT, "<") \
 	X(GT, ">") \
+	X(EQ, "==") \
+	X(NOT_EQ, "!=") \
 	X(COMMA, ",") \
 	X(SEMICOLON, ";") \
 	X(LPAREN, "(") \
@@ -75,6 +80,7 @@ void DestroyToken(Token* token);
  * @brief Looks up the identifier in the keywords table and returns the
  * corresponding token type.
  *
+ * @param monkey The library instance.
  * @param identifier The identifier to look up.
  * @return The token type corresponding to the identifier.
  */

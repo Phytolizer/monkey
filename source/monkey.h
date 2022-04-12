@@ -1,5 +1,9 @@
 #pragma once
 
+/**
+ * @brief MonkeyTokenState is an opaque struct that holds the state of the
+ * token module.
+ */
 typedef struct MonkeyTokenState MonkeyTokenState;
 
 /**

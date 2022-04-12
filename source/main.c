@@ -10,7 +10,7 @@ int main(int argc, const char* argv[]) {
 	(void)argv;
 
 	if (lib.name == NULL) {
-		(void)puts("Hello from unknown! (JSON parsing failed in library)");
+		(void)puts("Hello from unknown! (Memory allocation failed in library)");
 	} else {
 		(void)printf("Hello from %s!", lib.name);
 	}

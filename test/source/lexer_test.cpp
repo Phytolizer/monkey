@@ -24,6 +24,9 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 		} else {
 			return false;
 		}
+
+		10 == 10;
+		10 != 9;
 	)mk";
 
 	struct test {
@@ -97,6 +100,14 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 			{TOKEN_TYPE_FALSE, "false"},
 			{TOKEN_TYPE_SEMICOLON, ";"},
 			{TOKEN_TYPE_RBRACE, "}"},
+			{TOKEN_TYPE_INT, "10"},
+			{TOKEN_TYPE_EQ, "=="},
+			{TOKEN_TYPE_INT, "10"},
+			{TOKEN_TYPE_SEMICOLON, ";"},
+			{TOKEN_TYPE_INT, "10"},
+			{TOKEN_TYPE_NOT_EQ, "!="},
+			{TOKEN_TYPE_INT, "9"},
+			{TOKEN_TYPE_SEMICOLON, ";"},
 			{TOKEN_TYPE_END_OF_FILE, ""},
 	};
 
