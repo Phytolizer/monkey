@@ -1,5 +1,6 @@
 # monkey
 
+[![Continuous Integration](https://github.com/Phytolizer/monkey-cpp/actions/workflows/ci.yml/badge.svg)](https://github.com/Phytolizer/monkey-cpp/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/Phytolizer/monkey-cpp/branch/master/graph/badge.svg?token=6Y38HZUR0Q)](https://codecov.io/gh/Phytolizer/monkey-cpp)
 
 The Monkey programming language, implemented in C with unit tests in C++.
