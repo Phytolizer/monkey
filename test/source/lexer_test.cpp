@@ -67,6 +67,8 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 	auto monkey_ptr = std::unique_ptr<Monkey, void (*)(Monkey*)>(&monkey, &DestroyMonkey);
 
 	auto lexer = CreateLexer(&monkey, input);
+	auto lexer_ptr = std::unique_ptr<Lexer, void (*)(Lexer*)>(&lexer, &DestroyLexer);
+
 	for (const auto tt : tests) {
 		auto tok = LexerNextToken(&lexer);
 		auto tok_ptr = std::unique_ptr<Token, void (*)(Token*)>(&tok, &DestroyToken);
