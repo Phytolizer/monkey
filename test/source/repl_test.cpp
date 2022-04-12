@@ -15,11 +15,12 @@ TEST_CASE("REPL prints simple output", "[repl]") {
 			StreamFromText(input_text, sizeof(input_text) - 1),
 			StreamFromText(output_text.data(), output_text.size()),
 	};
+	auto reader_ptr = std::unique_ptr<Stream, decltype(&CloseStream)>(args.reader, &CloseStream);
+	auto writer_ptr = std::unique_ptr<Stream, decltype(&CloseStream)>(args.writer, &CloseStream);
+
 	MonkeyRepl(args);
 	args.writer->text[args.writer->text_position] = '\0';
 
 	REQUIRE(std::string(output_text.data()) ==
 			"> {LET, let}\n{IDENT, five}\n{=, =}\n{INT, 6}\n{;, ;}\n{EOF, }\n> \n");
-	CloseStream(args.reader);
-	CloseStream(args.writer);
 }
