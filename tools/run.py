@@ -11,6 +11,7 @@ preset = "dev"
 
 p = argparse.ArgumentParser()
 p.add_argument("--preset")
+p.add_argument("--target")
 p.add_argument("-r", "--run", action="store_true")
 p.add_argument("-c", "--configure", action="store_true")
 args = p.parse_args()
@@ -36,8 +37,13 @@ if args.configure:
     subprocess.run(["cmake", "--preset", preset], check=True, env=devenv)
 
 # Build the project
-subprocess.run(["cmake", "--build", "--preset", preset],
-               check=True, env=devenv)
+if args.target is None:
+    subprocess.run(["cmake", "--build", "--preset", preset],
+                   check=True, env=devenv)
+else:
+    subprocess.run(["cmake", "--build", "--preset", preset,
+                   "--target", args.target], check=True, env=devenv)
 # Run the final executable
 if args.run:
-    subprocess.run("build/test/monkey_test" + (".exe" if os.name == "nt" else ""))
+    subprocess.run("build/test/monkey_test" +
+                   (".exe" if os.name == "nt" else ""))

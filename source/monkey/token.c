@@ -59,11 +59,10 @@ const char* TokenTypeText(TokenType type) {
 		return string;
 		TOKEN_TYPES_X
 #undef X
-		default:
-			(void)fprintf(stderr, "Unknown token type: %d\n", type);
-			assert(false);
-			return NULL;
 	}
+	(void)fprintf(stderr, "Unknown token type: %d\n", type);
+	assert(false);
+	return NULL;
 }
 
 void DestroyToken(Token* token) {

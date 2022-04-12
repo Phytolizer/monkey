@@ -12,15 +12,9 @@ static const char library_name[] = "Monkey";
 Monkey CreateMonkey() {
 	Monkey lib;
 	char* name = malloc(sizeof library_name);
-	if (name == NULL) {
-		goto exit;
-	}
-
 	(void)memcpy(name, library_name, sizeof library_name);
-
-exit:
-	lib.token = CreateTokenState();
 	lib.name = name;
+	lib.token = CreateTokenState();
 	return lib;
 }
 
