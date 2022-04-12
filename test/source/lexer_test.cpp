@@ -15,6 +15,7 @@ TEST_CASE("Lexer reports problem for illegal tokens", "[lexer]") {
 	auto lexer_ptr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(&lexer, &DestroyLexer);
 
 	Token token = LexerNextToken(&lexer);
+	auto token_ptr = std::unique_ptr<Token, decltype(&DestroyToken)>(&token, &DestroyToken);
 	REQUIRE(std::string(TokenTypeText(token.type)) ==
 			std::string(TokenTypeText(TOKEN_TYPE_ILLEGAL)));
 }
@@ -125,14 +126,14 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 	};
 
 	Monkey monkey = CreateMonkey();
-	auto monkey_ptr = std::unique_ptr<Monkey, void (*)(Monkey*)>(&monkey, &DestroyMonkey);
+	auto monkey_ptr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(&monkey, &DestroyMonkey);
 
 	auto lexer = CreateLexer(&monkey, input);
-	auto lexer_ptr = std::unique_ptr<Lexer, void (*)(Lexer*)>(&lexer, &DestroyLexer);
+	auto lexer_ptr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(&lexer, &DestroyLexer);
 
 	for (const auto tt : tests) {
 		auto tok = LexerNextToken(&lexer);
-		auto tok_ptr = std::unique_ptr<Token, void (*)(Token*)>(&tok, &DestroyToken);
+		auto tok_ptr = std::unique_ptr<Token, decltype(&DestroyToken)>(&tok, &DestroyToken);
 		REQUIRE(std::string(TokenTypeText(tt.expectedType)) ==
 				std::string(TokenTypeText(tok.type)));
 		REQUIRE(std::string(tt.expectedLiteral) == tok.literal);
