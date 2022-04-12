@@ -84,7 +84,9 @@ jobs:
 
             - name: Install vcpkg
               uses: friendlyanon/setup-vcpkg@v1
-              with: { committish: "${{ env.VCPKG_COMMIT }}" }
+              with:
+                  committish: "${{ env.VCPKG_COMMIT }}"
+                  cache-key: vcpkg-sanitize
 
             - name: Configure
               env: { CC: clang-12, CXX: clang++-12 }
