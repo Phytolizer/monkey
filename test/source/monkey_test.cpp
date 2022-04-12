@@ -7,8 +7,8 @@ extern "C" {
 }
 
 TEST_CASE("Name is Monkey", "[library]") {
-	Monkey lib = create_monkey();
-	auto ptr = std::unique_ptr<Monkey, void (*)(Monkey*)>(&lib, &destroy_monkey);
+	Monkey lib = CreateMonkey();
+	auto ptr = std::unique_ptr<Monkey, void (*)(Monkey*)>(&lib, &DestroyMonkey);
 
 	REQUIRE(std::string("Monkey") == lib.name);
 }

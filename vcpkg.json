@@ -3,6 +3,10 @@
 	"version-semver": "0.1.0",
 	"dependencies": [
 		{
+			"name": "glib",
+			"version>=": "2.70.5"
+		},
+		{
 			"name": "hedley",
 			"version>=": "15"
 		}

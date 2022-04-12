@@ -1,5 +1,7 @@
 #pragma once
 
+#include "monkey.h"
+
 #define TOKEN_TYPES_X \
 	X(ILLEGAL, "ILLEGAL") \
 	X(END_OF_FILE, "EOF") \
@@ -35,6 +37,20 @@ typedef struct {
 } Token;
 
 /**
+ * @brief Creates a new token state.
+ *
+ * @return A new token state.
+ */
+MonkeyTokenState* CreateTokenState(void);
+
+/**
+ * @brief Destroys a token state.
+ *
+ * @param state The token state to destroy.
+ */
+void DestroyTokenState(MonkeyTokenState* state);
+
+/**
  * @brief Returns the string representation of the given token type.
  */
 const char* TokenTypeText(TokenType type);
@@ -43,3 +59,12 @@ const char* TokenTypeText(TokenType type);
  * @brief Destroys the resources held by the given token.
  */
 void DestroyToken(Token* token);
+
+/**
+ * @brief Looks up the identifier in the keywords table and returns the
+ * corresponding token type.
+ *
+ * @param identifier The identifier to look up.
+ * @return The token type corresponding to the identifier.
+ */
+TokenType LookupIdent(Monkey* monkey, const char* identifier);

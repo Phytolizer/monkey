@@ -10,3 +10,10 @@ char* MonkeyStrdup(const char* str) {
 	result[len] = '\0';
 	return result;
 }
+
+char* MonkeyStrndup(const char* str, size_t n) {
+	char* result = malloc(sizeof(char) * (n + 1));
+	memcpy(result, str, n);
+	result[n] = '\0';
+	return result;
+}

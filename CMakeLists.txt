@@ -33,6 +33,10 @@ if(NOT HEDLEY_INCLUDE_DIR)
 endif()
 target_include_directories(monkey_lib SYSTEM PRIVATE "${HEDLEY_INCLUDE_DIR}")
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(glib REQUIRED IMPORTED_TARGET glib-2.0)
+target_link_libraries(monkey_lib PUBLIC PkgConfig::glib)
+
 # ---- Declare executable ----
 
 add_executable(monkey_exe source/main.c)

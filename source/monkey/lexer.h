@@ -1,5 +1,6 @@
 #pragma once
 
+#include "monkey.h"
 #include "monkey/token.h"
 
 #include <stddef.h>
@@ -9,6 +10,7 @@
  * @brief Lexer is a struct that stores state related to the lexing of Monkey.
  */
 typedef struct {
+	Monkey* monkey;
 	const char* input;
 	size_t inputLength;
 	uint64_t position;
@@ -21,7 +23,7 @@ typedef struct {
  * @param input The input string to lex.
  * @return A new lexer.
  */
-Lexer CreateLexer(const char* input);
+Lexer CreateLexer(Monkey* monkey, const char* input);
 
 /**
  * LexerNextToken

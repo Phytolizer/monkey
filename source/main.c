@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 int main(int argc, const char* argv[]) {
-	Monkey lib = create_monkey();
+	Monkey lib = CreateMonkey();
 
 	(void)argc;
 	(void)argv;
@@ -14,6 +14,6 @@ int main(int argc, const char* argv[]) {
 	} else {
 		(void)printf("Hello from %s!", lib.name);
 	}
-	destroy_monkey(&lib);
+	DestroyMonkey(&lib);
 	return 0;
 }

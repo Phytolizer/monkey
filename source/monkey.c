@@ -1,5 +1,7 @@
 #include "monkey.h"
 
+#include "monkey/token.h"
+
 #include <hedley.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -7,7 +9,7 @@
 
 static const char library_name[] = "Monkey";
 
-Monkey create_monkey() {
+Monkey CreateMonkey() {
 	Monkey lib;
 	char* name = malloc(sizeof library_name);
 	if (name == NULL) {
@@ -17,10 +19,11 @@ Monkey create_monkey() {
 	(void)memcpy(name, library_name, sizeof library_name);
 
 exit:
+	lib.token = CreateTokenState();
 	lib.name = name;
 	return lib;
 }
 
-void destroy_monkey(Monkey* lib) {
+void DestroyMonkey(Monkey* lib) {
 	free(HEDLEY_CONST_CAST(void*, lib->name));
 }
