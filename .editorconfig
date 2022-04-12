@@ -6,6 +6,8 @@ indent_size = 4
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.yml, .clang*]
+[*.yml]
 indent_style = space
-indent_size = 4
+
+[.clang*]
+indent_style = space
