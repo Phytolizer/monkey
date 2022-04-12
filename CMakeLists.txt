@@ -16,8 +16,9 @@ include(cmake/variables.cmake)
 # ---- Declare library ----
 
 add_library(
-	monkey_lib OBJECT source/monkey.c source/monkey/lexer.c
-						source/monkey/string.c source/monkey/token.c
+	monkey_lib OBJECT
+	source/monkey.c source/monkey/lexer.c source/monkey/string.c
+	source/monkey/token.c source/monkey/repl.c
 )
 
 target_include_directories(

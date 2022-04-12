@@ -53,18 +53,14 @@ typedef struct {
 } Token;
 
 /**
- * @brief Creates a new token state.
- *
- * @return A new token state.
+ * @private
  */
-MonkeyTokenState* CreateTokenState(void);
+MONKEY_INTERNAL MonkeyTokenState* CreateTokenState(void);
 
 /**
- * @brief Destroys a token state.
- *
- * @param state The token state to destroy.
+ * @private
  */
-void DestroyTokenState(MonkeyTokenState* state);
+MONKEY_INTERNAL void DestroyTokenState(MonkeyTokenState* state);
 
 /**
  * @brief Returns the string representation of the given token type.
@@ -77,11 +73,6 @@ const char* TokenTypeText(TokenType type);
 void DestroyToken(Token* token);
 
 /**
- * @brief Looks up the identifier in the keywords table and returns the
- * corresponding token type.
- *
- * @param monkey The library instance.
- * @param identifier The identifier to look up.
- * @return The token type corresponding to the identifier.
+ * @private
  */
-TokenType LookupIdent(Monkey* monkey, const char* identifier);
+MONKEY_INTERNAL TokenType LookupIdent(Monkey* monkey, const char* identifier);
