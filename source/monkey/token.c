@@ -3,7 +3,9 @@
 #include "monkey/macros.h"
 #include "monkey/string.h"
 
+#include <assert.h>
 #include <glib.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -54,7 +56,7 @@ const char* TokenTypeText(TokenType type) {
 #undef X
 		default:
 			(void)fprintf(stderr, "Unknown token type: %d\n", type);
-			return NULL;
+			assert(false);
 	}
 }
 
