@@ -20,4 +20,6 @@ TEST_CASE("REPL prints simple output", "[repl]") {
 
 	REQUIRE(std::string(output_text.data()) ==
 			"> {LET, let}\n{IDENT, five}\n{=, =}\n{INT, 6}\n{;, ;}\n{EOF, }\n> \n");
+	CloseStream(args.reader);
+	CloseStream(args.writer);
 }
