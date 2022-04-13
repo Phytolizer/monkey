@@ -1,6 +1,7 @@
 #include "monkey/user.h"
 #ifdef _WIN32
 #include <Windows.h>
+#include <security.h>
 #else
 #include "monkey/string.h"
 
@@ -32,6 +33,8 @@ char* CurrentUser(void) {
 		free(buf);
 		return NULL;
 	}
-	return MonkeyStrdup(pw.pw_name);
+	char* name = MonkeyStrdup(pw.pw_name);
+	free(buf);
+	return name;
 #endif
 }
