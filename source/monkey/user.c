@@ -1,6 +1,7 @@
 #include "monkey/user.h"
 #ifdef _WIN32
 #include <Windows.h>
+#define SECURITY_WIN32
 #include <security.h>
 #else
 #include "monkey/string.h"
