@@ -95,10 +95,20 @@ int64_t StreamPrintf(Stream* stream, const char* format, ...) {
 	} else {
 		result = vsnprintf(stream->text + stream->text_position,
 				stream->text_length - stream->text_position, format, args);
-		stream->text_position += result;
+		if (result > 0) {
+			stream->text_position += (size_t)result;
+		}
 	}
 	va_end(args);
 	return result;
+}
+
+void RewindStream(Stream* stream) {
+	if (stream->file) {
+		rewind(stream->file);
+	} else {
+		stream->text_position = 0;
+	}
 }
 
 void CloseStream(Stream* stream) {

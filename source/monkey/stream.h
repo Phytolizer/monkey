@@ -1,5 +1,6 @@
 #pragma once
 
+#include <hedley.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -73,7 +74,14 @@ int64_t WriteStream(Stream* stream, const char* buffer, size_t buffer_size);
  * @param format The format string.
  * @return The number of characters written, or -1 if an error occurred.
  */
-int64_t StreamPrintf(Stream* stream, const char* format, ...);
+int64_t StreamPrintf(Stream* stream, const char* format, ...) HEDLEY_PRINTF_FORMAT(2, 3);
+
+/**
+ * @brief RewindStream rewinds a stream to the beginning.
+ *
+ * @param stream The stream to rewind.
+ */
+void RewindStream(Stream* stream);
 
 /**
  * @brief CloseStream closes the stream.
