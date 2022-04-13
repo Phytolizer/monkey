@@ -7,7 +7,12 @@ extern "C" {
 }
 
 TEST_CASE("Stream behaves nicely when backed by files", "[stream]") {
-	FILE* tempFile = std::tmpfile();
+	FILE* tempFile;
+#ifdef _WIN32
+	REQUIRE(tmpfile_s(&tempFile) == 0);
+#else
+	tempFile = std::tmpfile();
+#endif
 	Stream* stream = StreamFromFile(tempFile);
 	std::unique_ptr<Stream, decltype(&CloseStream)> stream_ptr(stream, &CloseStream);
 
