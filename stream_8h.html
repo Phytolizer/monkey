@@ -103,11 +103,15 @@
             </dt>
             <dd>WriteStream writes characters from a buffer.</dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a98037328897d1f8ea9f842537a7dd0fc" class="m-doc">StreamPrintf</a>(</span><span class="m-doc-wrap"><a href="structStream.html" class="m-doc">Stream</a>* stream,
+              <span class="m-doc-wrap-bumper">auto <a href="#aa72fa6267c1f20878ca73bb1fa715c09" class="m-doc">StreamPrintf</a>(</span><span class="m-doc-wrap"><a href="structStream.html" class="m-doc">Stream</a>* stream,
               const char* format,
-              ...) -&gt; int64_t</span>
+              ...) HEDLEY_PRINTF_FORMAT(2 -&gt; int64_t</span>
             </dt>
             <dd>StreamPrintf writes a formatted string to a stream.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a306614c1310a3b67633e5bb365ec8e4b" class="m-doc">RewindStream</a>(</span><span class="m-doc-wrap"><a href="structStream.html" class="m-doc">Stream</a>* stream) -&gt; int64_t void</span>
+            </dt>
+            <dd>RewindStream rewinds a stream to the beginning.</dd>
             <dt>
               <span class="m-doc-wrap-bumper">void <a href="#a0105cae589b6cf9097d8aad5d27e3c74" class="m-doc">CloseStream</a>(</span><span class="m-doc-wrap"><a href="structStream.html" class="m-doc">Stream</a>* stream)</span>
             </dt>
@@ -266,11 +270,11 @@
               </tfoot>
             </table>
           </div></section>
-          <section class="m-doc-details" id="a98037328897d1f8ea9f842537a7dd0fc"><div>
+          <section class="m-doc-details" id="aa72fa6267c1f20878ca73bb1fa715c09"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">int64_t </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a98037328897d1f8ea9f842537a7dd0fc" class="m-doc-self">StreamPrintf</a>(</span><span class="m-doc-wrap"><a href="structStream.html" class="m-doc">Stream</a>* stream,
+              <span class="m-doc-wrap-bumper">int64_t </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aa72fa6267c1f20878ca73bb1fa715c09" class="m-doc-self">StreamPrintf</a>(</span><span class="m-doc-wrap"><a href="structStream.html" class="m-doc">Stream</a>* stream,
               const char* format,
-              ...)</span></span>
+              ...) HEDLEY_PRINTF_FORMAT(2</span></span>
             </h3>
             <p>StreamPrintf writes a formatted string to a stream.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -293,6 +297,23 @@
                   <td>The number of characters written, or -1 if an error occurred.</td>
                 </tr>
               </tfoot>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a306614c1310a3b67633e5bb365ec8e4b"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">int64_t void </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a306614c1310a3b67633e5bb365ec8e4b" class="m-doc-self">RewindStream</a>(</span><span class="m-doc-wrap"><a href="structStream.html" class="m-doc">Stream</a>* stream)</span></span>
+            </h3>
+            <p>RewindStream rewinds a stream to the beginning.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">stream</td>
+                  <td>The stream to rewind.</td>
+                </tr>
+              </tbody>
             </table>
           </div></section>
           <section class="m-doc-details" id="a0105cae589b6cf9097d8aad5d27e3c74"><div>

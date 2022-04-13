@@ -93,12 +93,16 @@
               size_t buffer_size) -&gt; int64_t</span>
             </dt>
             <dd>WriteStream writes characters from a buffer.</dd>
-            <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a98037328897d1f8ea9f842537a7dd0fc" class="m-doc">StreamPrintf</a>(</span><span class="m-doc-wrap"><a href="structStream.html" class="m-doc">Stream</a>* stream,
+            <dt id="a98037328897d1f8ea9f842537a7dd0fc">
+              <span class="m-doc-wrap-bumper">auto <a href="#a98037328897d1f8ea9f842537a7dd0fc" class="m-doc-self">StreamPrintf</a>(</span><span class="m-doc-wrap"><a href="structStream.html" class="m-doc">Stream</a>* stream,
               const char* format,
               ...) -&gt; int64_t</span>
             </dt>
-            <dd>StreamPrintf writes a formatted string to a stream.</dd>
+            <dd><span></span></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#ae5643c009e4fc61f26aa7fc4f5e9f950" class="m-doc">RewindStream</a>(</span><span class="m-doc-wrap"><a href="structStream.html" class="m-doc">Stream</a>* stream)</span>
+            </dt>
+            <dd>RewindStream rewinds a stream to the beginning.</dd>
             <dt>
               <span class="m-doc-wrap-bumper">void <a href="#a0105cae589b6cf9097d8aad5d27e3c74" class="m-doc">CloseStream</a>(</span><span class="m-doc-wrap"><a href="structStream.html" class="m-doc">Stream</a>* stream)</span>
             </dt>
@@ -271,13 +275,11 @@
               </tfoot>
             </table>
           </div></section>
-          <section class="m-doc-details" id="a98037328897d1f8ea9f842537a7dd0fc"><div>
+          <section class="m-doc-details" id="ae5643c009e4fc61f26aa7fc4f5e9f950"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">int64_t </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a98037328897d1f8ea9f842537a7dd0fc" class="m-doc-self">StreamPrintf</a>(</span><span class="m-doc-wrap"><a href="structStream.html" class="m-doc">Stream</a>* stream,
-              const char* format,
-              ...)</span></span>
+              <span class="m-doc-wrap-bumper">void </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ae5643c009e4fc61f26aa7fc4f5e9f950" class="m-doc-self">RewindStream</a>(</span><span class="m-doc-wrap"><a href="structStream.html" class="m-doc">Stream</a>* stream)</span></span>
             </h3>
-            <p>StreamPrintf writes a formatted string to a stream.</p>
+            <p>RewindStream rewinds a stream to the beginning.</p>
             <table class="m-table m-fullwidth m-flat">
               <thead>
                 <tr><th colspan="2">Parameters</th></tr>
@@ -285,19 +287,9 @@
               <tbody>
                 <tr>
                   <td style="width: 1%">stream</td>
-                  <td>The stream to write to.</td>
-                </tr>
-                <tr>
-                  <td>format</td>
-                  <td>The format string.</td>
+                  <td>The stream to rewind.</td>
                 </tr>
               </tbody>
-              <tfoot>
-                <tr>
-                  <th>Returns</th>
-                  <td>The number of characters written, or -1 if an error occurred.</td>
-                </tr>
-              </tfoot>
             </table>
           </div></section>
           <section class="m-doc-details" id="a0105cae589b6cf9097d8aad5d27e3c74"><div>
