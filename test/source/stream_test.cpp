@@ -9,6 +9,7 @@ extern "C" {
 TEST_CASE("Stream behaves nicely when backed by files", "[stream]") {
 	FILE* tempFile = std::tmpfile();
 	Stream* stream = StreamFromFile(tempFile);
+	std::unique_ptr<Stream, decltype(&CloseStream)> stream_ptr(stream, &CloseStream);
 
 	const char input[] = "Hello, World!";
 
@@ -19,6 +20,4 @@ TEST_CASE("Stream behaves nicely when backed by files", "[stream]") {
 	ReadStream(stream, buffer, sizeof input);
 
 	REQUIRE(std::string{buffer} == std::string{input});
-
-	CloseStream(stream);
 }
