@@ -13,8 +13,8 @@ Stream* StreamFromFile(FILE* file) {
 Stream* StreamFromText(char* text, size_t text_length) {
 	Stream* result = calloc(1, sizeof(Stream));
 	result->text = text;
-	result->text_length = text_length;
-	result->text_position = 0;
+	result->textLength = text_length;
+	result->textPosition = 0;
 	return result;
 }
 
@@ -26,19 +26,19 @@ int64_t ReadStream(Stream* stream, char* buffer, size_t buffer_size) {
 	if (stream->file) {
 		return (int64_t)fread(buffer, 1, buffer_size, stream->file);
 	}
-	if (stream->text_position == stream->text_length) {
+	if (stream->textPosition == stream->textLength) {
 		return -1;
 	}
-	size_t bytes_to_read = MIN(buffer_size, stream->text_length - stream->text_position);
-	memcpy(buffer, stream->text + stream->text_position, bytes_to_read);
-	stream->text_position += bytes_to_read;
-	return (int64_t)bytes_to_read;
+	size_t bytesToRead = MIN(buffer_size, stream->textLength - stream->textPosition);
+	memcpy(buffer, stream->text + stream->textPosition, bytesToRead);
+	stream->textPosition += bytesToRead;
+	return (int64_t)bytesToRead;
 }
 
 #define INITIAL_BUFFER_SIZE 256
 
 int64_t ReadStreamLine(char** buffer, size_t* buffer_size, Stream* stream) {
-	size_t bytes_read = 0;
+	size_t bytesRead = 0;
 	if (*buffer_size == 0) {
 		*buffer_size = INITIAL_BUFFER_SIZE;
 		*buffer = malloc(*buffer_size);
@@ -48,14 +48,14 @@ int64_t ReadStreamLine(char** buffer, size_t* buffer_size, Stream* stream) {
 		if (stream->file) {
 			c = fgetc(stream->file);
 		} else {
-			if (stream->text_position == stream->text_length) {
+			if (stream->textPosition == stream->textLength) {
 				c = EOF;
 			} else {
-				c = (unsigned char)stream->text[stream->text_position++];
+				c = (unsigned char)stream->text[stream->textPosition++];
 			}
 		}
 		if (c == EOF) {
-			if (bytes_read == 0) {
+			if (bytesRead == 0) {
 				return -1;
 			}
 			break;
@@ -63,27 +63,27 @@ int64_t ReadStreamLine(char** buffer, size_t* buffer_size, Stream* stream) {
 		if (c == '\n') {
 			break;
 		}
-		(*buffer)[bytes_read++] = (char)c;
-		if (bytes_read == *buffer_size) {
+		(*buffer)[bytesRead++] = (char)c;
+		if (bytesRead == *buffer_size) {
 			*buffer_size *= 2;
 			*buffer = realloc(*buffer, *buffer_size);
 		}
 	}
-	(*buffer)[bytes_read] = '\0';
-	return (int64_t)bytes_read;
+	(*buffer)[bytesRead] = '\0';
+	return (int64_t)bytesRead;
 }
 
 int64_t WriteStream(Stream* stream, const char* buffer, size_t buffer_size) {
 	if (stream->file) {
 		return (int64_t)fwrite(buffer, 1, buffer_size, stream->file);
 	}
-	size_t bytes_to_copy = MIN(buffer_size, stream->text_length - stream->text_position);
-	if (bytes_to_copy == 0) {
+	size_t bytesToCopy = MIN(buffer_size, stream->textLength - stream->textPosition);
+	if (bytesToCopy == 0) {
 		return -1;
 	}
-	memcpy(stream->text + stream->text_position, buffer, bytes_to_copy);
-	stream->text_position += bytes_to_copy;
-	return (int64_t)bytes_to_copy;
+	memcpy(stream->text + stream->textPosition, buffer, bytesToCopy);
+	stream->textPosition += bytesToCopy;
+	return (int64_t)bytesToCopy;
 }
 
 int64_t StreamPrintf(Stream* stream, const char* format, ...) {
@@ -93,10 +93,10 @@ int64_t StreamPrintf(Stream* stream, const char* format, ...) {
 	if (stream->file) {
 		result = vfprintf(stream->file, format, args);
 	} else {
-		result = vsnprintf(stream->text + stream->text_position,
-				stream->text_length - stream->text_position, format, args);
+		result = vsnprintf(stream->text + stream->textPosition,
+				stream->textLength - stream->textPosition, format, args);
 		if (result > 0) {
-			stream->text_position += (size_t)result;
+			stream->textPosition += (size_t)result;
 		}
 	}
 	va_end(args);
@@ -107,7 +107,7 @@ void RewindStream(Stream* stream) {
 	if (stream->file) {
 		rewind(stream->file);
 	} else {
-		stream->text_position = 0;
+		stream->textPosition = 0;
 	}
 }
 

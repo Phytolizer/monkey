@@ -24,6 +24,8 @@ add_library(
 	source/monkey/repl.c
 	source/monkey/stream.c
 	source/monkey/user.c
+	source/monkey/ast.c
+	source/monkey/parser.c
 )
 
 target_include_directories(

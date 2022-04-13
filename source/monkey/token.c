@@ -12,11 +12,11 @@
 #define KEYWORD_COUNT 7
 
 struct MonkeyTokenState {
-	char* keywords_text[KEYWORD_COUNT];
+	char* keywordsText[KEYWORD_COUNT];
 	GHashTable* keywords;
 };
 
-MONKEY_INTERNAL void fillKeywords(MonkeyTokenState* state) {
+MONKEY_FILE_LOCAL void fillKeywords(MonkeyTokenState* state) {
 	typedef struct {
 		TokenType type;
 		const char* text;
@@ -32,9 +32,9 @@ MONKEY_INTERNAL void fillKeywords(MonkeyTokenState* state) {
 	};
 	state->keywords = g_hash_table_new(g_str_hash, g_str_equal);
 	for (int i = 0; i < KEYWORD_COUNT; i++) {
-		state->keywords_text[i] = MonkeyStrdup(keywords[i].text);
+		state->keywordsText[i] = MonkeyStrdup(keywords[i].text);
 		g_hash_table_insert(
-				state->keywords, state->keywords_text[i], GINT_TO_POINTER(keywords[i].type));
+				state->keywords, state->keywordsText[i], GINT_TO_POINTER(keywords[i].type));
 	}
 }
 
@@ -47,7 +47,7 @@ MonkeyTokenState* CreateTokenState(void) {
 void DestroyTokenState(MonkeyTokenState* state) {
 	g_hash_table_destroy(state->keywords);
 	for (size_t i = 0; i < KEYWORD_COUNT; i++) {
-		free(state->keywords_text[i]);
+		free(state->keywordsText[i]);
 	}
 	free(state);
 }

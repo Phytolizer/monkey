@@ -8,19 +8,19 @@ extern "C" {
 constexpr std::size_t OUTPUT_BUFFER_SIZE = 1024;
 
 TEST_CASE("REPL prints simple output", "[repl]") {
-	char input_text[] = "let five = 6;\n";
-	std::array<char, OUTPUT_BUFFER_SIZE> output_text;
+	char inputText[] = "let five = 6;\n";
+	std::array<char, OUTPUT_BUFFER_SIZE> outputText;
 
 	MonkeyReplArgs args = {
-			StreamFromText(input_text, sizeof(input_text) - 1),
-			StreamFromText(output_text.data(), output_text.size()),
+			StreamFromText(inputText, sizeof(inputText) - 1),
+			StreamFromText(outputText.data(), outputText.size()),
 	};
-	auto reader_ptr = std::unique_ptr<Stream, decltype(&CloseStream)>(args.reader, &CloseStream);
-	auto writer_ptr = std::unique_ptr<Stream, decltype(&CloseStream)>(args.writer, &CloseStream);
+	auto readerPtr = std::unique_ptr<Stream, decltype(&CloseStream)>(args.reader, &CloseStream);
+	auto writerPtr = std::unique_ptr<Stream, decltype(&CloseStream)>(args.writer, &CloseStream);
 
 	MonkeyRepl(args);
-	args.writer->text[args.writer->text_position] = '\0';
+	args.writer->text[args.writer->textPosition] = '\0';
 
-	REQUIRE(std::string(output_text.data()) ==
+	REQUIRE(std::string(outputText.data()) ==
 			"> {LET, let}\n{IDENT, five}\n{=, =}\n{INT, 6}\n{;, ;}\n{EOF, }\n> \n");
 }

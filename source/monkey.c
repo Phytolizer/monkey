@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-MONKEY_INTERNAL const char library_name[] = "Monkey";
+MONKEY_INTERNAL const char LIBRARY_NAME[] = "Monkey";
 
 typedef struct {
 	Monkey base;
@@ -17,8 +17,8 @@ typedef struct {
 
 Monkey* CreateMonkey() {
 	MonkeyImpl* impl = malloc(sizeof(MonkeyImpl));
-	char* name = malloc(sizeof library_name);
-	(void)memcpy(name, library_name, sizeof library_name);
+	char* name = malloc(sizeof LIBRARY_NAME);
+	(void)memcpy(name, LIBRARY_NAME, sizeof LIBRARY_NAME);
 	impl->base.name = name;
 	impl->token = CreateTokenState();
 	return (Monkey*)impl;

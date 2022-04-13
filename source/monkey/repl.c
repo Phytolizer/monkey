@@ -19,9 +19,9 @@ void MonkeyRepl(MonkeyReplArgs args) {
 			break;
 		}
 
-		Lexer lexer = CreateLexer(monkey, line);
+		Lexer* lexer = CreateLexer(monkey, line);
 		while (true) {
-			Token token = LexerNextToken(&lexer);
+			Token token = LexerNextToken(lexer);
 
 			(void)StreamPrintf(args.writer, "{%s, %s}\n", TokenTypeText(token.type), token.literal);
 			DestroyToken(&token);
@@ -29,7 +29,7 @@ void MonkeyRepl(MonkeyReplArgs args) {
 				break;
 			}
 		}
-		DestroyLexer(&lexer);
+		DestroyLexer(lexer);
 	}
 	free(line);
 	DestroyMonkey(monkey);

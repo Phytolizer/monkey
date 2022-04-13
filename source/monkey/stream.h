@@ -13,8 +13,8 @@
 typedef struct {
 	FILE* file;
 	char* text;
-	size_t text_length;
-	size_t text_position;
+	size_t textLength;
+	size_t textPosition;
 } Stream;
 
 /**

@@ -6,6 +6,7 @@ Checks: |
     clang-analyzer-*,
     cert-*,
     bugprone-*,
+    -bugprone-macro-parentheses,
     concurrency-*,
     misc-*,
     portability-*,
@@ -35,3 +36,31 @@ CheckOptions:
       value: "true"
     - key: "readability-inconsistent-declaration-parameter-name.Strict"
       value: "true"
+    - key: readability-identifier-naming.ClassCase
+      value: CamelCase
+    - key: readability-identifier-naming.PrivateMemberPrefix
+      value: m_
+    - key: readability-identifier-naming.ClassMethodCase
+      value: CamelCase
+    - key: readability-identifier-naming.ConstantCase
+      value: UPPER_CASE
+    - key: readability-identifier-naming.EnumCase
+      value: CamelCase
+    - key: readability-identifier-naming.FunctionCase
+      value: camelBack
+    - key: readability-identifier-naming.GlobalFunctionCase
+      value: CamelCase
+    - key: readability-identifier-naming.MacroDefinitionCase
+      value: UPPER_CASE
+    - key: readability-identifier-naming.MemberCase
+      value: camelBack
+    - key: readability-identifier-naming.NamespaceCase
+      value: lower_case
+    - key: readability-identifier-naming.StructCase
+      value: CamelCase
+    - key: readability-identifier-naming.TemplateParameterCase
+      value: CamelCase
+    - key: readability-identifier-naming.TypeAliasCase
+      value: CamelCase
+    - key: readability-identifier-naming.VariableCase
+      value: camelBack

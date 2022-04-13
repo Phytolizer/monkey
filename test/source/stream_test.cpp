@@ -14,15 +14,15 @@ TEST_CASE("Stream behaves nicely when backed by files", "[stream]") {
 	tempFile = std::tmpfile();
 #endif
 	Stream* stream = StreamFromFile(tempFile);
-	std::unique_ptr<Stream, decltype(&CloseStream)> stream_ptr(stream, &CloseStream);
+	std::unique_ptr<Stream, decltype(&CloseStream)> streamPtr(stream, &CloseStream);
 
-	const char input[] = "Hello, World!";
+	const char INPUT[] = "Hello, World!";
 
-	WriteStream(stream, input, sizeof input);
+	WriteStream(stream, INPUT, sizeof INPUT);
 
-	char buffer[sizeof input];
+	char buffer[sizeof INPUT];
 	RewindStream(stream);
-	ReadStream(stream, buffer, sizeof input);
+	ReadStream(stream, buffer, sizeof INPUT);
 
-	REQUIRE(std::string{buffer} == std::string{input});
+	REQUIRE(std::string{buffer} == std::string{INPUT});
 }

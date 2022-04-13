@@ -7,14 +7,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-MONKEY_INTERNAL char peekChar(Lexer* lexer) {
+struct Lexer {
+	Monkey* monkey;
+	const char* input;
+	size_t inputLength;
+	uint64_t position;
+	uint64_t readPosition;
+	char ch;
+};
+
+MONKEY_FILE_LOCAL char peekChar(Lexer* lexer) {
 	if (lexer->readPosition >= lexer->inputLength) {
 		return 0;
 	}
 	return lexer->input[lexer->readPosition];
 }
 
-MONKEY_INTERNAL void readChar(Lexer* lexer) {
+MONKEY_FILE_LOCAL void readChar(Lexer* lexer) {
 	lexer->ch = peekChar(lexer);
 	lexer->position = lexer->readPosition;
 	lexer->readPosition += 1;
@@ -28,7 +37,7 @@ typedef struct {
 	char literal;
 } NewTokenArgs;
 
-MONKEY_INTERNAL Token newToken(NewTokenArgs args) {
+MONKEY_FILE_LOCAL Token newToken(NewTokenArgs args) {
 	Token token;
 	token.type = args.type;
 	token.literal = malloc(sizeof(char) * 2);
@@ -37,15 +46,15 @@ MONKEY_INTERNAL Token newToken(NewTokenArgs args) {
 	return token;
 }
 
-MONKEY_INTERNAL bool isLetter(char ch) {
+MONKEY_FILE_LOCAL bool isLetter(char ch) {
 	return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_';
 }
 
-MONKEY_INTERNAL bool isDigit(char ch) {
+MONKEY_FILE_LOCAL bool isDigit(char ch) {
 	return ch >= '0' && ch <= '9';
 }
 
-MONKEY_INTERNAL char* readIdentifier(Lexer* lexer) {
+MONKEY_FILE_LOCAL char* readIdentifier(Lexer* lexer) {
 	size_t position = lexer->position;
 	while (isLetter(lexer->ch)) {
 		readChar(lexer);
@@ -53,7 +62,7 @@ MONKEY_INTERNAL char* readIdentifier(Lexer* lexer) {
 	return MonkeyStrndup(lexer->input + position, lexer->position - position);
 }
 
-MONKEY_INTERNAL char* readNumber(Lexer* lexer) {
+MONKEY_FILE_LOCAL char* readNumber(Lexer* lexer) {
 	size_t position = lexer->position;
 	while (isDigit(lexer->ch)) {
 		readChar(lexer);
@@ -61,7 +70,7 @@ MONKEY_INTERNAL char* readNumber(Lexer* lexer) {
 	return MonkeyStrndup(lexer->input + position, lexer->position - position);
 }
 
-MONKEY_INTERNAL void skipWhitespace(Lexer* lexer) {
+MONKEY_FILE_LOCAL void skipWhitespace(Lexer* lexer) {
 	while (lexer->ch == ' ' || lexer->ch == '\t' || lexer->ch == '\n' || lexer->ch == '\r') {
 		readChar(lexer);
 	}
@@ -69,15 +78,15 @@ MONKEY_INTERNAL void skipWhitespace(Lexer* lexer) {
 
 #define NEW_TOKEN(...) newToken((NewTokenArgs){__VA_ARGS__})
 
-Lexer CreateLexer(Monkey* monkey, const char* input) {
-	Lexer lexer;
-	lexer.monkey = monkey;
-	lexer.input = input;
-	lexer.inputLength = strlen(input);
-	lexer.position = 0;
-	lexer.readPosition = 0;
-	lexer.ch = '\0';
-	readChar(&lexer);
+Lexer* CreateLexer(Monkey* monkey, const char* input) {
+	Lexer* lexer = malloc(sizeof(Lexer));
+	lexer->monkey = monkey;
+	lexer->input = input;
+	lexer->inputLength = strlen(input);
+	lexer->position = 0;
+	lexer->readPosition = 0;
+	lexer->ch = '\0';
+	readChar(lexer);
 	return lexer;
 }
 
@@ -163,6 +172,5 @@ Token LexerNextToken(Lexer* lexer) {
 }
 
 void DestroyLexer(Lexer* lexer) {
-	// Nothing to do here.
-	(void)lexer;
+	free(lexer);
 }

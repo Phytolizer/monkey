@@ -7,6 +7,6 @@ extern "C" {
 
 TEST_CASE("CurrentUser() returns a valid name", "[user]") {
 	char* name = CurrentUser();
-	auto name_ptr = std::unique_ptr<char, decltype(&free)>(name, &free);
+	auto namePtr = std::unique_ptr<char, decltype(&free)>(name, &free);
 	REQUIRE(name != nullptr);
 }

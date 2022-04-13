@@ -7,21 +7,21 @@ extern "C" {
 }
 
 TEST_CASE("Lexer reports problem for illegal tokens", "[lexer]") {
-	constexpr const char input[] = "@";
+	constexpr const char INPUT[] = "@";
 	Monkey* monkey = CreateMonkey();
-	auto monkey_ptr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(monkey, &DestroyMonkey);
+	auto monkeyPtr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(monkey, &DestroyMonkey);
 
-	Lexer lexer = CreateLexer(monkey, input);
-	auto lexer_ptr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(&lexer, &DestroyLexer);
+	Lexer* lexer = CreateLexer(monkey, INPUT);
+	auto lexerPtr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(lexer, &DestroyLexer);
 
-	Token token = LexerNextToken(&lexer);
-	auto token_ptr = std::unique_ptr<Token, decltype(&DestroyToken)>(&token, &DestroyToken);
+	Token token = LexerNextToken(lexer);
+	auto tokenPtr = std::unique_ptr<Token, decltype(&DestroyToken)>(&token, &DestroyToken);
 	REQUIRE(std::string(TokenTypeText(token.type)) ==
 			std::string(TokenTypeText(TOKEN_TYPE_ILLEGAL)));
 }
 
 TEST_CASE("Lexer lexes tokens", "[lexer]") {
-	constexpr const char input[] = R"mk(
+	constexpr const char INPUT[] = R"mk(
 		let five = 6;
 		let ten = 10;
 
@@ -43,12 +43,12 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 		10 != 9;
 	)mk";
 
-	struct test {
+	struct Test {
 		TokenType expectedType;
 		const char* expectedLiteral;
 	};
 
-	constexpr test tests[] = {
+	constexpr Test TESTS[] = {
 			{TOKEN_TYPE_LET, "let"},
 			{TOKEN_TYPE_IDENT, "five"},
 			{TOKEN_TYPE_ASSIGN, "="},
@@ -126,16 +126,16 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 	};
 
 	Monkey* monkey = CreateMonkey();
-	auto monkey_ptr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(monkey, &DestroyMonkey);
+	auto monkeyPtr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(monkey, &DestroyMonkey);
 
-	auto lexer = CreateLexer(monkey, input);
-	auto lexer_ptr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(&lexer, &DestroyLexer);
+	Lexer* lexer = CreateLexer(monkey, INPUT);
+	auto lexerPtr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(lexer, &DestroyLexer);
 
-	for (const auto tt : tests) {
-		auto tok = LexerNextToken(&lexer);
-		auto tok_ptr = std::unique_ptr<Token, decltype(&DestroyToken)>(&tok, &DestroyToken);
-		REQUIRE(std::string(TokenTypeText(tt.expectedType)) ==
+	for (const auto TT : TESTS) {
+		auto tok = LexerNextToken(lexer);
+		auto tokPtr = std::unique_ptr<Token, decltype(&DestroyToken)>(&tok, &DestroyToken);
+		REQUIRE(std::string(TokenTypeText(TT.expectedType)) ==
 				std::string(TokenTypeText(tok.type)));
-		REQUIRE(std::string(tt.expectedLiteral) == tok.literal);
+		REQUIRE(std::string(TT.expectedLiteral) == tok.literal);
 	}
 }
