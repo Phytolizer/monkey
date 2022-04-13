@@ -17,8 +17,13 @@ include(cmake/variables.cmake)
 
 add_library(
 	monkey_lib OBJECT
-	source/monkey.c source/monkey/lexer.c source/monkey/string.c
-	source/monkey/token.c source/monkey/repl.c source/monkey/stream.c
+	source/monkey.c
+	source/monkey/lexer.c
+	source/monkey/string.c
+	source/monkey/token.c
+	source/monkey/repl.c
+	source/monkey/stream.c
+	source/monkey/user.c
 )
 
 target_include_directories(
@@ -27,6 +32,9 @@ target_include_directories(
 )
 
 target_compile_features(monkey_lib PUBLIC c_std_11)
+if(WIN32)
+	target_compile_definitions(monkey_lib PUBLIC WIN32_LEAN_AND_MEAN NOMINMAX)
+endif()
 
 find_path(HEDLEY_INCLUDE_DIR hedley.h)
 if(NOT HEDLEY_INCLUDE_DIR)
