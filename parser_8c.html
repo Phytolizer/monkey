@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>source/monkey/lexer.c file | monkey</title>
+  <title>source/monkey/parser.c file | monkey</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -48,7 +48,7 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          <span class="m-breadcrumb"><a href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html">source</a>/</span><span class="m-breadcrumb"><a href="dir_e63aed17ca12ecf13a4ba395ed06a5b5.html">monkey</a>/</span>lexer.c <span class="m-thin">file</span>
+          <span class="m-breadcrumb"><a href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html">source</a>/</span><span class="m-breadcrumb"><a href="dir_e63aed17ca12ecf13a4ba395ed06a5b5.html">monkey</a>/</span>parser.c <span class="m-thin">file</span>
         </h1>
         <p><span></span></p>
         <div class="m-block m-default">
@@ -59,7 +59,6 @@
               <ul>
                 <li><a href="#nested-classes">Classes</a></li>
                 <li><a href="#func-members">Functions</a></li>
-                <li><a href="#define-members">Defines</a></li>
               </ul>
             </li>
           </ul>
@@ -68,7 +67,7 @@
           <h2><a href="#nested-classes">Classes</a></h2>
           <dl class="m-doc">
             <dt>
-              struct <a href="structLexer.html" class="m-doc">Lexer</a>
+              struct <a href="structParser.html" class="m-doc">Parser</a>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -76,97 +75,54 @@
         <section id="func-members">
           <h2><a href="#func-members">Functions</a></h2>
           <dl class="m-doc">
-            <dt id="a32a3e0f932d287c7873b5f1857ec7cb9">
-              <span class="m-doc-wrap-bumper">auto <a href="#a32a3e0f932d287c7873b5f1857ec7cb9" class="m-doc-self">peekChar</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> char</span>
+            <dt id="ae278b9b2dc0b0cc6d573482796fc96da">
+              <span class="m-doc-wrap-bumper">auto <a href="#ae278b9b2dc0b0cc6d573482796fc96da" class="m-doc-self">BUFFER_TYPE</a>(</span><span class="m-doc-wrap"><a href="structStatement.html" class="m-doc">Statement</a>*) -&gt; typedef</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="add094e98466f26046e2656b504ae555b">
-              <span class="m-doc-wrap-bumper">auto <a href="#add094e98466f26046e2656b504ae555b" class="m-doc-self">readChar</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> void</span>
+            <dt id="acc9a13a7179fc03f83128836deb8f5dc">
+              <span class="m-doc-wrap-bumper">auto <a href="#acc9a13a7179fc03f83128836deb8f5dc" class="m-doc-self">curTokenIs</a>(</span><span class="m-doc-wrap"><a href="structParser.html" class="m-doc">Parser</a>* parser,
+              <a href="token_8h.html#aa520fbf142ba1e7e659590c07da31921" class="m-doc">TokenType</a> type) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> bool</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a2326bd9437571c5de60e1939f0882a0a">
-              <span class="m-doc-wrap-bumper">auto <a href="#a2326bd9437571c5de60e1939f0882a0a" class="m-doc-self">newToken</a>(</span><span class="m-doc-wrap">NewTokenArgs args) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structToken.html" class="m-doc">Token</a></span>
+            <dt id="a283947c1a2c00a75e81a78d22ea02d97">
+              <span class="m-doc-wrap-bumper">auto <a href="#a283947c1a2c00a75e81a78d22ea02d97" class="m-doc-self">peekTokenIs</a>(</span><span class="m-doc-wrap"><a href="structParser.html" class="m-doc">Parser</a>* parser,
+              <a href="token_8h.html#aa520fbf142ba1e7e659590c07da31921" class="m-doc">TokenType</a> type) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> bool</span>
             </dt>
             <dd><span></span></dd>
-            <dt id="a2789cc688fdbe44ab84564287a4d47b0">
-              <span class="m-doc-wrap-bumper">auto <a href="#a2789cc688fdbe44ab84564287a4d47b0" class="m-doc-self">isLetter</a>(</span><span class="m-doc-wrap">char ch) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> bool</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="afe614d9cb8a05e833c5dd3139f916df4">
-              <span class="m-doc-wrap-bumper">auto <a href="#afe614d9cb8a05e833c5dd3139f916df4" class="m-doc-self">isDigit</a>(</span><span class="m-doc-wrap">char ch) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> bool</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a2311d70398c7da3bfc381847a899f002">
-              <span class="m-doc-wrap-bumper">auto <a href="#a2311d70398c7da3bfc381847a899f002" class="m-doc-self">readIdentifier</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> char*</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a6a4e7ec50e227384f4ab3a6901d2beba">
-              <span class="m-doc-wrap-bumper">auto <a href="#a6a4e7ec50e227384f4ab3a6901d2beba" class="m-doc-self">readNumber</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> char*</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a39717e1506f1c8b7291998c52f185cec">
-              <span class="m-doc-wrap-bumper">auto <a href="#a39717e1506f1c8b7291998c52f185cec" class="m-doc-self">skipWhitespace</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> void</span>
+            <dt id="acb89998f6e5eb3e75b9d5f58c2b6574a">
+              <span class="m-doc-wrap-bumper">auto <a href="#acb89998f6e5eb3e75b9d5f58c2b6574a" class="m-doc-self">expectPeek</a>(</span><span class="m-doc-wrap"><a href="structParser.html" class="m-doc">Parser</a>* parser,
+              <a href="token_8h.html#aa520fbf142ba1e7e659590c07da31921" class="m-doc">TokenType</a> t) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> bool</span>
             </dt>
             <dd><span></span></dd>
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a65b8b3f5b39308264bc421aaf24529bd" class="m-doc">CreateLexer</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
-              const char* input) -&gt; <a href="structLexer.html" class="m-doc">Lexer</a>*</span>
+              <span class="m-doc-wrap-bumper">auto <a href="#aec6501168aafca728ca29b883464b90d" class="m-doc">CreateParser</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer) -&gt; <a href="structParser.html" class="m-doc">Parser</a>*</span>
             </dt>
-            <dd>Creates a new lexer.</dd>
-            <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a52062687a209ed347144c7aa0e2f8d57" class="m-doc">LexerNextToken</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer) -&gt; <a href="structToken.html" class="m-doc">Token</a></span>
-            </dt>
-            <dd>LexerNextToken gets the next token from the lexer.</dd>
-            <dt>
-              <span class="m-doc-wrap-bumper">void <a href="#a916c379cff6e88e6f00b64a38a00beb0" class="m-doc">DestroyLexer</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer)</span>
-            </dt>
-            <dd>DestroyLexer destroys a lexer.</dd>
-          </dl>
-        </section>
-        <section id="define-members">
-          <h2><a href="#define-members">Defines</a></h2>
-          <dl class="m-doc">
-            <dt id="a0ccdcdc8f16e07b33ce9c9f1fb308958">
-              <span class="m-doc-wrap-bumper">#define <a href="#a0ccdcdc8f16e07b33ce9c9f1fb308958" class="m-doc-self">NEW_TOKEN</a>(</span><span class="m-doc-wrap">...)</span>
+            <dd>CreateParser creates a new parser.</dd>
+            <dt id="a158ce3485484366405b3b494d678ad96">
+              <span class="m-doc-wrap-bumper">auto <a href="#a158ce3485484366405b3b494d678ad96" class="m-doc-self">parseLetStatement</a>(</span><span class="m-doc-wrap"><a href="structParser.html" class="m-doc">Parser</a>* parser) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structStatement.html" class="m-doc">Statement</a>*</span>
             </dt>
             <dd><span></span></dd>
+            <dt id="abfa1eb28a6f3fd0aee34c6595dcf43ee">
+              <span class="m-doc-wrap-bumper">auto <a href="#abfa1eb28a6f3fd0aee34c6595dcf43ee" class="m-doc-self">parseStatement</a>(</span><span class="m-doc-wrap"><a href="structParser.html" class="m-doc">Parser</a>* parser) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structStatement.html" class="m-doc">Statement</a>*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a11315bdaffd2a76ae47e2496dd56c689" class="m-doc">ParseProgram</a>(</span><span class="m-doc-wrap"><a href="structParser.html" class="m-doc">Parser</a>* parser) -&gt; <a href="structProgram.html" class="m-doc">Program</a>*</span>
+            </dt>
+            <dd>ParseProgram parses the program.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">void <a href="#afd83fdc4aba21eead1325e9e7785bea4" class="m-doc">DestroyParser</a>(</span><span class="m-doc-wrap"><a href="structParser.html" class="m-doc">Parser</a>* parser)</span>
+            </dt>
+            <dd>DestroyParser destroys a parser.</dd>
           </dl>
         </section>
         <section>
           <h2>Function documentation</h2>
-          <section class="m-doc-details" id="a65b8b3f5b39308264bc421aaf24529bd"><div>
+          <section class="m-doc-details" id="aec6501168aafca728ca29b883464b90d"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><a href="structLexer.html" class="m-doc">Lexer</a>* </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a65b8b3f5b39308264bc421aaf24529bd" class="m-doc-self">CreateLexer</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
-              const char* input)</span></span>
+              <span class="m-doc-wrap-bumper"><a href="structParser.html" class="m-doc">Parser</a>* </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aec6501168aafca728ca29b883464b90d" class="m-doc-self">CreateParser</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer)</span></span>
             </h3>
-            <p>Creates a new lexer.</p>
-            <table class="m-table m-fullwidth m-flat">
-              <thead>
-                <tr><th colspan="2">Parameters</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="width: 1%">monkey</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td>input</td>
-                  <td>The input string to lex.</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <th>Returns</th>
-                  <td>A new lexer.</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div></section>
-          <section class="m-doc-details" id="a52062687a209ed347144c7aa0e2f8d57"><div>
-            <h3>
-              <span class="m-doc-wrap-bumper"><a href="structToken.html" class="m-doc">Token</a> </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a52062687a209ed347144c7aa0e2f8d57" class="m-doc-self">LexerNextToken</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer)</span></span>
-            </h3>
-            <p>LexerNextToken gets the next token from the lexer.</p>
+            <p>CreateParser creates a new parser.</p>
             <table class="m-table m-fullwidth m-flat">
               <thead>
                 <tr><th colspan="2">Parameters</th></tr>
@@ -174,30 +130,53 @@
               <tbody>
                 <tr>
                   <td style="width: 1%">lexer</td>
-                  <td>The lexer to get the next token from.</td>
+                  <td>The lexer to use.</td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr>
                   <th>Returns</th>
-                  <td>The next token from the lexer.</td>
+                  <td>A new parser.</td>
                 </tr>
               </tfoot>
             </table>
           </div></section>
-          <section class="m-doc-details" id="a916c379cff6e88e6f00b64a38a00beb0"><div>
+          <section class="m-doc-details" id="a11315bdaffd2a76ae47e2496dd56c689"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">void </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a916c379cff6e88e6f00b64a38a00beb0" class="m-doc-self">DestroyLexer</a>(</span><span class="m-doc-wrap"><a href="structLexer.html" class="m-doc">Lexer</a>* lexer)</span></span>
+              <span class="m-doc-wrap-bumper"><a href="structProgram.html" class="m-doc">Program</a>* </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a11315bdaffd2a76ae47e2496dd56c689" class="m-doc-self">ParseProgram</a>(</span><span class="m-doc-wrap"><a href="structParser.html" class="m-doc">Parser</a>* parser)</span></span>
             </h3>
-            <p>DestroyLexer destroys a lexer.</p>
+            <p>ParseProgram parses the program.</p>
             <table class="m-table m-fullwidth m-flat">
               <thead>
                 <tr><th colspan="2">Parameters</th></tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style="width: 1%">lexer</td>
-                  <td>The lexer to destroy.</td>
+                  <td style="width: 1%">parser</td>
+                  <td>The parser to use.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>The program.</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="afd83fdc4aba21eead1325e9e7785bea4"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">void </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#afd83fdc4aba21eead1325e9e7785bea4" class="m-doc-self">DestroyParser</a>(</span><span class="m-doc-wrap"><a href="structParser.html" class="m-doc">Parser</a>* parser)</span></span>
+            </h3>
+            <p>DestroyParser destroys a parser.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">parser</td>
+                  <td>The parser to destroy.</td>
                 </tr>
               </tbody>
             </table>
