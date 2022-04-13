@@ -34,6 +34,7 @@ target_include_directories(
 target_compile_features(monkey_lib PUBLIC c_std_11)
 if(WIN32)
 	target_compile_definitions(monkey_lib PUBLIC WIN32_LEAN_AND_MEAN NOMINMAX)
+	target_link_libraries(monkey_lib PUBLIC Secur32)
 endif()
 
 find_path(HEDLEY_INCLUDE_DIR hedley.h)
