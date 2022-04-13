@@ -65,6 +65,14 @@ const char* TokenTypeText(TokenType type) {
 	return NULL;
 }
 
+Token CopyToken(Token* token) {
+	Token result = {
+			.type = token->type,
+			.literal = MonkeyStrdup(token->literal),
+	};
+	return result;
+}
+
 void DestroyToken(Token* token) {
 	free(token->literal);
 }

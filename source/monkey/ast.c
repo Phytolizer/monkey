@@ -18,14 +18,15 @@ MONKEY_FILE_LOCAL void initExpression(Expression* expression, ExpressionType typ
 	expression->type = type;
 }
 
-MONKEY_FILE_LOCAL void destroyIdentifier(Identifier* identifier) {
-	free(identifier->value);
+MONKEY_FILE_LOCAL void destroyExpression(Expression* expression) {
+	free(expression);
 }
 
 MONKEY_FILE_LOCAL void destroyLetStatement(LetStatement* statement) {
 	DestroyToken(&statement->token);
-	destroyIdentifier(statement->identifier);
-	free(statement->value);
+	DestroyIdentifier(statement->identifier);
+	free(statement->identifier);
+	destroyExpression(statement->value);
 }
 
 MONKEY_FILE_LOCAL void destroyStatement(Statement* statement) {
@@ -50,9 +51,11 @@ char* StatementTokenLiteral(const Statement* statement) {
 	return NULL;
 }
 
-void InitProgram(Program* program, StatementSpan statements) {
+Program* CreateProgram(StatementSpan statements) {
+	Program* program = calloc(1, sizeof(Program));
 	program->base.type = NODE_TYPE_PROGRAM;
 	program->statements = statements;
+	return program;
 }
 
 char* ProgramTokenLiteral(const Program* program) {
@@ -68,24 +71,33 @@ void DestroyProgram(Program* program) {
 		destroyStatement(program->statements.begin[i]);
 	}
 	free(program->statements.begin);
+	free(program);
 }
 
-void InitIdentifier(Identifier* identifier, Token token, char* value) {
+Identifier* CreateIdentifier(Token token, char* value) {
+	Identifier* identifier = calloc(1, sizeof(Identifier));
 	initExpression(&identifier->base, EXPRESSION_TYPE_IDENTIFIER);
 	identifier->token = token;
 	identifier->value = value;
+	return identifier;
 }
 
 char* IdentifierTokenLiteral(const Identifier* identifier) {
 	return MonkeyStrdup(identifier->token.literal);
 }
 
-void InitLetStatement(
-		LetStatement* statement, Token token, Identifier* identifier, Expression* value) {
+void DestroyIdentifier(Identifier* identifier) {
+	DestroyToken(&identifier->token);
+	free(identifier->value);
+}
+
+LetStatement* CreateLetStatement(Token token, Identifier* identifier, Expression* value) {
+	LetStatement* statement = calloc(1, sizeof(LetStatement));
 	initStatement(&statement->base, STATEMENT_TYPE_LET);
 	statement->token = token;
 	statement->identifier = identifier;
 	statement->value = value;
+	return statement;
 }
 
 char* LetStatementTokenLiteral(const LetStatement* statement) {

@@ -53,7 +53,7 @@ typedef struct {
 	StatementSpan statements;
 } Program;
 
-void InitProgram(Program* program, StatementSpan statements);
+Program* CreateProgram(StatementSpan statements);
 char* ProgramTokenLiteral(const Program* program);
 void DestroyProgram(Program* program);
 
@@ -63,8 +63,9 @@ typedef struct {
 	char* value;
 } Identifier;
 
-void InitIdentifier(Identifier* identifier, Token token, char* value);
+Identifier* CreateIdentifier(Token token, char* value);
 char* IdentifierTokenLiteral(const Identifier* identifier);
+void DestroyIdentifier(Identifier* identifier);
 
 typedef struct {
 	Statement base;
@@ -73,6 +74,5 @@ typedef struct {
 	Expression* value;
 } LetStatement;
 
-void InitLetStatement(
-		LetStatement* statement, Token token, Identifier* identifier, Expression* value);
+LetStatement* CreateLetStatement(Token token, Identifier* identifier, Expression* value);
 char* LetStatementTokenLiteral(const LetStatement* statement);

@@ -68,6 +68,11 @@ MONKEY_INTERNAL void DestroyTokenState(MonkeyTokenState* state);
 const char* TokenTypeText(TokenType type);
 
 /**
+ * @brief CopyToken copies the given token into a new token.
+ */
+Token CopyToken(Token* token);
+
+/**
  * @brief Destroys the resources held by the given token.
  */
 void DestroyToken(Token* token);
