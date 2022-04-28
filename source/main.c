@@ -12,7 +12,7 @@ int main(int argc, const char* argv[]) {
 
 	char* user = CurrentUser();
 	if (user == NULL) {
-		fprintf(stderr, "Could not get current user.\n");
+		(void)fprintf(stderr, "Could not get current user.\n");
 		return EXIT_FAILURE;
 	}
 	printf("Hello %s! This is the Monkey programming language!\n", user);

@@ -1,5 +1,4 @@
 #include "monkey.h"
-
 #include "monkey/macros.h"
 #include "monkey/token.h"
 
@@ -15,7 +14,7 @@ typedef struct {
 	MonkeyTokenState* token;
 } MonkeyImpl;
 
-Monkey* CreateMonkey() {
+Monkey* CreateMonkey(void) {
 	MonkeyImpl* impl = malloc(sizeof(MonkeyImpl));
 	char* name = malloc(sizeof LIBRARY_NAME);
 	(void)memcpy(name, LIBRARY_NAME, sizeof LIBRARY_NAME);
