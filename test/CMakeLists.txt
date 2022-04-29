@@ -18,6 +18,7 @@ add_executable(
 	source/lexer_test.cpp
 	source/repl_test.cpp
 	source/stream_test.cpp
+	source/string_test.cpp
 	source/user_test.cpp
 	source/parser_test.cpp
 )
