@@ -26,4 +26,9 @@ Program* ParseProgram(Parser* parser);
  */
 void DestroyParser(Parser* parser);
 
+/**
+ * @brief Obtain the list of parser errors.
+ * @param parser The parser to use.
+ * @return The list of errors.
+ */
 MonkeyStringVector ParserErrors(Parser* parser);
