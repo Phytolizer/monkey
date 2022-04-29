@@ -74,6 +74,15 @@
               size_t n) -&gt; char*</span>
             </dt>
             <dd>Allocates a new string and copies the given characters into it.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a7f47c873dfa24402ae147d26f71012aa" class="m-doc">MonkeyAsprintf</a>(</span><span class="m-doc-wrap">const char* format,
+              ...) -&gt; char*</span>
+            </dt>
+            <dd>Allocates a new string and formats the given arguments into it.</dd>
+            <dt id="a24f66138ba83b93651edc9274664806e">
+              <span class="m-doc-wrap-bumper">auto <a href="#a24f66138ba83b93651edc9274664806e" class="m-doc-self">VECTOR_T</a>(</span><span class="m-doc-wrap">char*) MonkeyStringVector -&gt; typedef</span>
+            </dt>
+            <dd>A collection of strings.</dd>
           </dl>
         </section>
         <section>
@@ -119,6 +128,30 @@
                 <tr>
                   <td>n</td>
                   <td>The number of characters to copy.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>A new string.</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a7f47c873dfa24402ae147d26f71012aa"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">char* </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a7f47c873dfa24402ae147d26f71012aa" class="m-doc-self">MonkeyAsprintf</a>(</span><span class="m-doc-wrap">const char* format,
+              ...)</span></span>
+            </h3>
+            <p>Allocates a new string and formats the given arguments into it.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">format</td>
+                  <td>The format string.</td>
                 </tr>
               </tbody>
               <tfoot>
