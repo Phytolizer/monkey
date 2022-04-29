@@ -2,6 +2,7 @@
 
 #include "monkey/ast.h"
 #include "monkey/lexer.h"
+#include "monkey/string.h"
 
 typedef struct Parser Parser;
 
@@ -24,3 +25,5 @@ Program* ParseProgram(Parser* parser);
  * @param parser The parser to destroy.
  */
 void DestroyParser(Parser* parser);
+
+MonkeyStringVector ParserErrors(Parser* parser);

@@ -8,6 +8,8 @@
 struct Parser {
 	Lexer* lexer;
 
+	MonkeyStringVector errors;
+
 	Token currentToken;
 	Token peekToken;
 };
@@ -28,12 +30,19 @@ MONKEY_FILE_LOCAL bool peekTokenIs(Parser* parser, TokenType type) {
 	return parser->peekToken.type == type;
 }
 
+MONKEY_FILE_LOCAL void peekError(Parser* parser, TokenType t) {
+	char* message = MonkeyAsprintf("expected next token to be %s, got %s instead", TokenTypeText(t),
+			TokenTypeText(parser->peekToken.type));
+	VECTOR_PUSH(&parser->errors, message);
+}
+
 MONKEY_FILE_LOCAL bool expectPeek(Parser* parser, TokenType t) {
 	if (peekTokenIs(parser, t)) {
 		nextToken(parser);
 		return true;
 	}
 
+	peekError(parser, t);
 	return false;
 }
 
@@ -98,5 +107,13 @@ Program* ParseProgram(Parser* parser) {
 void DestroyParser(Parser* parser) {
 	DestroyToken(&parser->currentToken);
 	DestroyToken(&parser->peekToken);
+	for (size_t i = 0; i < parser->errors.size; i++) {
+		free(parser->errors.data[i]);
+	}
+	VECTOR_FREE(&parser->errors);
 	free(parser);
+}
+
+MonkeyStringVector ParserErrors(Parser* parser) {
+	return parser->errors;
 }

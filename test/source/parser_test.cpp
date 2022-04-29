@@ -20,6 +20,15 @@ MONKEY_FILE_LOCAL void testLetStatement(Statement* statement, const char* name) 
 	REQUIRE(std::string(nameToklit) == std::string(name));
 }
 
+MONKEY_FILE_LOCAL void checkParserErrors(Parser* parser) {
+	MonkeyStringVector errors = ParserErrors(parser);
+	for (size_t i = 0; i < errors.size; i++) {
+		char* error = errors.data[i];
+		FAIL_CHECK(error);
+	}
+	REQUIRE(errors.size == 0);
+}
+
 TEST_CASE("Let statements are parsed correctly", "[parser]") {
 	constexpr char INPUT[] = R"mk(
 		let x = 5;
@@ -37,6 +46,8 @@ TEST_CASE("Let statements are parsed correctly", "[parser]") {
 	Program* program = ParseProgram(parser);
 	REQUIRE(program != nullptr);
 	auto programPtr = std::unique_ptr<Program, decltype(&DestroyProgram)>(program, &DestroyProgram);
+
+	checkParserErrors(parser);
 
 	REQUIRE(program->statements.length == 3);
 

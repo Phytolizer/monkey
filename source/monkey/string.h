@@ -1,5 +1,7 @@
 #pragma once
 
+#include "monkey/vector.h"
+
 #include <stddef.h>
 
 /**
@@ -16,3 +18,16 @@ char* MonkeyStrdup(const char* str);
  * @return A new string.
  */
 char* MonkeyStrndup(const char* str, size_t n);
+
+/**
+ * @brief Allocates a new string and formats the given arguments into it.
+ * @param format The format string.
+ * @param ... The arguments to format.
+ * @return A new string.
+ */
+char* MonkeyAsprintf(const char* format, ...);
+
+/**
+ * @brief A collection of strings.
+ */
+typedef VECTOR_T(char*) MonkeyStringVector;
