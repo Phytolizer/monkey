@@ -18,7 +18,9 @@ typedef struct {
 	NodeType type;
 } Node;
 
-#define STATEMENT_TYPES_X X(LET)
+#define STATEMENT_TYPES_X \
+	X(LET) \
+	X(RETURN)
 
 typedef enum {
 #define X(name) STATEMENT_TYPE_##name,
@@ -76,3 +78,12 @@ typedef struct {
 
 LetStatement* CreateLetStatement(Token token, Identifier* identifier, Expression* value);
 char* LetStatementTokenLiteral(const LetStatement* statement);
+
+typedef struct {
+	Statement base;
+	Token token;
+	Expression* returnValue;
+} ReturnStatement;
+
+ReturnStatement* CreateReturnStatement(Token token, Expression* returnValue);
+char* ReturnStatementTokenLiteral(const ReturnStatement* statement);

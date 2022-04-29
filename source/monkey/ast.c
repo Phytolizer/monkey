@@ -29,10 +29,18 @@ MONKEY_FILE_LOCAL void destroyLetStatement(LetStatement* statement) {
 	destroyExpression(statement->value);
 }
 
+MONKEY_FILE_LOCAL void destroyReturnStatement(ReturnStatement* statement) {
+	DestroyToken(&statement->token);
+	destroyExpression(statement->returnValue);
+}
+
 MONKEY_FILE_LOCAL void destroyStatement(Statement* statement) {
 	switch (statement->type) {
 		case STATEMENT_TYPE_LET:
 			destroyLetStatement((LetStatement*)statement);
+			break;
+		case STATEMENT_TYPE_RETURN:
+			destroyReturnStatement((ReturnStatement*)statement);
 			break;
 		default:
 			(void)fprintf(stderr, "Unknown statement type: %d\n", statement->type);
@@ -45,6 +53,8 @@ char* StatementTokenLiteral(const Statement* statement) {
 	switch (statement->type) {
 		case STATEMENT_TYPE_LET:
 			return LetStatementTokenLiteral((const LetStatement*)statement);
+		case STATEMENT_TYPE_RETURN:
+			return ReturnStatementTokenLiteral((const ReturnStatement*)statement);
 	}
 	(void)fprintf(stderr, "Unknown statement type: %d\n", statement->type);
 	assert(false);
@@ -101,5 +111,17 @@ LetStatement* CreateLetStatement(Token token, Identifier* identifier, Expression
 }
 
 char* LetStatementTokenLiteral(const LetStatement* statement) {
+	return MonkeyStrdup(statement->token.literal);
+}
+
+ReturnStatement* CreateReturnStatement(Token token, Expression* returnValue) {
+	ReturnStatement* statement = calloc(1, sizeof(ReturnStatement));
+	initStatement(&statement->base, STATEMENT_TYPE_RETURN);
+	statement->token = token;
+	statement->returnValue = returnValue;
+	return statement;
+}
+
+char* ReturnStatementTokenLiteral(const ReturnStatement* statement) {
 	return MonkeyStrdup(statement->token.literal);
 }

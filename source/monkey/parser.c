@@ -81,10 +81,25 @@ MONKEY_FILE_LOCAL Statement* parseLetStatement(Parser* parser) {
 	return (Statement*)CreateLetStatement(token, name, NULL);
 }
 
+MONKEY_FILE_LOCAL Statement* parseReturnStatement(Parser* parser) {
+	Token token = CopyToken(&parser->currentToken);
+
+	nextToken(parser);
+
+	// TODO: parse expression
+	while (!curTokenIs(parser, TOKEN_TYPE_SEMICOLON)) {
+		nextToken(parser);
+	}
+
+	return (Statement*)CreateReturnStatement(token, NULL);
+}
+
 MONKEY_FILE_LOCAL Statement* parseStatement(Parser* parser) {
 	switch (parser->currentToken.type) {
 		case TOKEN_TYPE_LET:
 			return parseLetStatement(parser);
+		case TOKEN_TYPE_RETURN:
+			return parseReturnStatement(parser);
 		default:
 			return NULL;
 	}
