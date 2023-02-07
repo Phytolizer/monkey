@@ -21,7 +21,7 @@ MONKEY_FILE_LOCAL void testLetStatement(Statement* statement, const char* name) 
 }
 
 MONKEY_FILE_LOCAL void checkParserErrors(Parser* parser) {
-	MonkeyStringVector errors = ParserErrors(parser);
+	const MonkeyStringVector errors = ParserErrors(parser);
 	for (size_t i = 0; i < errors.size; i++) {
 		char* error = errors.data[i];
 		FAIL_CHECK(error);
@@ -62,10 +62,29 @@ TEST_CASE("Let statements are parsed correctly", "[parser]") {
 	};
 
 	std::size_t i = 0;
-	for (const auto TT : TESTS) {
-		testLetStatement(program->statements.begin[i], TT.expectedIdentifier);
+	for (const auto tt : TESTS) {
+		testLetStatement(program->statements.begin[i], tt.expectedIdentifier);
 		i++;
 	}
+}
+
+TEST_CASE("Let statement error on missing name", "[parser]") {
+	constexpr char INPUT[] = R"mk(
+		let = 5;
+	)mk";
+
+	Monkey* monkey = CreateMonkey();
+	auto monkeyPtr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(monkey, &DestroyMonkey);
+	Lexer* lexer = CreateLexer(monkey, INPUT);
+	auto lexerPtr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(lexer, &DestroyLexer);
+	Parser* parser = CreateParser(lexer);
+	auto parserPtr = std::unique_ptr<Parser, decltype(&DestroyParser)>(parser, &DestroyParser);
+
+	Program* program = ParseProgram(parser);
+	const auto programPtr = std::unique_ptr<Program, decltype(&DestroyProgram)>(program, &DestroyProgram);
+
+	const MonkeyStringVector errors = ParserErrors(parser);
+	CHECK(errors.size > 0);
 }
 
 TEST_CASE("Return statements are parsed correctly", "[parser]") {

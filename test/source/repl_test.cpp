@@ -11,7 +11,7 @@ TEST_CASE("REPL prints simple output", "[repl]") {
 	char inputText[] = "let five = 6;\n";
 	std::array<char, OUTPUT_BUFFER_SIZE> outputText;
 
-	MonkeyReplArgs args = {
+	const MonkeyReplArgs args = {
 			StreamFromText(inputText, sizeof(inputText) - 1),
 			StreamFromText(outputText.data(), outputText.size()),
 	};

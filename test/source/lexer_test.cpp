@@ -131,11 +131,11 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 	Lexer* lexer = CreateLexer(monkey, INPUT);
 	auto lexerPtr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(lexer, &DestroyLexer);
 
-	for (const auto TT : TESTS) {
+	for (const auto tt : TESTS) {
 		auto tok = LexerNextToken(lexer);
 		auto tokPtr = std::unique_ptr<Token, decltype(&DestroyToken)>(&tok, &DestroyToken);
-		REQUIRE(std::string(TokenTypeText(TT.expectedType)) ==
+		REQUIRE(std::string(TokenTypeText(tt.expectedType)) ==
 				std::string(TokenTypeText(tok.type)));
-		REQUIRE(std::string(TT.expectedLiteral) == tok.literal);
+		REQUIRE(std::string(tt.expectedLiteral) == tok.literal);
 	}
 }

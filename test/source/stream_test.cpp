@@ -15,9 +15,9 @@ TEST_CASE("Stream behaves nicely when backed by files", "[stream]") {
 	tempFile = std::tmpfile();
 #endif
 	Stream* stream = StreamFromFile(tempFile);
-	std::unique_ptr<Stream, decltype(&CloseStream)> streamPtr(stream, &CloseStream);
+	const std::unique_ptr<Stream, decltype(&CloseStream)> streamPtr(stream, &CloseStream);
 
-	const char INPUT[] = "Hello, World!";
+	constexpr char INPUT[] = "Hello, World!";
 
 	WriteStream(stream, INPUT, sizeof INPUT);
 
@@ -31,7 +31,7 @@ TEST_CASE("Stream behaves nicely when backed by files", "[stream]") {
 	char* dynamicBuffer = nullptr;
 	size_t dynamicBufferSize = 0;
 	ReadStreamLine(&dynamicBuffer, &dynamicBufferSize, stream);
-	std::unique_ptr<char, decltype(&free)> dynamicBufferPtr(dynamicBuffer, &free);
+	const std::unique_ptr<char, decltype(&free)> dynamicBufferPtr(dynamicBuffer, &free);
 
 	REQUIRE(std::string{dynamicBuffer} == std::string{INPUT});
 
@@ -48,11 +48,11 @@ TEST_CASE("Stream behaves nicely when backed by files", "[stream]") {
 }
 
 TEST_CASE("Stream behaves nicely when backed by a string", "[stream]") {
-	const char INPUT[] = "Hello, World!";
+	constexpr char INPUT[] = "Hello, World!";
 	char* dynamicInput = MonkeyStrdup(INPUT);
-	std::unique_ptr<char, decltype(&free)> dynamicInputPtr(dynamicInput, &free);
+	const std::unique_ptr<char, decltype(&free)> dynamicInputPtr(dynamicInput, &free);
 	Stream* stream = StreamFromText(dynamicInput, sizeof INPUT);
-	std::unique_ptr<Stream, decltype(&CloseStream)> streamPtr(stream, &CloseStream);
+	const std::unique_ptr<Stream, decltype(&CloseStream)> streamPtr(stream, &CloseStream);
 
 	char buffer[sizeof INPUT];
 	ReadStream(stream, buffer, sizeof INPUT);
