@@ -6,9 +6,10 @@ extern "C" {
 #include "monkey.h"
 }
 
+#include "monkey_wrapper.hpp"
+
 TEST_CASE("Name is Monkey", "[library]") {
-	Monkey* lib = CreateMonkey();
-	auto ptr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(lib, &DestroyMonkey);
+	MonkeyPtr lib{CreateMonkey()};
 
 	REQUIRE(std::string("Monkey") == lib->name);
 }

@@ -5,10 +5,11 @@ extern "C" {
 #include "monkey/string.h"
 }
 
+#include "monkey_wrapper.hpp"
+
 constexpr int MAGIC = 42;
 
 TEST_CASE("Allocated string printf works", "[string]") {
-	char* result = MonkeyAsprintf("%s %d", "Hello", MAGIC);
-	auto resultPtr = std::unique_ptr<char, decltype(&free)>(result, free);
-	REQUIRE(result == std::string{"Hello 42"});
+	const StringPtr result{MonkeyAsprintf("%s %d", "Hello", MAGIC)};
+	REQUIRE(std::string{result.get()} == std::string{"Hello 42"});
 }

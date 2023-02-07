@@ -7,17 +7,17 @@ extern "C" {
 #include "monkey/parser.h"
 }
 
+#include "monkey_wrapper.hpp"
+
 MONKEY_FILE_LOCAL void testLetStatement(Statement* statement, const char* name) {
-	char* toklit = StatementTokenLiteral(statement);
-	auto toklitPtr = std::unique_ptr<char, decltype(&free)>(toklit, &free);
+	const StringPtr toklit{StatementTokenLiteral(statement)};
 
 	REQUIRE(statement->type == STATEMENT_TYPE_LET);
 	auto* letStatement = reinterpret_cast<LetStatement*>(statement);
 	REQUIRE(std::string(letStatement->identifier->value) == std::string(name));
 
-	char* nameToklit = IdentifierTokenLiteral(letStatement->identifier);
-	auto nameToklitPtr = std::unique_ptr<char, decltype(&free)>(nameToklit, &free);
-	REQUIRE(std::string(nameToklit) == std::string(name));
+	const StringPtr nameToklit{IdentifierTokenLiteral(letStatement->identifier)};
+	REQUIRE(std::string(nameToklit.get()) == std::string(name));
 }
 
 MONKEY_FILE_LOCAL void checkParserErrors(Parser* parser) {
@@ -36,18 +36,14 @@ TEST_CASE("Let statements are parsed correctly", "[parser]") {
 		let foobar = 838383;
 	)mk";
 
-	Monkey* monkey = CreateMonkey();
-	auto monkeyPtr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(monkey, &DestroyMonkey);
-	Lexer* lexer = CreateLexer(monkey, INPUT);
-	auto lexerPtr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(lexer, &DestroyLexer);
-	Parser* parser = CreateParser(lexer);
-	auto parserPtr = std::unique_ptr<Parser, decltype(&DestroyParser)>(parser, &DestroyParser);
+	const MonkeyPtr monkey{CreateMonkey()};
+	const LexerPtr lexer{CreateLexer(monkey.get(), INPUT)};
+	const ParserPtr parser{CreateParser(lexer.get())};
 
-	Program* program = ParseProgram(parser);
+	const ProgramPtr program{ParseProgram(parser.get())};
 	REQUIRE(program != nullptr);
-	auto programPtr = std::unique_ptr<Program, decltype(&DestroyProgram)>(program, &DestroyProgram);
 
-	checkParserErrors(parser);
+	checkParserErrors(parser.get());
 
 	REQUIRE(program->statements.length == 3);
 
@@ -68,23 +64,31 @@ TEST_CASE("Let statements are parsed correctly", "[parser]") {
 	}
 }
 
-TEST_CASE("Let statement error on missing name", "[parser]") {
-	constexpr char INPUT[] = R"mk(
-		let = 5;
-	)mk";
+TEST_CASE("Let statement errors", "[parser]") {
+	const auto doTest = [](const char* input) {
+		const MonkeyPtr monkey{CreateMonkey()};
+		const LexerPtr lexer{CreateLexer(monkey.get(), input)};
+		const ParserPtr parser{CreateParser(lexer.get())};
 
-	Monkey* monkey = CreateMonkey();
-	auto monkeyPtr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(monkey, &DestroyMonkey);
-	Lexer* lexer = CreateLexer(monkey, INPUT);
-	auto lexerPtr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(lexer, &DestroyLexer);
-	Parser* parser = CreateParser(lexer);
-	auto parserPtr = std::unique_ptr<Parser, decltype(&DestroyParser)>(parser, &DestroyParser);
+		const ProgramPtr program{ParseProgram(parser.get())};
 
-	Program* program = ParseProgram(parser);
-	const auto programPtr = std::unique_ptr<Program, decltype(&DestroyProgram)>(program, &DestroyProgram);
+		const MonkeyStringVector errors = ParserErrors(parser.get());
+		CHECK(errors.size > 0);
+	};
 
-	const MonkeyStringVector errors = ParserErrors(parser);
-	CHECK(errors.size > 0);
+	SECTION("missing variable name") {
+		doTest("let = 5;");
+	}
+	SECTION("missing = sign") {
+		doTest("let x 5;");
+	}
+	// FIXME: below is unimplemented
+	// SECTION("missing value") {
+	// 	doTest("let x = ;");
+	// }
+	// SECTION("missing semicolon") {
+	// 	doTest("let x = 5");
+	// }
 }
 
 TEST_CASE("Return statements are parsed correctly", "[parser]") {
@@ -94,26 +98,21 @@ TEST_CASE("Return statements are parsed correctly", "[parser]") {
 		return 993322;
 	)mk";
 
-	Monkey* monkey = CreateMonkey();
-	auto monkeyPtr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(monkey, &DestroyMonkey);
-	Lexer* lexer = CreateLexer(monkey, INPUT);
-	auto lexerPtr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(lexer, &DestroyLexer);
-	Parser* parser = CreateParser(lexer);
-	auto parserPtr = std::unique_ptr<Parser, decltype(&DestroyParser)>(parser, &DestroyParser);
+	const MonkeyPtr monkey{CreateMonkey()};
+	const LexerPtr lexer{CreateLexer(monkey.get(), INPUT)};
+	const ParserPtr parser{CreateParser(lexer.get())};
 
-	Program* program = ParseProgram(parser);
+	const ProgramPtr program{ParseProgram(parser.get())};
 	REQUIRE(program != nullptr);
-	auto programPtr = std::unique_ptr<Program, decltype(&DestroyProgram)>(program, &DestroyProgram);
 
-	checkParserErrors(parser);
+	checkParserErrors(parser.get());
 
 	REQUIRE(program->statements.length == 3);
 
 	for (size_t i = 0; i < program->statements.length; i++) {
 		Statement* statement = program->statements.begin[i];
 		REQUIRE(statement->type == STATEMENT_TYPE_RETURN);
-		char* toklit = StatementTokenLiteral(statement);
-		auto toklitPtr = std::unique_ptr<char, decltype(&free)>(toklit, &free);
-		REQUIRE(std::string(toklit) == std::string("return"));
+		StringPtr toklit{StatementTokenLiteral(statement)};
+		REQUIRE(std::string(toklit.get()) == std::string("return"));
 	}
 }

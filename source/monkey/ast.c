@@ -25,7 +25,6 @@ MONKEY_FILE_LOCAL void destroyExpression(Expression* expression) {
 MONKEY_FILE_LOCAL void destroyLetStatement(LetStatement* statement) {
 	DestroyToken(&statement->token);
 	DestroyIdentifier(statement->identifier);
-	free(statement->identifier);
 	destroyExpression(statement->value);
 }
 
@@ -99,6 +98,7 @@ char* IdentifierTokenLiteral(const Identifier* identifier) {
 void DestroyIdentifier(Identifier* identifier) {
 	DestroyToken(&identifier->token);
 	free(identifier->value);
+	free(identifier);
 }
 
 LetStatement* CreateLetStatement(Token token, Identifier* identifier, Expression* value) {

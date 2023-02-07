@@ -5,8 +5,9 @@ extern "C" {
 #include "monkey/user.h"
 }
 
+#include "monkey_wrapper.hpp"
+
 TEST_CASE("CurrentUser() returns a valid name", "[user]") {
-	char* name = CurrentUser();
-	auto namePtr = std::unique_ptr<char, decltype(&free)>(name, &free);
+	StringPtr name{CurrentUser()};
 	REQUIRE(name != nullptr);
 }

@@ -5,6 +5,8 @@ extern "C" {
 #include "monkey/repl.h"
 }
 
+#include "monkey_wrapper.hpp"
+
 constexpr std::size_t OUTPUT_BUFFER_SIZE = 1024;
 
 TEST_CASE("REPL prints simple output", "[repl]") {
@@ -15,8 +17,8 @@ TEST_CASE("REPL prints simple output", "[repl]") {
 			StreamFromText(inputText, sizeof(inputText) - 1),
 			StreamFromText(outputText.data(), outputText.size()),
 	};
-	auto readerPtr = std::unique_ptr<Stream, decltype(&CloseStream)>(args.reader, &CloseStream);
-	auto writerPtr = std::unique_ptr<Stream, decltype(&CloseStream)>(args.writer, &CloseStream);
+	const StreamPtr readerPtr{args.reader};
+	const StreamPtr writerPtr{args.writer};
 
 	MonkeyRepl(args);
 	args.writer->text[args.writer->textPosition] = '\0';

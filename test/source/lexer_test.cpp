@@ -6,16 +6,16 @@ extern "C" {
 #include <monkey/token.h>
 }
 
+#include "monkey_wrapper.hpp"
+
 TEST_CASE("Lexer reports problem for illegal tokens", "[lexer]") {
 	constexpr const char INPUT[] = "@";
-	Monkey* monkey = CreateMonkey();
-	auto monkeyPtr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(monkey, &DestroyMonkey);
+	const MonkeyPtr monkey{CreateMonkey()};
 
-	Lexer* lexer = CreateLexer(monkey, INPUT);
-	auto lexerPtr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(lexer, &DestroyLexer);
+	const LexerPtr lexer{CreateLexer(monkey.get(), INPUT)};
 
-	Token token = LexerNextToken(lexer);
-	auto tokenPtr = std::unique_ptr<Token, decltype(&DestroyToken)>(&token, &DestroyToken);
+	Token token = LexerNextToken(lexer.get());
+	const TokenPtr tokenPtr{&token};
 	REQUIRE(std::string(TokenTypeText(token.type)) ==
 			std::string(TokenTypeText(TOKEN_TYPE_ILLEGAL)));
 }
@@ -125,15 +125,12 @@ TEST_CASE("Lexer lexes tokens", "[lexer]") {
 			{TOKEN_TYPE_END_OF_FILE, ""},
 	};
 
-	Monkey* monkey = CreateMonkey();
-	auto monkeyPtr = std::unique_ptr<Monkey, decltype(&DestroyMonkey)>(monkey, &DestroyMonkey);
-
-	Lexer* lexer = CreateLexer(monkey, INPUT);
-	auto lexerPtr = std::unique_ptr<Lexer, decltype(&DestroyLexer)>(lexer, &DestroyLexer);
+	const MonkeyPtr monkey{CreateMonkey()};
+	const LexerPtr lexer{CreateLexer(monkey.get(), INPUT)};
 
 	for (const auto tt : TESTS) {
-		auto tok = LexerNextToken(lexer);
-		auto tokPtr = std::unique_ptr<Token, decltype(&DestroyToken)>(&tok, &DestroyToken);
+		auto tok = LexerNextToken(lexer.get());
+		const TokenPtr tokPtr{&tok};
 		REQUIRE(std::string(TokenTypeText(tt.expectedType)) ==
 				std::string(TokenTypeText(tok.type)));
 		REQUIRE(std::string(tt.expectedLiteral) == tok.literal);
