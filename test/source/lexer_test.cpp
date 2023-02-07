@@ -1,5 +1,5 @@
 #include <array>
-#include <catch2/catch.hpp>
+#include <catch.hpp>
 
 extern "C" {
 #include <monkey/lexer.h>
