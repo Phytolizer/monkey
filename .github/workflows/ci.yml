@@ -10,7 +10,7 @@ on:
             - master
 
 env:
-    VCPKG_COMMIT: e9d2b4c40e3a3ac4c6264dd685d59df8d082ace1
+    VCPKG_COMMIT: 71d3fa60b67540e9bf5fde2bf2188f579ff09433
 
 jobs:
     lint:
