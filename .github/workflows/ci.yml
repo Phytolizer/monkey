@@ -89,7 +89,7 @@ jobs:
               with:
                   committish: "${{ env.VCPKG_COMMIT }}"
                   cache-key: vcpkg-sanitize
-                  cache-version: 2
+                  cache-version: 3
 
             - name: Configure
               env: { CC: clang-12, CXX: clang++-12 }
