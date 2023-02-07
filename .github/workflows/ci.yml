@@ -53,7 +53,9 @@ jobs:
 
             - name: Install vcpkg
               uses: friendlyanon/setup-vcpkg@v1
-              with: { committish: "${{ env.VCPKG_COMMIT }}" }
+              with:
+                  committish: "${{ env.VCPKG_COMMIT }}"
+                  cache-version: 2
 
             - name: Configure
               run: cmake --preset=ci-coverage
@@ -87,6 +89,7 @@ jobs:
               with:
                   committish: "${{ env.VCPKG_COMMIT }}"
                   cache-key: vcpkg-sanitize
+                  cache-version: 2
 
             - name: Configure
               env: { CC: clang-12, CXX: clang++-12 }
