@@ -12,6 +12,27 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+typedef Expression*(PrefixParseFn)(Parser*);
+typedef Expression*(InfixParseFn)(Parser*, Expression*);
+
+#define PRECEDENCES_X \
+	X(LOWEST) \
+	X(EQUALS) \
+	X(LESSGREATER) \
+	X(SUM) \
+	X(PRODUCT) \
+	X(PREFIX) \
+	X(CALL)
+
+typedef enum {
+#define X(x) PRECEDENCE_##x,
+	PRECEDENCES_X
+#undef X
+} Precedence;
+
+MONKEY_FILE_LOCAL PrefixParseFn* getPrefixParser(TokenType type);
+// MONKEY_FILE_LOCAL InfixParseFn* getInfixParser(TokenType type);
+
 struct Parser {
 	Lexer* lexer;
 
@@ -63,6 +84,24 @@ Parser* CreateParser(Lexer* lexer) {
 	return parser;
 }
 
+MONKEY_FILE_LOCAL Expression* parseIdentifier(Parser* parser) {
+	return (Expression*)CreateIdentifier(
+			CopyToken(&parser->currentToken), MonkeyStrdup(parser->currentToken.literal));
+}
+
+MONKEY_FILE_LOCAL Expression* parseExpression(Parser* parser, Precedence precedence) {
+	PrefixParseFn* prefix = getPrefixParser(parser->currentToken.type);
+	if (prefix == NULL) {
+		return NULL;
+	}
+
+	(void)precedence; // TODO: use this
+
+	Expression* leftExp = prefix(parser);
+
+	return leftExp;
+}
+
 MONKEY_FILE_LOCAL Statement* parseLetStatement(Parser* parser) {
 	Token token = CopyToken(&parser->currentToken);
 
@@ -101,6 +140,18 @@ MONKEY_FILE_LOCAL Statement* parseReturnStatement(Parser* parser) {
 	return (Statement*)CreateReturnStatement(token, NULL);
 }
 
+MONKEY_FILE_LOCAL Statement* parseExpressionStatement(Parser* parser) {
+	Token token = CopyToken(&parser->currentToken);
+
+	Expression* expression = parseExpression(parser, PRECEDENCE_LOWEST);
+
+	if (peekTokenIs(parser, TOKEN_TYPE_SEMICOLON)) {
+		nextToken(parser);
+	}
+
+	return (Statement*)CreateExpressionStatement(token, expression);
+}
+
 MONKEY_FILE_LOCAL Statement* parseStatement(Parser* parser) {
 	switch (parser->currentToken.type) {
 		case TOKEN_TYPE_LET:
@@ -108,7 +159,7 @@ MONKEY_FILE_LOCAL Statement* parseStatement(Parser* parser) {
 		case TOKEN_TYPE_RETURN:
 			return parseReturnStatement(parser);
 		default:
-			return NULL;
+			return parseExpressionStatement(parser);
 	}
 }
 
@@ -139,3 +190,19 @@ void DestroyParser(Parser* parser) {
 MonkeyStringVector ParserErrors(Parser* parser) {
 	return parser->errors;
 }
+
+MONKEY_FILE_LOCAL PrefixParseFn* getPrefixParser(TokenType type) {
+	switch (type) {
+		case TOKEN_TYPE_IDENT:
+			return &parseIdentifier;
+		default:
+			return NULL;
+	}
+}
+
+// MONKEY_FILE_LOCAL InfixParseFn* getInfixParser(TokenType type) {
+// 	switch (type) {
+// 		default:
+// 			return NULL;
+// 	}
+// }

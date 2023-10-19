@@ -13,6 +13,15 @@ extern "C" {
 #include "monkey_wrapper.hpp"
 
 namespace {
+void testIdentifierExpression(Expression* expression, const char* name) {
+	REQUIRE(expression->type == EXPRESSION_TYPE_IDENTIFIER);
+	auto* ident = reinterpret_cast<Identifier*>(expression);
+
+	REQUIRE(std::string(ident->value) == std::string(name));
+	const StringPtr nameToklit{IdentifierTokenLiteral(ident)};
+	REQUIRE(std::string(nameToklit.get()) == std::string(name));
+}
+
 void testLetStatement(Statement* statement, const char* name) {
 	const StringPtr toklit{StatementTokenLiteral(statement)};
 
@@ -117,7 +126,25 @@ TEST_CASE("Return statements are parsed correctly", "[parser]") {
 	for (size_t i = 0; i < program->statements.length; i++) {
 		Statement* statement = program->statements.begin[i];
 		REQUIRE(statement->type == STATEMENT_TYPE_RETURN);
-		StringPtr const toklit{StatementTokenLiteral(statement)};
+		const StringPtr toklit{StatementTokenLiteral(statement)};
 		REQUIRE(std::string(toklit.get()) == std::string("return"));
 	}
+}
+
+TEST_CASE("Identifier expressions are parsed correctly", "[parser]") {
+	constexpr char INPUT[] = "foobar";
+
+	const MonkeyPtr monkey{CreateMonkey()};
+	const LexerPtr lexer{CreateLexer(monkey.get(), INPUT)};
+	const ParserPtr parser{CreateParser(lexer.get())};
+
+	const ProgramPtr program{ParseProgram(parser.get())};
+	REQUIRE(program != nullptr);
+
+	checkParserErrors(parser.get());
+
+	REQUIRE(program->statements.length == 1);
+	REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+	auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
+	testIdentifierExpression(stmt->expression, "foobar");
 }

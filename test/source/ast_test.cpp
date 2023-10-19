@@ -27,6 +27,7 @@ TEST_CASE("AST can be pretty-printed", "[ast]") {
 	};
 	Statement** statements = static_cast<Statement**>(malloc(sizeof(Statement*)));
 	memcpy(statements, rawStatements, sizeof(rawStatements));
+	// NOLINTNEXTLINE(clang-analyzer-unix.Malloc): false positive
 	const ProgramPtr program{CreateProgram(SPAN_WITH_LENGTH(statements, 1))};
 
 	const StringPtr actual{ProgramString(program.get())};
