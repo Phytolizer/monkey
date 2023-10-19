@@ -270,3 +270,39 @@ TEST_CASE("Infix expressions are parsed correctly", "[parser]") {
 		testInfixExpression(stmt->expression, tt.left, tt.op, tt.right);
 	}
 }
+
+TEST_CASE("Operator precedence is respected", "[parser]") {
+	typedef struct {
+		const char* input;
+		const char* expected;
+	} PrecedenceTest;
+
+	constexpr PrecedenceTest TESTS[] = {
+			{"-a * b", "((-a) * b)"},
+			{"!-a", "(!(-a))"},
+			{"a + b + c", "((a + b) + c)"},
+			{"a + b - c", "((a + b) - c)"},
+			{"a * b * c", "((a * b) * c)"},
+			{"a * b / c", "((a * b) / c)"},
+			{"a + b / c", "(a + (b / c))"},
+			{"a + b * c + d / e - f", "(((a + (b * c)) + (d / e)) - f)"},
+			{"3 + 4; -5 * 5", "(3 + 4)((-5) * 5)"},
+			{"5 > 4 == 3 < 4", "((5 > 4) == (3 < 4))"},
+			{"5 < 4 != 3 > 4", "((5 < 4) != (3 > 4))"},
+			{"3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"},
+	};
+
+	const MonkeyPtr monkey{CreateMonkey()};
+
+	for (auto tt : TESTS) {
+		const LexerPtr lexer{CreateLexer(monkey.get(), tt.input)};
+		const ParserPtr parser{CreateParser(lexer.get())};
+
+		const ProgramPtr program{ParseProgram(parser.get())};
+		checkParserErrors(parser.get());
+		REQUIRE(program != nullptr);
+
+		const StringPtr actual{ProgramString(program.get())};
+		CHECK(std::string(tt.expected) == actual.get());
+	}
+}
