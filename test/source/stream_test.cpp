@@ -42,7 +42,7 @@ TEST_CASE("Stream behaves nicely when backed by files", "[stream]") {
 
 	RewindStream(stream);
 	auto expected = std::string{"Hello... World!"};
-	auto buffer2 = std::unique_ptr<char[]>(new char[expected.size() + 1]);
+	auto buffer2 = std::make_unique<char[]>(expected.size() + 1);
 	ReadStream(stream, buffer2.get(), expected.size());
 	buffer2[expected.size()] = '\0';
 
