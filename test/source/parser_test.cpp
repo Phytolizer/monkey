@@ -1,7 +1,9 @@
+#include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <vector>
 
 extern "C" {
 #include <monkey.h>
@@ -20,8 +22,8 @@ void testIdentifierExpression(Expression* expression, const char* name) {
 	auto* ident = reinterpret_cast<Identifier*>(expression);
 
 	REQUIRE(std::string(ident->value) == std::string(name));
-	const StringPtr nameToklit{IdentifierTokenLiteral(ident)};
-	REQUIRE(std::string(nameToklit.get()) == std::string(name));
+	const StringPtr toklit{IdentifierTokenLiteral(ident)};
+	REQUIRE(std::string(toklit.get()) == std::string(name));
 }
 
 void testIntegerLiteralExpression(Expression* expression, int64_t value) {
@@ -30,8 +32,19 @@ void testIntegerLiteralExpression(Expression* expression, int64_t value) {
 	auto* intlit = reinterpret_cast<IntegerLiteral*>(expression);
 
 	REQUIRE(intlit->value == value);
-	const StringPtr nameToklit{IntegerLiteralTokenLiteral(intlit)};
-	REQUIRE(std::string(nameToklit.get()) == std::to_string(value));
+	const StringPtr toklit{IntegerLiteralTokenLiteral(intlit)};
+	REQUIRE(std::string(toklit.get()) == std::to_string(value));
+}
+
+void testPrefixExpression(Expression* expression, const char* op, int64_t value) {
+	REQUIRE(expression != nullptr);
+	REQUIRE(expression->type == EXPRESSION_TYPE_PREFIX);
+	auto* prefix = reinterpret_cast<PrefixExpression*>(expression);
+
+	REQUIRE(std::string(op) == prefix->op);
+	const StringPtr toklit{PrefixExpressionTokenLiteral(prefix)};
+	REQUIRE(std::string(toklit.get()) == op);
+	testIntegerLiteralExpression(prefix->right, value);
 }
 
 void testLetStatement(Statement* statement, const char* name) {
@@ -46,12 +59,12 @@ void testLetStatement(Statement* statement, const char* name) {
 }
 
 void checkParserErrors(Parser* parser) {
-	const MonkeyStringVector errors = ParserErrors(parser);
-	for (size_t i = 0; i < errors.size; i++) {
-		char* error = errors.data[i];
-		FAIL_CHECK(error);
+	const MonkeyStringVector rawErrors = ParserErrors(parser);
+	if (rawErrors.size > 0) {
+		auto errors = std::vector<char*>(rawErrors.data, rawErrors.data + rawErrors.size);
+		CAPTURE(errors);
+		FAIL();
 	}
-	REQUIRE(errors.size == 0);
 }
 } // namespace
 
@@ -177,4 +190,34 @@ TEST_CASE("Integer literal expressions are parsed correctly", "[parser]") {
 	REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
 	auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
 	testIntegerLiteralExpression(stmt->expression, 5); // NOLINT(readability-magic-numbers)
+}
+
+TEST_CASE("Prefix expressions are parsed correctly", "[parser]") {
+	typedef struct {
+		const char* input;
+		const char* op;
+		int64_t value;
+	} PrefixTest;
+
+	constexpr PrefixTest TESTS[] = {
+			{"!5;", "!", 5},
+			{"-15;", "-", 15},
+	};
+
+	const MonkeyPtr monkey{CreateMonkey()};
+
+	for (auto tt : TESTS) {
+		const LexerPtr lexer{CreateLexer(monkey.get(), tt.input)};
+		const ParserPtr parser{CreateParser(lexer.get())};
+
+		const ProgramPtr program{ParseProgram(parser.get())};
+		REQUIRE(program != nullptr);
+
+		checkParserErrors(parser.get());
+
+		REQUIRE(program->statements.length == 1);
+		REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+		auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
+		testPrefixExpression(stmt->expression, tt.op, tt.value);
+	}
 }

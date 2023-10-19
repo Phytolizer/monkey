@@ -25,7 +25,7 @@ add_executable(
 target_link_libraries(monkey_test PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(monkey_test PRIVATE monkey_lib)
 
-target_compile_features(monkey_test PRIVATE cxx_std_11)
+target_compile_features(monkey_test PRIVATE cxx_std_14)
 
 catch_discover_tests(monkey_test)
 

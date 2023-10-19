@@ -65,6 +65,11 @@ MONKEY_FILE_LOCAL void peekError(Parser* parser, TokenType t) {
 	VECTOR_PUSH(&parser->errors, message);
 }
 
+MONKEY_FILE_LOCAL void noPrefixParseFnError(Parser* parser, TokenType t) {
+	char* message = MonkeyAsprintf("no prefix parse function for %s found", TokenTypeText(t));
+	VECTOR_PUSH(&parser->errors, message);
+}
+
 MONKEY_FILE_LOCAL bool expectPeek(Parser* parser, TokenType t) {
 	if (peekTokenIs(parser, t)) {
 		nextToken(parser);
@@ -85,6 +90,8 @@ Parser* CreateParser(Lexer* lexer) {
 	return parser;
 }
 
+MONKEY_FILE_LOCAL Expression* parseExpression(Parser* parser, Precedence precedence);
+
 MONKEY_FILE_LOCAL Expression* parseIdentifier(Parser* parser) {
 	return (Expression*)CreateIdentifier(
 			CopyToken(&parser->currentToken), MonkeyStrdup(parser->currentToken.literal));
@@ -104,9 +111,21 @@ MONKEY_FILE_LOCAL Expression* parseIntegerLiteral(Parser* parser) {
 	return (Expression*)CreateIntegerLiteral(token, value);
 }
 
+MONKEY_FILE_LOCAL Expression* parsePrefixExpression(Parser* parser) {
+	Token token = CopyToken(&parser->currentToken);
+	char* op = MonkeyStrdup(token.literal);
+
+	nextToken(parser);
+
+	Expression* right = parseExpression(parser, PRECEDENCE_PREFIX);
+
+	return (Expression*)CreatePrefixExpression(token, op, right);
+}
+
 MONKEY_FILE_LOCAL Expression* parseExpression(Parser* parser, Precedence precedence) {
 	PrefixParseFn* prefix = getPrefixParser(parser->currentToken.type);
 	if (prefix == NULL) {
+		noPrefixParseFnError(parser, parser->currentToken.type);
 		return NULL;
 	}
 
@@ -212,6 +231,9 @@ MONKEY_FILE_LOCAL PrefixParseFn* getPrefixParser(TokenType type) {
 			return &parseIdentifier;
 		case TOKEN_TYPE_INT:
 			return &parseIntegerLiteral;
+		case TOKEN_TYPE_BANG:
+		case TOKEN_TYPE_MINUS:
+			return &parsePrefixExpression;
 		default:
 			return NULL;
 	}

@@ -34,6 +34,9 @@ MONKEY_FILE_LOCAL void destroyExpression(Expression* expression) {
 		case EXPRESSION_TYPE_INTEGER_LITERAL:
 			DestroyIntegerLiteral((IntegerLiteral*)expression);
 			return;
+		case EXPRESSION_TYPE_PREFIX:
+			DestroyPrefixExpression((PrefixExpression*)expression);
+			return;
 	}
 	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
 	assert(false);
@@ -108,6 +111,8 @@ char* ExpressionString(const Expression* expression) {
 			return IdentifierString((const Identifier*)expression);
 		case EXPRESSION_TYPE_INTEGER_LITERAL:
 			return IntegerLiteralString((const IntegerLiteral*)expression);
+		case EXPRESSION_TYPE_PREFIX:
+			return PrefixExpressionString((const PrefixExpression*)expression);
 	}
 	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
 	assert(false);
@@ -192,6 +197,40 @@ char* IntegerLiteralString(const IntegerLiteral* integerLiteral) {
 void DestroyIntegerLiteral(IntegerLiteral* integerLiteral) {
 	DestroyToken(&integerLiteral->token);
 	free(integerLiteral);
+}
+
+PrefixExpression* CreatePrefixExpression(Token token, char* op, Expression* right) {
+	PrefixExpression* prefix = calloc(1, sizeof(PrefixExpression));
+	initExpression(&prefix->base, EXPRESSION_TYPE_PREFIX);
+	prefix->token = token;
+	prefix->op = op;
+	prefix->right = right;
+	return prefix;
+}
+
+char* PrefixExpressionTokenLiteral(const PrefixExpression* prefix) {
+	return MonkeyStrdup(prefix->token.literal);
+}
+
+char* PrefixExpressionString(const PrefixExpression* prefix) {
+	MonkeyStringVector out = VECTOR_INIT;
+	VECTOR_PUSH(&out, MonkeyStrdup("("));
+	VECTOR_PUSH(&out, MonkeyStrdup(prefix->op));
+	VECTOR_PUSH(&out, ExpressionString(prefix->right));
+	VECTOR_PUSH(&out, MonkeyStrdup(")"));
+	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
+	for (size_t i = 0; i < out.size; ++i) {
+		free(out.data[i]);
+	}
+	VECTOR_FREE(&out);
+	return result;
+}
+
+void DestroyPrefixExpression(PrefixExpression* prefix) {
+	DestroyToken(&prefix->token);
+	free(prefix->op);
+	destroyExpression(prefix->right);
+	free(prefix);
 }
 
 LetStatement* CreateLetStatement(Token token, Identifier* identifier, Expression* value) {
