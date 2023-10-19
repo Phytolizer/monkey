@@ -42,7 +42,8 @@ char* StatementString(const Statement* statement);
 #define EXPRESSION_TYPES_X \
 	X(IDENTIFIER) \
 	X(INTEGER_LITERAL) \
-	X(PREFIX)
+	X(PREFIX) \
+	X(INFIX)
 
 typedef enum {
 #define X(name) EXPRESSION_TYPE_##name,
@@ -102,6 +103,19 @@ PrefixExpression* CreatePrefixExpression(Token token, char* op, Expression* righ
 char* PrefixExpressionTokenLiteral(const PrefixExpression* prefix);
 char* PrefixExpressionString(const PrefixExpression* prefix);
 void DestroyPrefixExpression(PrefixExpression* prefix);
+
+typedef struct {
+	Expression base;
+	Token token;
+	Expression* left;
+	char* op;
+	Expression* right;
+} InfixExpression;
+
+InfixExpression* CreateInfixExpression(Token token, Expression* left, char* op, Expression* right);
+char* InfixExpressionTokenLiteral(const InfixExpression* infix);
+char* InfixExpressionString(const InfixExpression* infix);
+void DestroyInfixExpression(InfixExpression* infix);
 
 typedef struct {
 	Statement base;

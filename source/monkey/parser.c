@@ -31,8 +31,27 @@ typedef enum {
 #undef X
 } Precedence;
 
+MONKEY_FILE_LOCAL Precedence getInfixPrecedence(TokenType type) {
+	switch (type) {
+		case TOKEN_TYPE_EQ:
+		case TOKEN_TYPE_NOT_EQ:
+			return PRECEDENCE_EQUALS;
+		case TOKEN_TYPE_LT:
+		case TOKEN_TYPE_GT:
+			return PRECEDENCE_LESSGREATER;
+		case TOKEN_TYPE_PLUS:
+		case TOKEN_TYPE_MINUS:
+			return PRECEDENCE_SUM;
+		case TOKEN_TYPE_ASTERISK:
+		case TOKEN_TYPE_SLASH:
+			return PRECEDENCE_PRODUCT;
+		default:
+			return PRECEDENCE_LOWEST;
+	}
+}
+
 MONKEY_FILE_LOCAL PrefixParseFn* getPrefixParser(TokenType type);
-// MONKEY_FILE_LOCAL InfixParseFn* getInfixParser(TokenType type);
+MONKEY_FILE_LOCAL InfixParseFn* getInfixParser(TokenType type);
 
 struct Parser {
 	Lexer* lexer;
@@ -49,6 +68,14 @@ MONKEY_FILE_LOCAL void nextToken(Parser* parser) {
 	DestroyToken(&parser->currentToken);
 	parser->currentToken = parser->peekToken;
 	parser->peekToken = LexerNextToken(parser->lexer);
+}
+
+MONKEY_FILE_LOCAL Precedence curPrecedence(Parser* parser) {
+	return getInfixPrecedence(parser->currentToken.type);
+}
+
+MONKEY_FILE_LOCAL Precedence peekPrecedence(Parser* parser) {
+	return getInfixPrecedence(parser->peekToken.type);
 }
 
 MONKEY_FILE_LOCAL bool curTokenIs(Parser* parser, TokenType type) {
@@ -122,6 +149,17 @@ MONKEY_FILE_LOCAL Expression* parsePrefixExpression(Parser* parser) {
 	return (Expression*)CreatePrefixExpression(token, op, right);
 }
 
+MONKEY_FILE_LOCAL Expression* parseInfixExpression(Parser* parser, Expression* left) {
+	Token token = CopyToken(&parser->currentToken);
+	char* op = MonkeyStrdup(token.literal);
+
+	Precedence precedence = curPrecedence(parser);
+	nextToken(parser);
+	Expression* right = parseExpression(parser, precedence);
+
+	return (Expression*)CreateInfixExpression(token, left, op, right);
+}
+
 MONKEY_FILE_LOCAL Expression* parseExpression(Parser* parser, Precedence precedence) {
 	PrefixParseFn* prefix = getPrefixParser(parser->currentToken.type);
 	if (prefix == NULL) {
@@ -129,9 +167,18 @@ MONKEY_FILE_LOCAL Expression* parseExpression(Parser* parser, Precedence precede
 		return NULL;
 	}
 
-	(void)precedence; // TODO: use this
-
 	Expression* leftExp = prefix(parser);
+
+	while (!peekTokenIs(parser, TOKEN_TYPE_SEMICOLON) && precedence < peekPrecedence(parser)) {
+		InfixParseFn* infix = getInfixParser(parser->peekToken.type);
+		if (infix == NULL) {
+			break;
+		}
+
+		nextToken(parser);
+
+		leftExp = infix(parser, leftExp);
+	}
 
 	return leftExp;
 }
@@ -239,9 +286,18 @@ MONKEY_FILE_LOCAL PrefixParseFn* getPrefixParser(TokenType type) {
 	}
 }
 
-// MONKEY_FILE_LOCAL InfixParseFn* getInfixParser(TokenType type) {
-// 	switch (type) {
-// 		default:
-// 			return NULL;
-// 	}
-// }
+MONKEY_FILE_LOCAL InfixParseFn* getInfixParser(TokenType type) {
+	switch (type) {
+		case TOKEN_TYPE_PLUS:
+		case TOKEN_TYPE_MINUS:
+		case TOKEN_TYPE_ASTERISK:
+		case TOKEN_TYPE_SLASH:
+		case TOKEN_TYPE_EQ:
+		case TOKEN_TYPE_NOT_EQ:
+		case TOKEN_TYPE_LT:
+		case TOKEN_TYPE_GT:
+			return &parseInfixExpression;
+		default:
+			return NULL;
+	}
+}

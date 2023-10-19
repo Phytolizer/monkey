@@ -37,6 +37,9 @@ MONKEY_FILE_LOCAL void destroyExpression(Expression* expression) {
 		case EXPRESSION_TYPE_PREFIX:
 			DestroyPrefixExpression((PrefixExpression*)expression);
 			return;
+		case EXPRESSION_TYPE_INFIX:
+			DestroyInfixExpression((InfixExpression*)expression);
+			return;
 	}
 	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
 	assert(false);
@@ -113,6 +116,8 @@ char* ExpressionString(const Expression* expression) {
 			return IntegerLiteralString((const IntegerLiteral*)expression);
 		case EXPRESSION_TYPE_PREFIX:
 			return PrefixExpressionString((const PrefixExpression*)expression);
+		case EXPRESSION_TYPE_INFIX:
+			return InfixExpressionString((const InfixExpression*)expression);
 	}
 	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
 	assert(false);
@@ -231,6 +236,45 @@ void DestroyPrefixExpression(PrefixExpression* prefix) {
 	free(prefix->op);
 	destroyExpression(prefix->right);
 	free(prefix);
+}
+
+InfixExpression* CreateInfixExpression(Token token, Expression* left, char* op, Expression* right) {
+	InfixExpression* infix = calloc(1, sizeof(InfixExpression));
+	initExpression(&infix->base, EXPRESSION_TYPE_INFIX);
+	infix->token = token;
+	infix->left = left;
+	infix->op = op;
+	infix->right = right;
+	return infix;
+}
+
+char* InfixExpressionTokenLiteral(const InfixExpression* infix) {
+	return MonkeyStrdup(infix->token.literal);
+}
+
+char* InfixExpressionString(const InfixExpression* infix) {
+	MonkeyStringVector out = VECTOR_INIT;
+	VECTOR_PUSH(&out, MonkeyStrdup("("));
+	VECTOR_PUSH(&out, ExpressionString(infix->left));
+	VECTOR_PUSH(&out, MonkeyStrdup(" "));
+	VECTOR_PUSH(&out, MonkeyStrdup(infix->op));
+	VECTOR_PUSH(&out, MonkeyStrdup(" "));
+	VECTOR_PUSH(&out, ExpressionString(infix->right));
+	VECTOR_PUSH(&out, MonkeyStrdup(")"));
+	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
+	for (size_t i = 0; i < out.size; ++i) {
+		free(out.data[i]);
+	}
+	VECTOR_FREE(&out);
+	return result;
+}
+
+void DestroyInfixExpression(InfixExpression* infix) {
+	DestroyToken(&infix->token);
+	destroyExpression(infix->left);
+	free(infix->op);
+	destroyExpression(infix->right);
+	free(infix);
 }
 
 LetStatement* CreateLetStatement(Token token, Identifier* identifier, Expression* value) {

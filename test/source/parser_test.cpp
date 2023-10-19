@@ -47,6 +47,18 @@ void testPrefixExpression(Expression* expression, const char* op, int64_t value)
 	testIntegerLiteralExpression(prefix->right, value);
 }
 
+void testInfixExpression(Expression* expression, int64_t left, const char* op, int64_t right) {
+	REQUIRE(expression != nullptr);
+	REQUIRE(expression->type == EXPRESSION_TYPE_INFIX);
+	auto* infix = reinterpret_cast<InfixExpression*>(expression);
+
+	REQUIRE(std::string(op) == infix->op);
+	const StringPtr toklit{InfixExpressionTokenLiteral(infix)};
+	REQUIRE(std::string(toklit.get()) == op);
+	testIntegerLiteralExpression(infix->left, left);
+	testIntegerLiteralExpression(infix->right, right);
+}
+
 void testLetStatement(Statement* statement, const char* name) {
 	const StringPtr toklit{StatementTokenLiteral(statement)};
 
@@ -219,5 +231,42 @@ TEST_CASE("Prefix expressions are parsed correctly", "[parser]") {
 		REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
 		auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
 		testPrefixExpression(stmt->expression, tt.op, tt.value);
+	}
+}
+
+TEST_CASE("Infix expressions are parsed correctly", "[parser]") {
+	typedef struct {
+		const char* input;
+		int64_t left;
+		const char* op;
+		int64_t right;
+	} InfixTest;
+
+	constexpr InfixTest TESTS[] = {
+			{"5 + 5;", 5, "+", 5},
+			{"5 - 5;", 5, "-", 5},
+			{"5 * 5;", 5, "*", 5},
+			{"5 / 5;", 5, "/", 5},
+			{"5 > 5;", 5, ">", 5},
+			{"5 < 5;", 5, "<", 5},
+			{"5 == 5;", 5, "==", 5},
+			{"5 != 5;", 5, "!=", 5},
+	};
+
+	const MonkeyPtr monkey{CreateMonkey()};
+
+	for (auto tt : TESTS) {
+		const LexerPtr lexer{CreateLexer(monkey.get(), tt.input)};
+		const ParserPtr parser{CreateParser(lexer.get())};
+
+		const ProgramPtr program{ParseProgram(parser.get())};
+		REQUIRE(program != nullptr);
+
+		checkParserErrors(parser.get());
+
+		REQUIRE(program->statements.length == 1);
+		REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+		auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
+		testInfixExpression(stmt->expression, tt.left, tt.op, tt.right);
 	}
 }
