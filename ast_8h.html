@@ -97,6 +97,10 @@
             </dt>
             <dd><span></span></dd>
             <dt>
+              struct <a href="structInfixExpression.html" class="m-doc">InfixExpression</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
               struct <a href="structLetStatement.html" class="m-doc">LetStatement</a>
             </dt>
             <dd><span></span></dd>
@@ -212,6 +216,25 @@
             <dd><span></span></dd>
             <dt id="a45776368f74c2adf1b539be3e9b0ddca">
               <span class="m-doc-wrap-bumper">void <a href="#a45776368f74c2adf1b539be3e9b0ddca" class="m-doc-self">DestroyPrefixExpression</a>(</span><span class="m-doc-wrap"><a href="structPrefixExpression.html" class="m-doc">PrefixExpression</a>* prefix)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a4784d20763ba5153b78c438f102d8628">
+              <span class="m-doc-wrap-bumper">auto <a href="#a4784d20763ba5153b78c438f102d8628" class="m-doc-self">CreateInfixExpression</a>(</span><span class="m-doc-wrap"><a href="structToken.html" class="m-doc">Token</a> token,
+              <a href="structExpression.html" class="m-doc">Expression</a>* left,
+              char* op,
+              <a href="structExpression.html" class="m-doc">Expression</a>* right) -&gt; <a href="structInfixExpression.html" class="m-doc">InfixExpression</a>*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a70c1c2dddc1ba8b92ae2d4d3966a2194">
+              <span class="m-doc-wrap-bumper">auto <a href="#a70c1c2dddc1ba8b92ae2d4d3966a2194" class="m-doc-self">InfixExpressionTokenLiteral</a>(</span><span class="m-doc-wrap">const <a href="structInfixExpression.html" class="m-doc">InfixExpression</a>* infix) -&gt; char*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="adfc2a85b282f43af71b6393d7e4afe41">
+              <span class="m-doc-wrap-bumper">auto <a href="#adfc2a85b282f43af71b6393d7e4afe41" class="m-doc-self">InfixExpressionString</a>(</span><span class="m-doc-wrap">const <a href="structInfixExpression.html" class="m-doc">InfixExpression</a>* infix) -&gt; char*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa429a09d535eaae1441c7ccb7abc0707">
+              <span class="m-doc-wrap-bumper">void <a href="#aa429a09d535eaae1441c7ccb7abc0707" class="m-doc-self">DestroyInfixExpression</a>(</span><span class="m-doc-wrap"><a href="structInfixExpression.html" class="m-doc">InfixExpression</a>* infix)</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a856c650d4dbe740d6a2c0276acf323b8">

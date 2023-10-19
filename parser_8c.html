@@ -100,12 +100,28 @@
         <section id="func-members">
           <h2><a href="#func-members">Functions</a></h2>
           <dl class="m-doc">
+            <dt id="a747122079513c33cf06872d1e812c044">
+              <span class="m-doc-wrap-bumper">auto <a href="#a747122079513c33cf06872d1e812c044" class="m-doc-self">getInfixPrecedence</a>(</span><span class="m-doc-wrap"><a href="token_8h.html#aa520fbf142ba1e7e659590c07da31921" class="m-doc">TokenType</a> type) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="parser_8c.html#aa4e7d1a473d0280792d98ddb184d3006" class="m-doc">Precedence</a></span>
+            </dt>
+            <dd><span></span></dd>
             <dt id="a7e75c8d049037c5557b4054a60d7cb17">
               <span class="m-doc-wrap-bumper">auto <a href="#a7e75c8d049037c5557b4054a60d7cb17" class="m-doc-self">getPrefixParser</a>(</span><span class="m-doc-wrap"><a href="token_8h.html#aa520fbf142ba1e7e659590c07da31921" class="m-doc">TokenType</a> type) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="parser_8c.html#aa5e664644136441dd1c149da843f6e78" class="m-doc">PrefixParseFn</a>*</span>
             </dt>
             <dd><span></span></dd>
+            <dt id="aedd0deea88cfdc2608c900c261101370">
+              <span class="m-doc-wrap-bumper">auto <a href="#aedd0deea88cfdc2608c900c261101370" class="m-doc-self">getInfixParser</a>(</span><span class="m-doc-wrap"><a href="token_8h.html#aa520fbf142ba1e7e659590c07da31921" class="m-doc">TokenType</a> type) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="parser_8c.html#aa510b1fa2492978b81f10bff70224182" class="m-doc">InfixParseFn</a>*</span>
+            </dt>
+            <dd><span></span></dd>
             <dt id="ae278b9b2dc0b0cc6d573482796fc96da">
               <span class="m-doc-wrap-bumper">auto <a href="#ae278b9b2dc0b0cc6d573482796fc96da" class="m-doc-self">BUFFER_TYPE</a>(</span><span class="m-doc-wrap"><a href="structStatement.html" class="m-doc">Statement</a>*) -&gt; typedef</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ad3f785e5c9ebf24c53b349bd01578206">
+              <span class="m-doc-wrap-bumper">auto <a href="#ad3f785e5c9ebf24c53b349bd01578206" class="m-doc-self">curPrecedence</a>(</span><span class="m-doc-wrap"><a href="structParser.html" class="m-doc">Parser</a>* parser) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="parser_8c.html#aa4e7d1a473d0280792d98ddb184d3006" class="m-doc">Precedence</a></span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ab01244f726591b5b0c2f492948e255d4">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab01244f726591b5b0c2f492948e255d4" class="m-doc-self">peekPrecedence</a>(</span><span class="m-doc-wrap"><a href="structParser.html" class="m-doc">Parser</a>* parser) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="parser_8c.html#aa4e7d1a473d0280792d98ddb184d3006" class="m-doc">Precedence</a></span>
             </dt>
             <dd><span></span></dd>
             <dt id="acc9a13a7179fc03f83128836deb8f5dc">
@@ -152,6 +168,11 @@
             <dd><span></span></dd>
             <dt id="a3d53a70dddf92c955fcde46b55c874f4">
               <span class="m-doc-wrap-bumper">auto <a href="#a3d53a70dddf92c955fcde46b55c874f4" class="m-doc-self">parsePrefixExpression</a>(</span><span class="m-doc-wrap"><a href="structParser.html" class="m-doc">Parser</a>* parser) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structExpression.html" class="m-doc">Expression</a>*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a515a2f82e0c7a8b70ce9f49992b256be">
+              <span class="m-doc-wrap-bumper">auto <a href="#a515a2f82e0c7a8b70ce9f49992b256be" class="m-doc-self">parseInfixExpression</a>(</span><span class="m-doc-wrap"><a href="structParser.html" class="m-doc">Parser</a>* parser,
+              <a href="structExpression.html" class="m-doc">Expression</a>* left) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structExpression.html" class="m-doc">Expression</a>*</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a158ce3485484366405b3b494d678ad96">
