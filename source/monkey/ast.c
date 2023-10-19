@@ -39,26 +39,35 @@ MONKEY_FILE_LOCAL void destroyLetStatement(LetStatement* statement) {
 	DestroyToken(&statement->token);
 	DestroyIdentifier(statement->identifier);
 	destroyExpression(statement->value);
+	free(statement);
 }
 
 MONKEY_FILE_LOCAL void destroyReturnStatement(ReturnStatement* statement) {
 	DestroyToken(&statement->token);
 	destroyExpression(statement->returnValue);
+	free(statement);
+}
+
+MONKEY_FILE_LOCAL void destroyExpressionStatement(ExpressionStatement* statement) {
+	DestroyToken(&statement->token);
+	destroyExpression(statement->expression);
+	free(statement);
 }
 
 MONKEY_FILE_LOCAL void destroyStatement(Statement* statement) {
 	switch (statement->type) {
 		case STATEMENT_TYPE_LET:
 			destroyLetStatement((LetStatement*)statement);
-			break;
+			return;
 		case STATEMENT_TYPE_RETURN:
 			destroyReturnStatement((ReturnStatement*)statement);
-			break;
-		default:
-			(void)fprintf(stderr, "Unknown statement type: %d\n", statement->type);
-			assert(false);
+			return;
+		case STATEMENT_TYPE_EXPRESSION:
+			destroyExpressionStatement((ExpressionStatement*)statement);
+			return;
 	}
-	free(statement);
+	(void)fprintf(stderr, "Unknown statement type: %d\n", statement->type);
+	assert(false);
 }
 
 char* StatementTokenLiteral(const Statement* statement) {
