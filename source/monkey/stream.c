@@ -1,6 +1,8 @@
 #include "monkey/stream.h"
 
 #include <stdarg.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -105,7 +107,7 @@ int64_t StreamPrintf(Stream* stream, const char* format, ...) {
 
 void RewindStream(Stream* stream) {
 	if (stream->file) {
-		rewind(stream->file);
+		(void)fseek(stream->file, 0, SEEK_SET);
 	} else {
 		stream->textPosition = 0;
 	}

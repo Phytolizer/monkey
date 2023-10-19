@@ -1,9 +1,12 @@
 #include "monkey/lexer.h"
 
+#include "monkey.h"
 #include "monkey/macros.h"
 #include "monkey/string.h"
+#include "monkey/token.h"
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 

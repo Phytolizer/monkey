@@ -1,5 +1,5 @@
-#include "monkey.h"
 #include "monkey/repl.h"
+#include "monkey/stream.h"
 #include "monkey/user.h"
 
 #include <stddef.h>

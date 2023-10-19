@@ -1,8 +1,14 @@
 #include "monkey/repl.h"
 
+#include "monkey.h"
 #include "monkey/lexer.h"
+#include "monkey/stream.h"
+#include "monkey/token.h"
 
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #define GETLINE_INITIAL_LENGTH 256

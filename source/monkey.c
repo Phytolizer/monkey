@@ -4,7 +4,6 @@
 #include "monkey/token.h"
 
 #include <hedley.h>
-#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 

@@ -2,9 +2,11 @@
 
 #include "monkey/macros.h"
 #include "monkey/string.h"
+#include "monkey/token.h"
 
 #include <assert.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 

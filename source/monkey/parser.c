@@ -1,8 +1,15 @@
 #include "monkey/parser.h"
 
 #include "buffer.h"
+#include "monkey/ast.h"
+#include "monkey/lexer.h"
+#include "monkey/macros.h"
 #include "monkey/string.h"
+#include "monkey/token.h"
+#include "monkey/vector.h"
 
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdlib.h>
 
 struct Parser {
