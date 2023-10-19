@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -29,6 +30,9 @@ MONKEY_FILE_LOCAL void destroyExpression(Expression* expression) {
 	switch (expression->type) {
 		case EXPRESSION_TYPE_IDENTIFIER:
 			DestroyIdentifier((Identifier*)expression);
+			return;
+		case EXPRESSION_TYPE_INTEGER_LITERAL:
+			DestroyIntegerLiteral((IntegerLiteral*)expression);
 			return;
 	}
 	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
@@ -102,6 +106,8 @@ char* ExpressionString(const Expression* expression) {
 	switch (expression->type) {
 		case EXPRESSION_TYPE_IDENTIFIER:
 			return IdentifierString((const Identifier*)expression);
+		case EXPRESSION_TYPE_INTEGER_LITERAL:
+			return IntegerLiteralString((const IntegerLiteral*)expression);
 	}
 	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
 	assert(false);
@@ -165,6 +171,27 @@ void DestroyIdentifier(Identifier* identifier) {
 	DestroyToken(&identifier->token);
 	free(identifier->value);
 	free(identifier);
+}
+
+IntegerLiteral* CreateIntegerLiteral(Token token, int64_t value) {
+	IntegerLiteral* integerLiteral = calloc(1, sizeof(IntegerLiteral));
+	initExpression(&integerLiteral->base, EXPRESSION_TYPE_INTEGER_LITERAL);
+	integerLiteral->token = token;
+	integerLiteral->value = value;
+	return integerLiteral;
+}
+
+char* IntegerLiteralTokenLiteral(const IntegerLiteral* integerLiteral) {
+	return MonkeyStrdup(integerLiteral->token.literal);
+}
+
+char* IntegerLiteralString(const IntegerLiteral* integerLiteral) {
+	return MonkeyStrdup(integerLiteral->token.literal);
+}
+
+void DestroyIntegerLiteral(IntegerLiteral* integerLiteral) {
+	DestroyToken(&integerLiteral->token);
+	free(integerLiteral);
 }
 
 LetStatement* CreateLetStatement(Token token, Identifier* identifier, Expression* value) {

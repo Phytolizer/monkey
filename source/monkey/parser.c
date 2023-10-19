@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 typedef Expression*(PrefixParseFn)(Parser*);
@@ -87,6 +88,20 @@ Parser* CreateParser(Lexer* lexer) {
 MONKEY_FILE_LOCAL Expression* parseIdentifier(Parser* parser) {
 	return (Expression*)CreateIdentifier(
 			CopyToken(&parser->currentToken), MonkeyStrdup(parser->currentToken.literal));
+}
+
+MONKEY_FILE_LOCAL Expression* parseIntegerLiteral(Parser* parser) {
+	Token token = CopyToken(&parser->currentToken);
+
+	char* errptr = NULL;
+	enum { BASE_10 = 10 };
+	int64_t value = strtoll(token.literal, &errptr, BASE_10);
+	if (errptr != NULL && *errptr != '\0') {
+		char* message = MonkeyAsprintf("could not parse \"%s\" as integer", token.literal);
+		VECTOR_PUSH(&parser->errors, message);
+		return NULL;
+	}
+	return (Expression*)CreateIntegerLiteral(token, value);
 }
 
 MONKEY_FILE_LOCAL Expression* parseExpression(Parser* parser, Precedence precedence) {
@@ -195,6 +210,8 @@ MONKEY_FILE_LOCAL PrefixParseFn* getPrefixParser(TokenType type) {
 	switch (type) {
 		case TOKEN_TYPE_IDENT:
 			return &parseIdentifier;
+		case TOKEN_TYPE_INT:
+			return &parseIntegerLiteral;
 		default:
 			return NULL;
 	}

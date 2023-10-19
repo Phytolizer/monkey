@@ -3,6 +3,8 @@
 #include "monkey/token.h"
 #include "span.h"
 
+#include <stdint.h>
+
 #define NODE_TYPES_X \
 	X(EXPRESSION) \
 	X(STATEMENT) \
@@ -37,7 +39,9 @@ typedef struct {
 char* StatementTokenLiteral(const Statement* statement);
 char* StatementString(const Statement* statement);
 
-#define EXPRESSION_TYPES_X X(IDENTIFIER)
+#define EXPRESSION_TYPES_X \
+	X(IDENTIFIER) \
+	X(INTEGER_LITERAL)
 
 typedef enum {
 #define X(name) EXPRESSION_TYPE_##name,
@@ -74,6 +78,17 @@ Identifier* CreateIdentifier(Token token, char* value);
 char* IdentifierTokenLiteral(const Identifier* identifier);
 char* IdentifierString(const Identifier* identifier);
 void DestroyIdentifier(Identifier* identifier);
+
+typedef struct {
+	Expression base;
+	Token token;
+	int64_t value;
+} IntegerLiteral;
+
+IntegerLiteral* CreateIntegerLiteral(Token token, int64_t value);
+char* IntegerLiteralTokenLiteral(const IntegerLiteral* integerLiteral);
+char* IntegerLiteralString(const IntegerLiteral* integerLiteral);
+void DestroyIntegerLiteral(IntegerLiteral* integerLiteral);
 
 typedef struct {
 	Statement base;
