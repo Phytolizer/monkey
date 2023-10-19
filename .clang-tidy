@@ -1,21 +1,22 @@
 ---
 # Enable ALL the things! Except not really
-Checks:
-    - -*
-    - -google-readability-todo
-    - clang-analyzer-*
-    - cert-*
-    - bugprone-*
-    - -bugprone-macro-parentheses
-    - -bugprone-sizeof-expression
-    - concurrency-*
-    - misc-*
-    - portability-*
-    - openmp-*
-    - readability-*
-    - -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
-    - -readability-identifier-length
-    - -clang-analyzer-valist.Uninitialized  # can remove when https://github.com/llvm/llvm-project/issues/40656 is fixed
+Checks: |
+    -*,
+    -google-readability-todo,
+    clang-analyzer-*,
+    cert-*,
+    bugprone-*,
+    -bugprone-macro-parentheses,
+    -bugprone-sizeof-expression,
+    concurrency-*,
+    misc-*,
+    portability-*,
+    openmp-*,
+    readability-*,
+    -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+    -readability-identifier-length,
+    -readability-function-cognitive-complexity,
+    -clang-analyzer-valist.Uninitialized,
 WarningsAsErrors: ""
 CheckOptions:
     - key: "bugprone-argument-comment.StrictMode"

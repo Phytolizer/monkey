@@ -20,6 +20,7 @@ add_executable(
 	source/string_test.cpp
 	source/user_test.cpp
 	source/parser_test.cpp
+	source/ast_test.cpp
 )
 target_link_libraries(monkey_test PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(monkey_test PRIVATE monkey_lib)

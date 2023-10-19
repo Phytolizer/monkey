@@ -1,6 +1,7 @@
 #pragma once
 
 #include "monkey/vector.h"
+#include "span.h"
 
 #include <stddef.h>
 
@@ -31,3 +32,10 @@ char* MonkeyAsprintf(const char* format, ...);
  * @brief A collection of strings.
  */
 typedef VECTOR_T(char*) MonkeyStringVector;
+
+/**
+ * @brief A view into a collection of strings.
+ */
+typedef SPAN_TYPE(char*) MonkeyStringSpan;
+
+char* MonkeyStringJoin(MonkeyStringSpan strings);

@@ -3,6 +3,8 @@
 #include "monkey/macros.h"
 #include "monkey/string.h"
 #include "monkey/token.h"
+#include "monkey/vector.h"
+#include "span.h"
 
 #include <assert.h>
 #include <stdbool.h>
@@ -21,7 +23,16 @@ MONKEY_FILE_LOCAL void initExpression(Expression* expression, ExpressionType typ
 }
 
 MONKEY_FILE_LOCAL void destroyExpression(Expression* expression) {
-	free(expression);
+	if (expression == NULL) {
+		return;
+	}
+	switch (expression->type) {
+		case EXPRESSION_TYPE_IDENTIFIER:
+			DestroyIdentifier((Identifier*)expression);
+			return;
+	}
+	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
+	assert(false);
 }
 
 MONKEY_FILE_LOCAL void destroyLetStatement(LetStatement* statement) {
@@ -56,8 +67,34 @@ char* StatementTokenLiteral(const Statement* statement) {
 			return LetStatementTokenLiteral((const LetStatement*)statement);
 		case STATEMENT_TYPE_RETURN:
 			return ReturnStatementTokenLiteral((const ReturnStatement*)statement);
+		case STATEMENT_TYPE_EXPRESSION:
+			return ExpressionStatementTokenLiteral((const ExpressionStatement*)statement);
 	}
 	(void)fprintf(stderr, "Unknown statement type: %d\n", statement->type);
+	assert(false);
+	return NULL;
+}
+
+char* StatementString(const Statement* statement) {
+	switch (statement->type) {
+		case STATEMENT_TYPE_LET:
+			return LetStatementString((const LetStatement*)statement);
+		case STATEMENT_TYPE_RETURN:
+			return ReturnStatementString((const ReturnStatement*)statement);
+		case STATEMENT_TYPE_EXPRESSION:
+			return ExpressionStatementString((const ExpressionStatement*)statement);
+	}
+	(void)fprintf(stderr, "Unknown statement type: %d\n", statement->type);
+	assert(false);
+	return NULL;
+}
+
+char* ExpressionString(const Expression* expression) {
+	switch (expression->type) {
+		case EXPRESSION_TYPE_IDENTIFIER:
+			return IdentifierString((const Identifier*)expression);
+	}
+	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
 	assert(false);
 	return NULL;
 }
@@ -75,6 +112,20 @@ char* ProgramTokenLiteral(const Program* program) {
 	}
 
 	return MonkeyStrdup("");
+}
+
+char* ProgramString(const Program* program) {
+	MonkeyStringVector statementStrings = VECTOR_INIT;
+	for (size_t i = 0; i < program->statements.length; ++i) {
+		VECTOR_PUSH(&statementStrings, StatementString(program->statements.begin[i]));
+	}
+	char* result = MonkeyStringJoin(
+			(MonkeyStringSpan)SPAN_WITH_LENGTH(statementStrings.data, statementStrings.size));
+	for (size_t i = 0; i < statementStrings.size; ++i) {
+		free(statementStrings.data[i]);
+	}
+	VECTOR_FREE(&statementStrings);
+	return result;
 }
 
 void DestroyProgram(Program* program) {
@@ -97,6 +148,10 @@ char* IdentifierTokenLiteral(const Identifier* identifier) {
 	return MonkeyStrdup(identifier->token.literal);
 }
 
+char* IdentifierString(const Identifier* identifier) {
+	return MonkeyStrdup(identifier->value);
+}
+
 void DestroyIdentifier(Identifier* identifier) {
 	DestroyToken(&identifier->token);
 	free(identifier->value);
@@ -116,6 +171,24 @@ char* LetStatementTokenLiteral(const LetStatement* statement) {
 	return MonkeyStrdup(statement->token.literal);
 }
 
+char* LetStatementString(const LetStatement* statement) {
+	MonkeyStringVector out = VECTOR_INIT;
+	VECTOR_PUSH(&out, LetStatementTokenLiteral(statement));
+	VECTOR_PUSH(&out, MonkeyStrdup(" "));
+	VECTOR_PUSH(&out, IdentifierString(statement->identifier));
+	VECTOR_PUSH(&out, MonkeyStrdup(" = "));
+	if (statement->value != NULL) {
+		VECTOR_PUSH(&out, ExpressionString(statement->value));
+	}
+	VECTOR_PUSH(&out, MonkeyStrdup(";"));
+	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
+	for (size_t i = 0; i < out.size; ++i) {
+		free(out.data[i]);
+	}
+	VECTOR_FREE(&out);
+	return result;
+}
+
 ReturnStatement* CreateReturnStatement(Token token, Expression* returnValue) {
 	ReturnStatement* statement = calloc(1, sizeof(ReturnStatement));
 	initStatement(&statement->base, STATEMENT_TYPE_RETURN);
@@ -126,4 +199,39 @@ ReturnStatement* CreateReturnStatement(Token token, Expression* returnValue) {
 
 char* ReturnStatementTokenLiteral(const ReturnStatement* statement) {
 	return MonkeyStrdup(statement->token.literal);
+}
+
+char* ReturnStatementString(const ReturnStatement* statement) {
+	MonkeyStringVector out = VECTOR_INIT;
+	VECTOR_PUSH(&out, ReturnStatementTokenLiteral(statement));
+	VECTOR_PUSH(&out, MonkeyStrdup(" "));
+	if (statement->returnValue != NULL) {
+		VECTOR_PUSH(&out, ExpressionString(statement->returnValue));
+	}
+	VECTOR_PUSH(&out, MonkeyStrdup(";"));
+	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
+	for (size_t i = 0; i < out.size; ++i) {
+		free(out.data[i]);
+	}
+	VECTOR_FREE(&out);
+	return result;
+}
+
+ExpressionStatement* CreateExpressionStatement(Token token, Expression* expression) {
+	ExpressionStatement* statement = calloc(1, sizeof(ExpressionStatement));
+	initStatement(&statement->base, STATEMENT_TYPE_EXPRESSION);
+	statement->token = token;
+	statement->expression = expression;
+	return statement;
+}
+
+char* ExpressionStatementTokenLiteral(const ExpressionStatement* statement) {
+	return MonkeyStrdup(statement->token.literal);
+}
+
+char* ExpressionStatementString(const ExpressionStatement* statement) {
+	if (statement->expression) {
+		return ExpressionString(statement->expression);
+	}
+	return MonkeyStrdup("");
 }

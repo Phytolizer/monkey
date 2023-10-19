@@ -20,7 +20,8 @@ typedef struct {
 
 #define STATEMENT_TYPES_X \
 	X(LET) \
-	X(RETURN)
+	X(RETURN) \
+	X(EXPRESSION)
 
 typedef enum {
 #define X(name) STATEMENT_TYPE_##name,
@@ -34,6 +35,7 @@ typedef struct {
 } Statement;
 
 char* StatementTokenLiteral(const Statement* statement);
+char* StatementString(const Statement* statement);
 
 #define EXPRESSION_TYPES_X X(IDENTIFIER)
 
@@ -48,6 +50,8 @@ typedef struct {
 	ExpressionType type;
 } Expression;
 
+char* ExpressionString(const Expression* expression);
+
 typedef SPAN_TYPE(Statement*) StatementSpan;
 
 typedef struct {
@@ -57,6 +61,7 @@ typedef struct {
 
 Program* CreateProgram(StatementSpan statements);
 char* ProgramTokenLiteral(const Program* program);
+char* ProgramString(const Program* program);
 void DestroyProgram(Program* program);
 
 typedef struct {
@@ -67,6 +72,7 @@ typedef struct {
 
 Identifier* CreateIdentifier(Token token, char* value);
 char* IdentifierTokenLiteral(const Identifier* identifier);
+char* IdentifierString(const Identifier* identifier);
 void DestroyIdentifier(Identifier* identifier);
 
 typedef struct {
@@ -78,6 +84,7 @@ typedef struct {
 
 LetStatement* CreateLetStatement(Token token, Identifier* identifier, Expression* value);
 char* LetStatementTokenLiteral(const LetStatement* statement);
+char* LetStatementString(const LetStatement* statement);
 
 typedef struct {
 	Statement base;
@@ -87,3 +94,14 @@ typedef struct {
 
 ReturnStatement* CreateReturnStatement(Token token, Expression* returnValue);
 char* ReturnStatementTokenLiteral(const ReturnStatement* statement);
+char* ReturnStatementString(const ReturnStatement* statement);
+
+typedef struct {
+	Statement base;
+	Token token;
+	Expression* expression;
+} ExpressionStatement;
+
+ExpressionStatement* CreateExpressionStatement(Token token, Expression* expression);
+char* ExpressionStatementTokenLiteral(const ExpressionStatement* statement);
+char* ExpressionStatementString(const ExpressionStatement* statement);
