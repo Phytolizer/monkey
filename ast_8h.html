@@ -93,6 +93,10 @@
             </dt>
             <dd><span></span></dd>
             <dt>
+              struct <a href="structPrefixExpression.html" class="m-doc">PrefixExpression</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
               struct <a href="structLetStatement.html" class="m-doc">LetStatement</a>
             </dt>
             <dd><span></span></dd>
@@ -190,6 +194,24 @@
             <dd><span></span></dd>
             <dt id="a585d4f3c88afd96e61940dd285bfe1a0">
               <span class="m-doc-wrap-bumper">void <a href="#a585d4f3c88afd96e61940dd285bfe1a0" class="m-doc-self">DestroyIntegerLiteral</a>(</span><span class="m-doc-wrap"><a href="structIntegerLiteral.html" class="m-doc">IntegerLiteral</a>* integerLiteral)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a8bdf62a1ec1efa20e288a0f8f4de425b">
+              <span class="m-doc-wrap-bumper">auto <a href="#a8bdf62a1ec1efa20e288a0f8f4de425b" class="m-doc-self">CreatePrefixExpression</a>(</span><span class="m-doc-wrap"><a href="structToken.html" class="m-doc">Token</a> token,
+              char* op,
+              <a href="structExpression.html" class="m-doc">Expression</a>* right) -&gt; <a href="structPrefixExpression.html" class="m-doc">PrefixExpression</a>*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aeb7de89f3d45096b2d932210376861df">
+              <span class="m-doc-wrap-bumper">auto <a href="#aeb7de89f3d45096b2d932210376861df" class="m-doc-self">PrefixExpressionTokenLiteral</a>(</span><span class="m-doc-wrap">const <a href="structPrefixExpression.html" class="m-doc">PrefixExpression</a>* prefix) -&gt; char*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aedf2a0dffaff8ac16cbecf2778eda7e2">
+              <span class="m-doc-wrap-bumper">auto <a href="#aedf2a0dffaff8ac16cbecf2778eda7e2" class="m-doc-self">PrefixExpressionString</a>(</span><span class="m-doc-wrap">const <a href="structPrefixExpression.html" class="m-doc">PrefixExpression</a>* prefix) -&gt; char*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a45776368f74c2adf1b539be3e9b0ddca">
+              <span class="m-doc-wrap-bumper">void <a href="#a45776368f74c2adf1b539be3e9b0ddca" class="m-doc-self">DestroyPrefixExpression</a>(</span><span class="m-doc-wrap"><a href="structPrefixExpression.html" class="m-doc">PrefixExpression</a>* prefix)</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a856c650d4dbe740d6a2c0276acf323b8">
