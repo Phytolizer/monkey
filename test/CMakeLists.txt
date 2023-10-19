@@ -21,12 +21,7 @@ add_executable(
 	source/user_test.cpp
 	source/parser_test.cpp
 )
-if(TARGET Catch2::Catch2WithMain)
-	target_link_libraries(monkey_test PRIVATE Catch2::Catch2WithMain)
-else()
-	target_link_libraries(monkey_test PRIVATE Catch2::Catch2)
-	target_sources(monkey_test PRIVATE source/catch_main.cpp)
-endif()
+target_link_libraries(monkey_test PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(monkey_test PRIVATE monkey_lib)
 
 target_compile_features(monkey_test PRIVATE cxx_std_11)
