@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>source/monkey/string.c file | monkey</title>
+  <title>ExpressionStatement struct | monkey</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -48,7 +48,8 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          <span class="m-breadcrumb"><a href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html">source</a>/</span><span class="m-breadcrumb"><a href="dir_e63aed17ca12ecf13a4ba395ed06a5b5.html">monkey</a>/</span>string.c <span class="m-thin">file</span>
+          ExpressionStatement <span class="m-thin">struct</span>
+          <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="ast_8h.html">&lt;ast.h&gt;</a></div>
         </h1>
         <p><span></span></p>
         <div class="m-block m-default">
@@ -57,111 +58,27 @@
             <li>
               Reference
               <ul>
-                <li><a href="#func-members">Functions</a></li>
+                <li><a href="#pub-attribs">Public variables</a></li>
               </ul>
             </li>
           </ul>
         </div>
-        <section id="func-members">
-          <h2><a href="#func-members">Functions</a></h2>
+        <section id="pub-attribs">
+          <h2><a href="#pub-attribs">Public variables</a></h2>
           <dl class="m-doc">
-            <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a3bf0f56b8b413ffc2d61d32211b6ee63" class="m-doc">MonkeyStrdup</a>(</span><span class="m-doc-wrap">const char* str) -&gt; char*</span>
+            <dt id="a882753a970557b399b0135d44c16ca46">
+              <a href="structStatement.html" class="m-doc">Statement</a> <a href="#a882753a970557b399b0135d44c16ca46" class="m-doc-self">base</a>
             </dt>
-            <dd>Allocates a new string and copies the given string into it.</dd>
-            <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a59ef667300d4c9d07373e42a9dc2c208" class="m-doc">MonkeyStrndup</a>(</span><span class="m-doc-wrap">const char* str,
-              size_t n) -&gt; char*</span>
+            <dd><span></span></dd>
+            <dt id="aa195d4b0fd00767226933f89a2eadfee">
+              <a href="structToken.html" class="m-doc">Token</a> <a href="#aa195d4b0fd00767226933f89a2eadfee" class="m-doc-self">token</a>
             </dt>
-            <dd>Allocates a new string and copies the given characters into it.</dd>
-            <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a7f47c873dfa24402ae147d26f71012aa" class="m-doc">MonkeyAsprintf</a>(</span><span class="m-doc-wrap">const char* format,
-              ...) -&gt; char*</span>
-            </dt>
-            <dd>Allocates a new string and formats the given arguments into it.</dd>
-            <dt id="ad53c3e01cb6ef647351f8502161ae372">
-              <span class="m-doc-wrap-bumper">auto <a href="#ad53c3e01cb6ef647351f8502161ae372" class="m-doc-self">MonkeyStringJoin</a>(</span><span class="m-doc-wrap">MonkeyStringSpan strings) -&gt; char*</span>
+            <dd><span></span></dd>
+            <dt id="af8fa751297f7dd719ebe74d62201fc3a">
+              <a href="structExpression.html" class="m-doc">Expression</a>* <a href="#af8fa751297f7dd719ebe74d62201fc3a" class="m-doc-self">expression</a>
             </dt>
             <dd><span></span></dd>
           </dl>
-        </section>
-        <section>
-          <h2>Function documentation</h2>
-          <section class="m-doc-details" id="a3bf0f56b8b413ffc2d61d32211b6ee63"><div>
-            <h3>
-              <span class="m-doc-wrap-bumper">char* </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3bf0f56b8b413ffc2d61d32211b6ee63" class="m-doc-self">MonkeyStrdup</a>(</span><span class="m-doc-wrap">const char* str)</span></span>
-            </h3>
-            <p>Allocates a new string and copies the given string into it.</p>
-            <table class="m-table m-fullwidth m-flat">
-              <thead>
-                <tr><th colspan="2">Parameters</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="width: 1%">str</td>
-                  <td>The string to copy.</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <th>Returns</th>
-                  <td>A new string.</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div></section>
-          <section class="m-doc-details" id="a59ef667300d4c9d07373e42a9dc2c208"><div>
-            <h3>
-              <span class="m-doc-wrap-bumper">char* </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a59ef667300d4c9d07373e42a9dc2c208" class="m-doc-self">MonkeyStrndup</a>(</span><span class="m-doc-wrap">const char* str,
-              size_t n)</span></span>
-            </h3>
-            <p>Allocates a new string and copies the given characters into it.</p>
-            <table class="m-table m-fullwidth m-flat">
-              <thead>
-                <tr><th colspan="2">Parameters</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="width: 1%">str</td>
-                  <td>The start of the characters to copy.</td>
-                </tr>
-                <tr>
-                  <td>n</td>
-                  <td>The number of characters to copy.</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <th>Returns</th>
-                  <td>A new string.</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div></section>
-          <section class="m-doc-details" id="a7f47c873dfa24402ae147d26f71012aa"><div>
-            <h3>
-              <span class="m-doc-wrap-bumper">char* </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a7f47c873dfa24402ae147d26f71012aa" class="m-doc-self">MonkeyAsprintf</a>(</span><span class="m-doc-wrap">const char* format,
-              ...)</span></span>
-            </h3>
-            <p>Allocates a new string and formats the given arguments into it.</p>
-            <table class="m-table m-fullwidth m-flat">
-              <thead>
-                <tr><th colspan="2">Parameters</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="width: 1%">format</td>
-                  <td>The format string.</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <th>Returns</th>
-                  <td>A new string.</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div></section>
         </section>
       </div>
     </div>
