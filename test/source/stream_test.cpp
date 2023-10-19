@@ -1,10 +1,11 @@
-#include <catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <cstdio>
+#include <memory>
 #include <string>
 
 extern "C" {
-#include "monkey/stream.h"
-#include "monkey/string.h"
+#include <monkey/stream.h>
+#include <monkey/string.h>
 }
 
 #include "monkey_wrapper.hpp"

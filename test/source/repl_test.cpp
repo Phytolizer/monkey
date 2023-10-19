@@ -1,8 +1,11 @@
 #include <array>
-#include <catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <cstddef>
+#include <string>
 
 extern "C" {
-#include "monkey/repl.h"
+#include <monkey/repl.h>
+#include <monkey/stream.h>
 }
 
 #include "monkey_wrapper.hpp"

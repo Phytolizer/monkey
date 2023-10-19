@@ -1,7 +1,8 @@
-#include <array>
-#include <catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <string>
 
 extern "C" {
+#include <monkey.h>
 #include <monkey/lexer.h>
 #include <monkey/token.h>
 }

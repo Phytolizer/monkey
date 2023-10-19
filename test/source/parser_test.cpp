@@ -1,15 +1,19 @@
-#include <catch.hpp>
-#include <memory>
+#include <catch2/catch_test_macros.hpp>
+#include <cstddef>
+#include <string>
 
 extern "C" {
-#include "monkey/ast.h"
-#include "monkey/lexer.h"
-#include "monkey/parser.h"
+#include <monkey.h>
+#include <monkey/ast.h>
+#include <monkey/lexer.h>
+#include <monkey/parser.h>
+#include <monkey/string.h>
 }
 
 #include "monkey_wrapper.hpp"
 
-MONKEY_FILE_LOCAL void testLetStatement(Statement* statement, const char* name) {
+namespace {
+void testLetStatement(Statement* statement, const char* name) {
 	const StringPtr toklit{StatementTokenLiteral(statement)};
 
 	REQUIRE(statement->type == STATEMENT_TYPE_LET);
@@ -20,7 +24,7 @@ MONKEY_FILE_LOCAL void testLetStatement(Statement* statement, const char* name) 
 	REQUIRE(std::string(nameToklit.get()) == std::string(name));
 }
 
-MONKEY_FILE_LOCAL void checkParserErrors(Parser* parser) {
+void checkParserErrors(Parser* parser) {
 	const MonkeyStringVector errors = ParserErrors(parser);
 	for (size_t i = 0; i < errors.size; i++) {
 		char* error = errors.data[i];
@@ -28,6 +32,7 @@ MONKEY_FILE_LOCAL void checkParserErrors(Parser* parser) {
 	}
 	REQUIRE(errors.size == 0);
 }
+} // namespace
 
 TEST_CASE("Let statements are parsed correctly", "[parser]") {
 	constexpr char INPUT[] = R"mk(
@@ -112,7 +117,7 @@ TEST_CASE("Return statements are parsed correctly", "[parser]") {
 	for (size_t i = 0; i < program->statements.length; i++) {
 		Statement* statement = program->statements.begin[i];
 		REQUIRE(statement->type == STATEMENT_TYPE_RETURN);
-		StringPtr toklit{StatementTokenLiteral(statement)};
+		StringPtr const toklit{StatementTokenLiteral(statement)};
 		REQUIRE(std::string(toklit.get()) == std::string("return"));
 	}
 }

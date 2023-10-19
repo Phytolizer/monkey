@@ -4,7 +4,7 @@
 	"dependencies": [
 		{
 			"name": "glib",
-			"version>=": "2.75.1"
+			"version>=": "2.78.0"
 		},
 		{
 			"name": "hedley",
@@ -18,10 +18,10 @@
 			"dependencies": [
 				{
 					"name": "catch2",
-					"version>=": "3.3.1"
+					"version>=": "3.4.0"
 				}
 			]
 		}
 	},
-	"builtin-baseline": "71d3fa60b67540e9bf5fde2bf2188f579ff09433"
+	"builtin-baseline": "621b7abe07d61f565795d15fb829caf8dcde0c18"
 }

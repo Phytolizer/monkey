@@ -1,8 +1,7 @@
-#include <catch.hpp>
-#include <memory>
+#include <catch2/catch_test_macros.hpp>
 
 extern "C" {
-#include "monkey/user.h"
+#include <monkey/user.h>
 }
 
 #include "monkey_wrapper.hpp"

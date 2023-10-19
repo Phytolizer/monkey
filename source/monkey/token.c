@@ -1,5 +1,7 @@
 #include "monkey/token.h"
 
+
+#include "monkey.h"
 #include "monkey/macros.h"
 #include "monkey/string.h"
 

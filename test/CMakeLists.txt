@@ -13,7 +13,6 @@ include(Catch)
 
 add_executable(
 	monkey_test
-	source/catch_main.cpp
 	source/monkey_test.cpp
 	source/lexer_test.cpp
 	source/repl_test.cpp
@@ -26,6 +25,7 @@ if(TARGET Catch2::Catch2WithMain)
 	target_link_libraries(monkey_test PRIVATE Catch2::Catch2WithMain)
 else()
 	target_link_libraries(monkey_test PRIVATE Catch2::Catch2)
+	target_sources(monkey_test PRIVATE source/catch_main.cpp)
 endif()
 target_link_libraries(monkey_test PRIVATE monkey_lib)
 
