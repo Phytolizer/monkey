@@ -2,6 +2,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <cstddef>
 #include <cstdint>
+#include <nonstd/variant.hpp>
 #include <string>
 #include <vector>
 
@@ -14,6 +15,8 @@ extern "C" {
 }
 
 #include "monkey_wrapper.hpp"
+
+using TestValue = nonstd::variant<const char*, int64_t>;
 
 namespace {
 void testIdentifierExpression(Expression* expression, const char* name) {
@@ -36,7 +39,18 @@ void testIntegerLiteralExpression(Expression* expression, int64_t value) {
 	REQUIRE(std::string(toklit.get()) == std::to_string(value));
 }
 
-void testPrefixExpression(Expression* expression, const char* op, int64_t value) {
+void testLiteralExpression(Expression* expression, TestValue value) {
+	REQUIRE(expression != nullptr);
+	if (auto* pText = nonstd::get_if<const char*>(&value)) {
+		testIdentifierExpression(expression, *pText);
+	} else if (auto* pInt = nonstd::get_if<int64_t>(&value)) {
+		testIntegerLiteralExpression(expression, *pInt);
+	} else {
+		FAIL("corrupt value");
+	}
+}
+
+void testPrefixExpression(Expression* expression, const char* op, TestValue value) {
 	REQUIRE(expression != nullptr);
 	REQUIRE(expression->type == EXPRESSION_TYPE_PREFIX);
 	auto* prefix = reinterpret_cast<PrefixExpression*>(expression);
@@ -44,10 +58,10 @@ void testPrefixExpression(Expression* expression, const char* op, int64_t value)
 	REQUIRE(std::string(op) == prefix->op);
 	const StringPtr toklit{PrefixExpressionTokenLiteral(prefix)};
 	REQUIRE(std::string(toklit.get()) == op);
-	testIntegerLiteralExpression(prefix->right, value);
+	testLiteralExpression(prefix->right, value);
 }
 
-void testInfixExpression(Expression* expression, int64_t left, const char* op, int64_t right) {
+void testInfixExpression(Expression* expression, TestValue left, const char* op, TestValue right) {
 	REQUIRE(expression != nullptr);
 	REQUIRE(expression->type == EXPRESSION_TYPE_INFIX);
 	auto* infix = reinterpret_cast<InfixExpression*>(expression);
@@ -55,8 +69,8 @@ void testInfixExpression(Expression* expression, int64_t left, const char* op, i
 	REQUIRE(std::string(op) == infix->op);
 	const StringPtr toklit{InfixExpressionTokenLiteral(infix)};
 	REQUIRE(std::string(toklit.get()) == op);
-	testIntegerLiteralExpression(infix->left, left);
-	testIntegerLiteralExpression(infix->right, right);
+	testLiteralExpression(infix->left, left);
+	testLiteralExpression(infix->right, right);
 }
 
 void testLetStatement(Statement* statement, const char* name) {

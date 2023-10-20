@@ -9,6 +9,8 @@ project(monkeyTests LANGUAGES CXX)
 find_package(Catch2 REQUIRED)
 include(Catch)
 
+find_package(variant-lite REQUIRED)
+
 # ---- Tests ----
 
 add_executable(
@@ -22,7 +24,7 @@ add_executable(
 	source/parser_test.cpp
 	source/ast_test.cpp
 )
-target_link_libraries(monkey_test PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(monkey_test PRIVATE Catch2::Catch2WithMain nonstd::variant-lite)
 target_link_libraries(monkey_test PRIVATE monkey_lib)
 
 target_compile_features(monkey_test PRIVATE cxx_std_14)
