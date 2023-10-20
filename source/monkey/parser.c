@@ -168,6 +168,43 @@ MONKEY_FILE_LOCAL Expression* parseGroupedExpression(Parser* parser) {
 	return exp;
 }
 
+MONKEY_FILE_LOCAL BlockStatement* parseBlockStatement(Parser* parser);
+
+MONKEY_FILE_LOCAL Expression* parseIfExpression(Parser* parser) {
+	Token token = CopyToken(&parser->currentToken);
+
+	if (!expectPeek(parser, TOKEN_TYPE_LPAREN)) {
+		DestroyToken(&token);
+		return NULL;
+	}
+
+	nextToken(parser);
+	Expression* condition = parseExpression(parser, PRECEDENCE_LOWEST);
+	if (!expectPeek(parser, TOKEN_TYPE_RPAREN) || !expectPeek(parser, TOKEN_TYPE_LBRACE)) {
+		DestroyExpression(condition);
+		DestroyToken(&token);
+		return NULL;
+	}
+
+	BlockStatement* consequence = parseBlockStatement(parser);
+
+	BlockStatement* alternative = NULL;
+
+	if (peekTokenIs(parser, TOKEN_TYPE_ELSE)) {
+		nextToken(parser);
+		if (!expectPeek(parser, TOKEN_TYPE_LBRACE)) {
+			DestroyBlockStatement(consequence);
+			DestroyExpression(condition);
+			DestroyToken(&token);
+			return NULL;
+		}
+
+		alternative = parseBlockStatement(parser);
+	}
+
+	return (Expression*)CreateIfExpression(token, condition, consequence, alternative);
+}
+
 MONKEY_FILE_LOCAL Expression* parseInfixExpression(Parser* parser, Expression* left) {
 	Token token = CopyToken(&parser->currentToken);
 	char* op = MonkeyStrdup(token.literal);
@@ -200,6 +237,25 @@ MONKEY_FILE_LOCAL Expression* parseExpression(Parser* parser, Precedence precede
 	}
 
 	return leftExp;
+}
+
+MONKEY_FILE_LOCAL Statement* parseStatement(Parser* parser);
+
+MONKEY_FILE_LOCAL BlockStatement* parseBlockStatement(Parser* parser) {
+	Token token = CopyToken(&parser->currentToken);
+	StatementBuffer statements = BUFFER_INIT;
+
+	nextToken(parser);
+
+	while (!curTokenIs(parser, TOKEN_TYPE_RBRACE) && !curTokenIs(parser, TOKEN_TYPE_END_OF_FILE)) {
+		Statement* stmt = parseStatement(parser);
+		if (stmt != NULL) {
+			BUFFER_PUSH(&statements, stmt);
+		}
+		nextToken(parser);
+	}
+
+	return CreateBlockStatement(token, (StatementSpan)BUFFER_AS_SPAN(statements));
 }
 
 MONKEY_FILE_LOCAL Statement* parseLetStatement(Parser* parser) {
@@ -305,6 +361,8 @@ MONKEY_FILE_LOCAL PrefixParseFn* getPrefixParser(TokenType type) {
 			return &parsePrefixExpression;
 		case TOKEN_TYPE_LPAREN:
 			return &parseGroupedExpression;
+		case TOKEN_TYPE_IF:
+			return &parseIfExpression;
 		default:
 			return NULL;
 	}

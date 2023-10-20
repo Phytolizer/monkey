@@ -43,10 +43,15 @@ void DestroyExpression(Expression* expression) {
 		case EXPRESSION_TYPE_INFIX:
 			DestroyInfixExpression((InfixExpression*)expression);
 			return;
+		case EXPRESSION_TYPE_IF:
+			DestroyIfExpression((IfExpression*)expression);
+			return;
 	}
 	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
 	assert(false);
 }
+
+MONKEY_FILE_LOCAL void destroyStatement(Statement* statement);
 
 MONKEY_FILE_LOCAL void destroyLetStatement(LetStatement* statement) {
 	DestroyToken(&statement->token);
@@ -78,6 +83,9 @@ MONKEY_FILE_LOCAL void destroyStatement(Statement* statement) {
 		case STATEMENT_TYPE_EXPRESSION:
 			destroyExpressionStatement((ExpressionStatement*)statement);
 			return;
+		case STATEMENT_TYPE_BLOCK:
+			DestroyBlockStatement((BlockStatement*)statement);
+			return;
 	}
 	(void)fprintf(stderr, "Unknown statement type: %d\n", statement->type);
 	assert(false);
@@ -91,6 +99,8 @@ char* StatementTokenLiteral(const Statement* statement) {
 			return ReturnStatementTokenLiteral((const ReturnStatement*)statement);
 		case STATEMENT_TYPE_EXPRESSION:
 			return ExpressionStatementTokenLiteral((const ExpressionStatement*)statement);
+		case STATEMENT_TYPE_BLOCK:
+			return BlockStatementTokenLiteral((const BlockStatement*)statement);
 	}
 	(void)fprintf(stderr, "Unknown statement type: %d\n", statement->type);
 	assert(false);
@@ -105,6 +115,8 @@ char* StatementString(const Statement* statement) {
 			return ReturnStatementString((const ReturnStatement*)statement);
 		case STATEMENT_TYPE_EXPRESSION:
 			return ExpressionStatementString((const ExpressionStatement*)statement);
+		case STATEMENT_TYPE_BLOCK:
+			return BlockStatementString((const BlockStatement*)statement);
 	}
 	(void)fprintf(stderr, "Unknown statement type: %d\n", statement->type);
 	assert(false);
@@ -123,6 +135,8 @@ char* ExpressionString(const Expression* expression) {
 			return PrefixExpressionString((const PrefixExpression*)expression);
 		case EXPRESSION_TYPE_INFIX:
 			return InfixExpressionString((const InfixExpression*)expression);
+		case EXPRESSION_TYPE_IF:
+			return IfExpressionString((const IfExpression*)expression);
 	}
 	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
 	assert(false);
@@ -303,6 +317,47 @@ void DestroyInfixExpression(InfixExpression* infix) {
 	free(infix);
 }
 
+IfExpression* CreateIfExpression(Token token, Expression* condition, BlockStatement* consequence,
+		BlockStatement* alternative) {
+	IfExpression* exp = calloc(1, sizeof(IfExpression));
+	initExpression(&exp->base, EXPRESSION_TYPE_IF);
+	exp->token = token;
+	exp->condition = condition;
+	exp->consequence = consequence;
+	exp->alternative = alternative;
+	return exp;
+}
+
+char* IfExpressionTokenLiteral(const IfExpression* exp) {
+	return MonkeyStrdup(exp->token.literal);
+}
+
+char* IfExpressionString(const IfExpression* exp) {
+	MonkeyStringVector out = VECTOR_INIT;
+	VECTOR_PUSH(&out, MonkeyStrdup("if"));
+	VECTOR_PUSH(&out, ExpressionString(exp->condition));
+	VECTOR_PUSH(&out, MonkeyStrdup(" "));
+	VECTOR_PUSH(&out, StatementString(&exp->consequence->base));
+	if (exp->alternative != NULL) {
+		VECTOR_PUSH(&out, MonkeyStrdup(" else "));
+		VECTOR_PUSH(&out, StatementString(&exp->alternative->base));
+	}
+	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
+	for (size_t i = 0; i < out.size; ++i) {
+		free(out.data[i]);
+	}
+	VECTOR_FREE(&out);
+	return result;
+}
+
+void DestroyIfExpression(IfExpression* exp) {
+	DestroyToken(&exp->token);
+	DestroyExpression(exp->condition);
+	DestroyBlockStatement(exp->consequence);
+	DestroyBlockStatement(exp->alternative);
+	free(exp);
+}
+
 LetStatement* CreateLetStatement(Token token, Identifier* identifier, Expression* value) {
 	LetStatement* statement = calloc(1, sizeof(LetStatement));
 	initStatement(&statement->base, STATEMENT_TYPE_LET);
@@ -379,4 +434,41 @@ char* ExpressionStatementString(const ExpressionStatement* statement) {
 		return ExpressionString(statement->expression);
 	}
 	return MonkeyStrdup("");
+}
+
+BlockStatement* CreateBlockStatement(Token token, StatementSpan statements) {
+	BlockStatement* statement = calloc(1, sizeof(BlockStatement));
+	initStatement(&statement->base, STATEMENT_TYPE_BLOCK);
+	statement->token = token;
+	statement->statements = statements;
+	return statement;
+}
+
+char* BlockStatementTokenLiteral(const BlockStatement* statement) {
+	return MonkeyStrdup(statement->token.literal);
+}
+
+char* BlockStatementString(const BlockStatement* statement) {
+	MonkeyStringVector out = VECTOR_INIT;
+	for (size_t i = 0; i < statement->statements.length; ++i) {
+		VECTOR_PUSH(&out, StatementString(statement->statements.begin[i]));
+	}
+	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
+	for (size_t i = 0; i < out.size; ++i) {
+		free(out.data[i]);
+	}
+	VECTOR_FREE(&out);
+	return result;
+}
+
+void DestroyBlockStatement(BlockStatement* statement) {
+	if (statement == NULL) {
+		return;
+	}
+	DestroyToken(&statement->token);
+	for (size_t i = 0; i < statement->statements.length; ++i) {
+		destroyStatement(statement->statements.begin[i]);
+	}
+	free(statement->statements.begin);
+	free(statement);
 }

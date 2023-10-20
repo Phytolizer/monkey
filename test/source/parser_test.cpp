@@ -368,3 +368,59 @@ TEST_CASE("Operator precedence is respected", "[parser]") {
 	const StringPtr actual{ProgramString(program.get())};
 	CHECK(std::string(expected) == actual.get());
 }
+
+TEST_CASE("If-expressions are parsed correctly", "[parser]") {
+	constexpr char INPUT[] = "if (x < y) { x }";
+	const MonkeyPtr monkey{CreateMonkey()};
+
+	const LexerPtr lexer{CreateLexer(monkey.get(), INPUT)};
+	const ParserPtr parser{CreateParser(lexer.get())};
+
+	const ProgramPtr program{ParseProgram(parser.get())};
+	checkParserErrors(parser.get());
+	REQUIRE(program != nullptr);
+	REQUIRE(program->statements.length == 1);
+	REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+	auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
+
+	REQUIRE(stmt->expression->type == EXPRESSION_TYPE_IF);
+	auto* ifExp = reinterpret_cast<IfExpression*>(stmt->expression);
+	testInfixExpression(ifExp->condition, TestString{"x"}, "<", TestString{"y"});
+
+	REQUIRE(ifExp->consequence->statements.length == 1);
+	REQUIRE(ifExp->consequence->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+	auto* body = reinterpret_cast<ExpressionStatement*>(ifExp->consequence->statements.begin[0]);
+	testIdentifierExpression(body->expression, "x");
+
+	REQUIRE(ifExp->alternative == nullptr);
+}
+
+TEST_CASE("If/else-expressions are parsed correctly", "[parser]") {
+	constexpr char INPUT[] = "if (x < y) { x } else { y }";
+	const MonkeyPtr monkey{CreateMonkey()};
+
+	const LexerPtr lexer{CreateLexer(monkey.get(), INPUT)};
+	const ParserPtr parser{CreateParser(lexer.get())};
+
+	const ProgramPtr program{ParseProgram(parser.get())};
+	checkParserErrors(parser.get());
+	REQUIRE(program != nullptr);
+	REQUIRE(program->statements.length == 1);
+	REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+	auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
+
+	REQUIRE(stmt->expression->type == EXPRESSION_TYPE_IF);
+	auto* ifExp = reinterpret_cast<IfExpression*>(stmt->expression);
+	testInfixExpression(ifExp->condition, TestString{"x"}, "<", TestString{"y"});
+
+	REQUIRE(ifExp->consequence->statements.length == 1);
+	REQUIRE(ifExp->consequence->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+	auto* body = reinterpret_cast<ExpressionStatement*>(ifExp->consequence->statements.begin[0]);
+	testIdentifierExpression(body->expression, "x");
+
+	REQUIRE(ifExp->alternative != nullptr);
+	REQUIRE(ifExp->alternative->statements.length == 1);
+	REQUIRE(ifExp->alternative->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+	auto* alternativeBody = reinterpret_cast<ExpressionStatement*>(ifExp->alternative->statements.begin[0]);
+	testIdentifierExpression(alternativeBody->expression, "y");
+}

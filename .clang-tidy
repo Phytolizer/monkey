@@ -8,6 +8,7 @@ Checks: |
     bugprone-*,
     -bugprone-macro-parentheses,
     -bugprone-sizeof-expression,
+    -bugprone-easily-swappable-parameters,
     concurrency-*,
     misc-*,
     portability-*,

@@ -24,7 +24,8 @@ typedef struct {
 #define STATEMENT_TYPES_X \
 	X(LET) \
 	X(RETURN) \
-	X(EXPRESSION)
+	X(EXPRESSION) \
+	X(BLOCK)
 
 typedef enum {
 #define X(name) STATEMENT_TYPE_##name,
@@ -45,7 +46,8 @@ char* StatementString(const Statement* statement);
 	X(INTEGER_LITERAL) \
 	X(BOOLEAN_LITERAL) \
 	X(PREFIX) \
-	X(INFIX)
+	X(INFIX) \
+	X(IF)
 
 typedef enum {
 #define X(name) EXPRESSION_TYPE_##name,
@@ -131,6 +133,22 @@ char* InfixExpressionTokenLiteral(const InfixExpression* infix);
 char* InfixExpressionString(const InfixExpression* infix);
 void DestroyInfixExpression(InfixExpression* infix);
 
+struct BlockStatement;
+
+typedef struct {
+	Expression base;
+	Token token;
+	Expression* condition;
+	struct BlockStatement* consequence;
+	struct BlockStatement* alternative;
+} IfExpression;
+
+IfExpression* CreateIfExpression(Token token, Expression* condition,
+		struct BlockStatement* consequence, struct BlockStatement* alternative);
+char* IfExpressionTokenLiteral(const IfExpression* exp);
+char* IfExpressionString(const IfExpression* exp);
+void DestroyIfExpression(IfExpression* exp);
+
 typedef struct {
 	Statement base;
 	Token token;
@@ -161,3 +179,14 @@ typedef struct {
 ExpressionStatement* CreateExpressionStatement(Token token, Expression* expression);
 char* ExpressionStatementTokenLiteral(const ExpressionStatement* statement);
 char* ExpressionStatementString(const ExpressionStatement* statement);
+
+typedef struct BlockStatement {
+	Statement base;
+	Token token;
+	StatementSpan statements;
+} BlockStatement;
+
+BlockStatement* CreateBlockStatement(Token token, StatementSpan statements);
+char* BlockStatementTokenLiteral(const BlockStatement* statement);
+char* BlockStatementString(const BlockStatement* statement);
+void DestroyBlockStatement(BlockStatement* statement);
