@@ -16,7 +16,19 @@ extern "C" {
 
 #include "monkey_wrapper.hpp"
 
-using TestValue = nonstd::variant<const char*, int64_t, bool>;
+// snuff implicit conversions
+struct TestString {
+	const char* value;
+};
+struct TestInt {
+	int64_t value;
+};
+struct TestBool {
+	bool value;
+};
+
+// generic type for tests
+using TestValue = nonstd::variant<TestString, TestInt, TestBool>;
 
 namespace {
 void testIdentifierExpression(Expression* expression, const char* name) {
@@ -51,12 +63,12 @@ void testBooleanLiteralExpression(Expression* expression, bool value) {
 
 void testLiteralExpression(Expression* expression, TestValue value) {
 	REQUIRE(expression != nullptr);
-	if (auto* pText = nonstd::get_if<const char*>(&value)) {
-		testIdentifierExpression(expression, *pText);
-	} else if (auto* pInt = nonstd::get_if<int64_t>(&value)) {
-		testIntegerLiteralExpression(expression, *pInt);
-	} else if (auto* pBool = nonstd::get_if<bool>(&value)) {
-		testBooleanLiteralExpression(expression, *pBool);
+	if (auto* pText = nonstd::get_if<TestString>(&value)) {
+		testIdentifierExpression(expression, pText->value);
+	} else if (auto* pInt = nonstd::get_if<TestInt>(&value)) {
+		testIntegerLiteralExpression(expression, pInt->value);
+	} else if (auto* pBool = nonstd::get_if<TestBool>(&value)) {
+		testBooleanLiteralExpression(expression, pBool->value);
 	} else {
 		FAIL("corrupt value");
 	}
@@ -233,11 +245,11 @@ TEST_CASE("Integer literal expressions are parsed correctly", "[parser]") {
 TEST_CASE("Boolean literal expressions are parsed correctly", "[parser]") {
 	struct BooleanTest {
 		const char* input;
-		bool expected;
+		TestBool expected;
 	};
 	constexpr BooleanTest TESTS[] = {
-			{"true;", true},
-			{"false;", false},
+			{"true;", {true}},
+			{"false;", {false}},
 	};
 
 	const MonkeyPtr monkey{CreateMonkey()};
@@ -261,17 +273,17 @@ TEST_CASE("Prefix expressions are parsed correctly", "[parser]") {
 	typedef struct {
 		const char* input;
 		const char* op;
-		int64_t value;
+		TestValue value;
 	} PrefixTest;
 
-	constexpr PrefixTest TESTS[] = {
-			{"!5;", "!", 5},
-			{"-15;", "-", 15},
+	const PrefixTest tests[] = {
+			{"!5;", "!", TestInt{5}},
+			{"-15;", "-", TestInt{15}},
 	};
 
 	const MonkeyPtr monkey{CreateMonkey()};
 
-	for (auto tt : TESTS) {
+	for (auto tt : tests) {
 		const LexerPtr lexer{CreateLexer(monkey.get(), tt.input)};
 		const ParserPtr parser{CreateParser(lexer.get())};
 
@@ -290,25 +302,28 @@ TEST_CASE("Prefix expressions are parsed correctly", "[parser]") {
 TEST_CASE("Infix expressions are parsed correctly", "[parser]") {
 	typedef struct {
 		const char* input;
-		int64_t left;
+		TestValue left;
 		const char* op;
-		int64_t right;
+		TestValue right;
 	} InfixTest;
 
-	constexpr InfixTest TESTS[] = {
-			{"5 + 5;", 5, "+", 5},
-			{"5 - 5;", 5, "-", 5},
-			{"5 * 5;", 5, "*", 5},
-			{"5 / 5;", 5, "/", 5},
-			{"5 > 5;", 5, ">", 5},
-			{"5 < 5;", 5, "<", 5},
-			{"5 == 5;", 5, "==", 5},
-			{"5 != 5;", 5, "!=", 5},
+	const InfixTest tests[] = {
+			{"5 + 5;", TestInt{5}, "+", TestInt{5}},
+			{"5 - 5;", TestInt{5}, "-", TestInt{5}},
+			{"5 * 5;", TestInt{5}, "*", TestInt{5}},
+			{"5 / 5;", TestInt{5}, "/", TestInt{5}},
+			{"5 > 5;", TestInt{5}, ">", TestInt{5}},
+			{"5 < 5;", TestInt{5}, "<", TestInt{5}},
+			{"5 == 5;", TestInt{5}, "==", TestInt{5}},
+			{"5 != 5;", TestInt{5}, "!=", TestInt{5}},
+			{"true == true;", TestBool{true}, "==", TestBool{true}},
+			{"true != false;", TestBool{true}, "!=", TestBool{false}},
+			{"false == false;", TestBool{false}, "==", TestBool{false}},
 	};
 
 	const MonkeyPtr monkey{CreateMonkey()};
 
-	for (auto tt : TESTS) {
+	for (auto tt : tests) {
 		const LexerPtr lexer{CreateLexer(monkey.get(), tt.input)};
 		const ParserPtr parser{CreateParser(lexer.get())};
 
