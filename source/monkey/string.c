@@ -2,6 +2,7 @@
 
 #include "monkey/vector.h"
 
+#include <hedley.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -24,6 +25,9 @@ char* MonkeyStrndup(const char* str, size_t n) {
 }
 
 char* MonkeyAsprintf(const char* format, ...) {
+	if (format == NULL) {
+		return NULL;
+	}
 	va_list args;
 	va_start(args, format);
 	int len = vsnprintf(NULL, 0, format, args);
