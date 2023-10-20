@@ -451,3 +451,35 @@ TEST_CASE("Function literals are parsed correctly", "[parser]") {
 	auto* bodyStmt = reinterpret_cast<ExpressionStatement*>(lit->body->statements.begin[0]);
 	testInfixExpression(bodyStmt->expression, TestString{"x"}, "+", TestString{"y"});
 }
+
+TEST_CASE("Function literal parameters are parsed correctly", "[parser]") {
+	const MonkeyPtr monkey{CreateMonkey()};
+
+	const char* input;
+	using Vec = std::vector<const char*>;
+	Vec expectedParams;
+	std::tie(input, expectedParams) = GENERATE(table<const char*, Vec>({
+			std::make_tuple("fn () {};", Vec{}),
+			std::make_tuple("fn (x) {};", Vec{"x"}),
+			std::make_tuple("fn (x, y, z) {};", Vec{"x", "y", "z"}),
+	}));
+
+	const LexerPtr lexer{CreateLexer(monkey.get(), input)};
+	const ParserPtr parser{CreateParser(lexer.get())};
+
+	const ProgramPtr program{ParseProgram(parser.get())};
+	checkParserErrors(parser.get());
+	REQUIRE(program != nullptr);
+	REQUIRE(program->statements.length == 1);
+	REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+	auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
+
+	REQUIRE(stmt->expression->type == EXPRESSION_TYPE_FUNCTION_LITERAL);
+	auto* lit = reinterpret_cast<FunctionLiteral*>(stmt->expression);
+	REQUIRE(lit->parameters.length == expectedParams.size());
+	for (size_t i = 0; i < expectedParams.size(); ++i) {
+		testIdentifierExpression(&lit->parameters.begin[i]->base, expectedParams[i]);
+	}
+
+	REQUIRE(lit->body->statements.length == 0);
+}
