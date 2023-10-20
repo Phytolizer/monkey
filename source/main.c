@@ -18,6 +18,10 @@ int main(int argc, const char* argv[]) {
 	printf("Hello %s! This is the Monkey programming language!\n", user);
 	free(user);
 	printf("Feel free to type in commands\n");
-	MONKEY_REPL(.reader = StreamFromFile(stdin), .writer = StreamFromFile(stdout));
+	Stream* reader = StreamFromFile(stdin);
+	Stream* writer = StreamFromFile(stdout);
+	MONKEY_REPL(.reader = reader, .writer = writer);
+	CloseStream(reader);
+	CloseStream(writer);
 	return EXIT_SUCCESS;
 }

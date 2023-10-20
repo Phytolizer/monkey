@@ -27,5 +27,5 @@ TEST_CASE("REPL prints simple output", "[repl]") {
 	args.writer->text[args.writer->textPosition] = '\0';
 
 	REQUIRE(std::string(outputText.data()) ==
-			"> {LET, let}\n{IDENT, five}\n{=, =}\n{INT, 6}\n{;, ;}\n{EOF, }\n> \n");
+			"> let five = 6;\n> \n");
 }
