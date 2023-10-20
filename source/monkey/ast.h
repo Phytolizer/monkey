@@ -49,7 +49,8 @@ char* StatementString(const Statement* statement);
 	X(PREFIX) \
 	X(INFIX) \
 	X(IF) \
-	X(FUNCTION_LITERAL)
+	X(FUNCTION_LITERAL) \
+	X(CALL)
 
 typedef enum {
 #define X(name) EXPRESSION_TYPE_##name,
@@ -61,6 +62,9 @@ typedef struct {
 	Node base;
 	ExpressionType type;
 } Expression;
+
+typedef BUFFER_TYPE(Expression*) ExpressionBuffer;
+typedef SPAN_TYPE(Expression*) ExpressionSpan;
 
 void DestroyExpression(Expression* expression);
 char* ExpressionString(const Expression* expression);
@@ -166,6 +170,18 @@ FunctionLiteral* CreateFunctionLiteral(
 char* FunctionLiteralTokenLiteral(const FunctionLiteral* exp);
 char* FunctionLiteralString(const FunctionLiteral* exp);
 void DestroyFunctionLiteral(FunctionLiteral* exp);
+
+typedef struct {
+	Expression base;
+	Token token;
+	Expression* function;
+	ExpressionSpan arguments;
+} CallExpression;
+
+CallExpression* CreateCallExpression(Token token, Expression* function, ExpressionSpan arguments);
+char* CallExpressionTokenLiteral(const CallExpression* exp);
+char* CallExpressionString(const CallExpression* exp);
+void DestroyCallExpression(CallExpression* exp);
 
 typedef struct {
 	Statement base;

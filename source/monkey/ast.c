@@ -49,6 +49,9 @@ void DestroyExpression(Expression* expression) {
 		case EXPRESSION_TYPE_FUNCTION_LITERAL:
 			DestroyFunctionLiteral((FunctionLiteral*)expression);
 			return;
+		case EXPRESSION_TYPE_CALL:
+			DestroyCallExpression((CallExpression*)expression);
+			return;
 	}
 	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
 	assert(false);
@@ -142,6 +145,8 @@ char* ExpressionString(const Expression* expression) {
 			return IfExpressionString((const IfExpression*)expression);
 		case EXPRESSION_TYPE_FUNCTION_LITERAL:
 			return FunctionLiteralString((const FunctionLiteral*)expression);
+		case EXPRESSION_TYPE_CALL:
+			return CallExpressionString((const CallExpression*)expression);
 	}
 	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
 	assert(false);
@@ -164,16 +169,15 @@ char* ProgramTokenLiteral(const Program* program) {
 }
 
 char* ProgramString(const Program* program) {
-	MonkeyStringVector statementStrings = VECTOR_INIT;
+	MonkeyStringBuffer statementStrings = BUFFER_INIT;
 	for (size_t i = 0; i < program->statements.length; ++i) {
-		VECTOR_PUSH(&statementStrings, StatementString(program->statements.begin[i]));
+		BUFFER_PUSH(&statementStrings, StatementString(program->statements.begin[i]));
 	}
-	char* result = MonkeyStringJoin(
-			(MonkeyStringSpan)SPAN_WITH_LENGTH(statementStrings.data, statementStrings.size));
-	for (size_t i = 0; i < statementStrings.size; ++i) {
+	char* result = MonkeyStringJoin((MonkeyStringSpan)BUFFER_AS_SPAN(statementStrings));
+	for (size_t i = 0; i < statementStrings.length; ++i) {
 		free(statementStrings.data[i]);
 	}
-	VECTOR_FREE(&statementStrings);
+	BUFFER_FREE(statementStrings);
 	return result;
 }
 
@@ -263,16 +267,16 @@ char* PrefixExpressionTokenLiteral(const PrefixExpression* prefix) {
 }
 
 char* PrefixExpressionString(const PrefixExpression* prefix) {
-	MonkeyStringVector out = VECTOR_INIT;
-	VECTOR_PUSH(&out, MonkeyStrdup("("));
-	VECTOR_PUSH(&out, MonkeyStrdup(prefix->op));
-	VECTOR_PUSH(&out, ExpressionString(prefix->right));
-	VECTOR_PUSH(&out, MonkeyStrdup(")"));
-	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
-	for (size_t i = 0; i < out.size; ++i) {
+	MonkeyStringBuffer out = BUFFER_INIT;
+	BUFFER_PUSH(&out, MonkeyStrdup("("));
+	BUFFER_PUSH(&out, MonkeyStrdup(prefix->op));
+	BUFFER_PUSH(&out, ExpressionString(prefix->right));
+	BUFFER_PUSH(&out, MonkeyStrdup(")"));
+	char* result = MonkeyStringJoin((MonkeyStringSpan)BUFFER_AS_SPAN(out));
+	for (size_t i = 0; i < out.length; ++i) {
 		free(out.data[i]);
 	}
-	VECTOR_FREE(&out);
+	BUFFER_FREE(out);
 	return result;
 }
 
@@ -298,19 +302,19 @@ char* InfixExpressionTokenLiteral(const InfixExpression* infix) {
 }
 
 char* InfixExpressionString(const InfixExpression* infix) {
-	MonkeyStringVector out = VECTOR_INIT;
-	VECTOR_PUSH(&out, MonkeyStrdup("("));
-	VECTOR_PUSH(&out, ExpressionString(infix->left));
-	VECTOR_PUSH(&out, MonkeyStrdup(" "));
-	VECTOR_PUSH(&out, MonkeyStrdup(infix->op));
-	VECTOR_PUSH(&out, MonkeyStrdup(" "));
-	VECTOR_PUSH(&out, ExpressionString(infix->right));
-	VECTOR_PUSH(&out, MonkeyStrdup(")"));
-	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
-	for (size_t i = 0; i < out.size; ++i) {
+	MonkeyStringBuffer out = BUFFER_INIT;
+	BUFFER_PUSH(&out, MonkeyStrdup("("));
+	BUFFER_PUSH(&out, ExpressionString(infix->left));
+	BUFFER_PUSH(&out, MonkeyStrdup(" "));
+	BUFFER_PUSH(&out, MonkeyStrdup(infix->op));
+	BUFFER_PUSH(&out, MonkeyStrdup(" "));
+	BUFFER_PUSH(&out, ExpressionString(infix->right));
+	BUFFER_PUSH(&out, MonkeyStrdup(")"));
+	char* result = MonkeyStringJoin((MonkeyStringSpan)BUFFER_AS_SPAN(out));
+	for (size_t i = 0; i < out.length; ++i) {
 		free(out.data[i]);
 	}
-	VECTOR_FREE(&out);
+	BUFFER_FREE(out);
 	return result;
 }
 
@@ -338,20 +342,20 @@ char* IfExpressionTokenLiteral(const IfExpression* exp) {
 }
 
 char* IfExpressionString(const IfExpression* exp) {
-	MonkeyStringVector out = VECTOR_INIT;
-	VECTOR_PUSH(&out, MonkeyStrdup("if"));
-	VECTOR_PUSH(&out, ExpressionString(exp->condition));
-	VECTOR_PUSH(&out, MonkeyStrdup(" "));
-	VECTOR_PUSH(&out, StatementString(&exp->consequence->base));
+	MonkeyStringBuffer out = BUFFER_INIT;
+	BUFFER_PUSH(&out, MonkeyStrdup("if"));
+	BUFFER_PUSH(&out, ExpressionString(exp->condition));
+	BUFFER_PUSH(&out, MonkeyStrdup(" "));
+	BUFFER_PUSH(&out, StatementString(&exp->consequence->base));
 	if (exp->alternative != NULL) {
-		VECTOR_PUSH(&out, MonkeyStrdup(" else "));
-		VECTOR_PUSH(&out, StatementString(&exp->alternative->base));
+		BUFFER_PUSH(&out, MonkeyStrdup(" else "));
+		BUFFER_PUSH(&out, StatementString(&exp->alternative->base));
 	}
-	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
-	for (size_t i = 0; i < out.size; ++i) {
+	char* result = MonkeyStringJoin((MonkeyStringSpan)BUFFER_AS_SPAN(out));
+	for (size_t i = 0; i < out.length; ++i) {
 		free(out.data[i]);
 	}
-	VECTOR_FREE(&out);
+	BUFFER_FREE(out);
 	return result;
 }
 
@@ -378,22 +382,22 @@ char* FunctionLiteralTokenLiteral(const FunctionLiteral* exp) {
 }
 
 char* FunctionLiteralString(const FunctionLiteral* exp) {
-	MonkeyStringVector out = VECTOR_INIT;
-	VECTOR_PUSH(&out, FunctionLiteralTokenLiteral(exp));
-	VECTOR_PUSH(&out, MonkeyStrdup("("));
+	MonkeyStringBuffer out = BUFFER_INIT;
+	BUFFER_PUSH(&out, FunctionLiteralTokenLiteral(exp));
+	BUFFER_PUSH(&out, MonkeyStrdup("("));
 	for (size_t i = 0; i < exp->parameters.length; ++i) {
 		if (i > 0) {
-			VECTOR_PUSH(&out, MonkeyStrdup(", "));
+			BUFFER_PUSH(&out, MonkeyStrdup(", "));
 		}
-		VECTOR_PUSH(&out, IdentifierString(exp->parameters.begin[i]));
+		BUFFER_PUSH(&out, IdentifierString(exp->parameters.begin[i]));
 	}
-	VECTOR_PUSH(&out, MonkeyStrdup(")"));
-	VECTOR_PUSH(&out, BlockStatementString(exp->body));
-	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
-	for (size_t i = 0; i < out.size; ++i) {
+	BUFFER_PUSH(&out, MonkeyStrdup(")"));
+	BUFFER_PUSH(&out, BlockStatementString(exp->body));
+	char* result = MonkeyStringJoin((MonkeyStringSpan)BUFFER_AS_SPAN(out));
+	for (size_t i = 0; i < out.length; ++i) {
 		free(out.data[i]);
 	}
-	VECTOR_FREE(&out);
+	BUFFER_FREE(out);
 	return result;
 }
 
@@ -404,6 +408,48 @@ void DestroyFunctionLiteral(FunctionLiteral* exp) {
 	}
 	free(exp->parameters.begin);
 	DestroyBlockStatement(exp->body);
+	free(exp);
+}
+
+CallExpression* CreateCallExpression(Token token, Expression* function, ExpressionSpan arguments) {
+	CallExpression* exp = calloc(1, sizeof(CallExpression));
+	initExpression(&exp->base, EXPRESSION_TYPE_CALL);
+	exp->token = token;
+	exp->function = function;
+	exp->arguments = arguments;
+	return exp;
+}
+
+char* CallExpressionTokenLiteral(const CallExpression* exp) {
+	return MonkeyStrdup(exp->token.literal);
+}
+
+char* CallExpressionString(const CallExpression* exp) {
+	MonkeyStringBuffer out = BUFFER_INIT;
+	BUFFER_PUSH(&out, ExpressionString(exp->function));
+	BUFFER_PUSH(&out, MonkeyStrdup("("));
+	for (size_t i = 0; i < exp->arguments.length; ++i) {
+		if (i > 0) {
+			BUFFER_PUSH(&out, MonkeyStrdup(", "));
+		}
+		BUFFER_PUSH(&out, ExpressionString(exp->arguments.begin[i]));
+	}
+	BUFFER_PUSH(&out, MonkeyStrdup(")"));
+	char* result = MonkeyStringJoin((MonkeyStringSpan)BUFFER_AS_SPAN(out));
+	for (size_t i = 0; i < out.length; ++i) {
+		free(out.data[i]);
+	}
+	BUFFER_FREE(out);
+	return result;
+}
+
+void DestroyCallExpression(CallExpression* exp) {
+	DestroyToken(&exp->token);
+	DestroyExpression(exp->function);
+	for (size_t i = 0; i < exp->arguments.length; ++i) {
+		DestroyExpression(exp->arguments.begin[i]);
+	}
+	free(exp->arguments.begin);
 	free(exp);
 }
 
@@ -421,20 +467,20 @@ char* LetStatementTokenLiteral(const LetStatement* statement) {
 }
 
 char* LetStatementString(const LetStatement* statement) {
-	MonkeyStringVector out = VECTOR_INIT;
-	VECTOR_PUSH(&out, LetStatementTokenLiteral(statement));
-	VECTOR_PUSH(&out, MonkeyStrdup(" "));
-	VECTOR_PUSH(&out, IdentifierString(statement->identifier));
-	VECTOR_PUSH(&out, MonkeyStrdup(" = "));
+	MonkeyStringBuffer out = BUFFER_INIT;
+	BUFFER_PUSH(&out, LetStatementTokenLiteral(statement));
+	BUFFER_PUSH(&out, MonkeyStrdup(" "));
+	BUFFER_PUSH(&out, IdentifierString(statement->identifier));
+	BUFFER_PUSH(&out, MonkeyStrdup(" = "));
 	if (statement->value != NULL) {
-		VECTOR_PUSH(&out, ExpressionString(statement->value));
+		BUFFER_PUSH(&out, ExpressionString(statement->value));
 	}
-	VECTOR_PUSH(&out, MonkeyStrdup(";"));
-	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
-	for (size_t i = 0; i < out.size; ++i) {
+	BUFFER_PUSH(&out, MonkeyStrdup(";"));
+	char* result = MonkeyStringJoin((MonkeyStringSpan)BUFFER_AS_SPAN(out));
+	for (size_t i = 0; i < out.length; ++i) {
 		free(out.data[i]);
 	}
-	VECTOR_FREE(&out);
+	BUFFER_FREE(out);
 	return result;
 }
 
@@ -451,18 +497,18 @@ char* ReturnStatementTokenLiteral(const ReturnStatement* statement) {
 }
 
 char* ReturnStatementString(const ReturnStatement* statement) {
-	MonkeyStringVector out = VECTOR_INIT;
-	VECTOR_PUSH(&out, ReturnStatementTokenLiteral(statement));
-	VECTOR_PUSH(&out, MonkeyStrdup(" "));
+	MonkeyStringBuffer out = BUFFER_INIT;
+	BUFFER_PUSH(&out, ReturnStatementTokenLiteral(statement));
+	BUFFER_PUSH(&out, MonkeyStrdup(" "));
 	if (statement->returnValue != NULL) {
-		VECTOR_PUSH(&out, ExpressionString(statement->returnValue));
+		BUFFER_PUSH(&out, ExpressionString(statement->returnValue));
 	}
-	VECTOR_PUSH(&out, MonkeyStrdup(";"));
-	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
-	for (size_t i = 0; i < out.size; ++i) {
+	BUFFER_PUSH(&out, MonkeyStrdup(";"));
+	char* result = MonkeyStringJoin((MonkeyStringSpan)BUFFER_AS_SPAN(out));
+	for (size_t i = 0; i < out.length; ++i) {
 		free(out.data[i]);
 	}
-	VECTOR_FREE(&out);
+	BUFFER_FREE(out);
 	return result;
 }
 
@@ -498,15 +544,15 @@ char* BlockStatementTokenLiteral(const BlockStatement* statement) {
 }
 
 char* BlockStatementString(const BlockStatement* statement) {
-	MonkeyStringVector out = VECTOR_INIT;
+	MonkeyStringBuffer out = BUFFER_INIT;
 	for (size_t i = 0; i < statement->statements.length; ++i) {
-		VECTOR_PUSH(&out, StatementString(statement->statements.begin[i]));
+		BUFFER_PUSH(&out, StatementString(statement->statements.begin[i]));
 	}
-	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
-	for (size_t i = 0; i < out.size; ++i) {
+	char* result = MonkeyStringJoin((MonkeyStringSpan)BUFFER_AS_SPAN(out));
+	for (size_t i = 0; i < out.length; ++i) {
 		free(out.data[i]);
 	}
-	VECTOR_FREE(&out);
+	BUFFER_FREE(out);
 	return result;
 }
 

@@ -45,6 +45,8 @@ MONKEY_FILE_LOCAL Precedence getInfixPrecedence(TokenType type) {
 		case TOKEN_TYPE_ASTERISK:
 		case TOKEN_TYPE_SLASH:
 			return PRECEDENCE_PRODUCT;
+		case TOKEN_TYPE_LPAREN:
+			return PRECEDENCE_CALL;
 		default:
 			return PRECEDENCE_LOWEST;
 	}
@@ -56,7 +58,7 @@ MONKEY_FILE_LOCAL InfixParseFn* getInfixParser(TokenType type);
 struct Parser {
 	Lexer* lexer;
 
-	MonkeyStringVector errors;
+	MonkeyStringBuffer errors;
 
 	Token currentToken;
 	Token peekToken;
@@ -89,12 +91,12 @@ MONKEY_FILE_LOCAL bool peekTokenIs(Parser* parser, TokenType type) {
 MONKEY_FILE_LOCAL void peekError(Parser* parser, TokenType t) {
 	char* message = MonkeyAsprintf("expected next token to be %s, got %s instead", TokenTypeText(t),
 			TokenTypeText(parser->peekToken.type));
-	VECTOR_PUSH(&parser->errors, message);
+	BUFFER_PUSH(&parser->errors, message);
 }
 
 MONKEY_FILE_LOCAL void noPrefixParseFnError(Parser* parser, TokenType t) {
 	char* message = MonkeyAsprintf("no prefix parse function for %s found", TokenTypeText(t));
-	VECTOR_PUSH(&parser->errors, message);
+	BUFFER_PUSH(&parser->errors, message);
 }
 
 MONKEY_FILE_LOCAL bool expectPeek(Parser* parser, TokenType t) {
@@ -132,7 +134,7 @@ MONKEY_FILE_LOCAL Expression* parseIntegerLiteral(Parser* parser) {
 	int64_t value = strtoll(token.literal, &errptr, BASE_10);
 	if (errptr != NULL && *errptr != '\0') {
 		char* message = MonkeyAsprintf("could not parse \"%s\" as integer", token.literal);
-		VECTOR_PUSH(&parser->errors, message);
+		BUFFER_PUSH(&parser->errors, message);
 		return NULL;
 	}
 	return (Expression*)CreateIntegerLiteral(token, value);
@@ -277,6 +279,48 @@ MONKEY_FILE_LOCAL Expression* parseInfixExpression(Parser* parser, Expression* l
 	return (Expression*)CreateInfixExpression(token, left, op, right);
 }
 
+MONKEY_FILE_LOCAL bool parseCallArguments(Parser* parser, ExpressionSpan* outArguments) {
+	ExpressionBuffer arguments = BUFFER_INIT;
+
+	if (peekTokenIs(parser, TOKEN_TYPE_RPAREN)) {
+		nextToken(parser);
+		*outArguments = (ExpressionSpan)BUFFER_AS_SPAN(arguments);
+		return true;
+	}
+
+	nextToken(parser);
+	BUFFER_PUSH(&arguments, parseExpression(parser, PRECEDENCE_LOWEST));
+
+	while (peekTokenIs(parser, TOKEN_TYPE_COMMA)) {
+		nextToken(parser);
+		nextToken(parser);
+		BUFFER_PUSH(&arguments, parseExpression(parser, PRECEDENCE_LOWEST));
+	}
+
+	if (!expectPeek(parser, TOKEN_TYPE_RPAREN)) {
+		for (size_t i = 0; i < arguments.length; ++i) {
+			DestroyExpression(arguments.data[i]);
+		}
+		BUFFER_FREE(arguments);
+		return false;
+	}
+
+	*outArguments = (ExpressionSpan)BUFFER_AS_SPAN(arguments);
+	return true;
+}
+
+MONKEY_FILE_LOCAL Expression* parseCallExpression(Parser* parser, Expression* function) {
+	Token token = CopyToken(&parser->currentToken);
+
+	ExpressionSpan arguments;
+	if (!parseCallArguments(parser, &arguments)) {
+		DestroyToken(&token);
+		return NULL;
+	}
+
+	return (Expression*)CreateCallExpression(token, function, arguments);
+}
+
 MONKEY_FILE_LOCAL Expression* parseExpression(Parser* parser, Precedence precedence) {
 	PrefixParseFn* prefix = getPrefixParser(parser->currentToken.type);
 	if (prefix == NULL) {
@@ -397,14 +441,14 @@ Program* ParseProgram(Parser* parser) {
 void DestroyParser(Parser* parser) {
 	DestroyToken(&parser->currentToken);
 	DestroyToken(&parser->peekToken);
-	for (size_t i = 0; i < parser->errors.size; i++) {
+	for (size_t i = 0; i < parser->errors.length; i++) {
 		free(parser->errors.data[i]);
 	}
-	VECTOR_FREE(&parser->errors);
+	BUFFER_FREE(parser->errors);
 	free(parser);
 }
 
-MonkeyStringVector ParserErrors(Parser* parser) {
+MonkeyStringBuffer ParserErrors(Parser* parser) {
 	return parser->errors;
 }
 
@@ -442,6 +486,8 @@ MONKEY_FILE_LOCAL InfixParseFn* getInfixParser(TokenType type) {
 		case TOKEN_TYPE_LT:
 		case TOKEN_TYPE_GT:
 			return &parseInfixExpression;
+		case TOKEN_TYPE_LPAREN:
+			return &parseCallExpression;
 		default:
 			return NULL;
 	}

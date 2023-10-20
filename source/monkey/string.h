@@ -1,6 +1,6 @@
 #pragma once
 
-#include "monkey/vector.h"
+#include "buffer.h"
 #include "span.h"
 
 #include <stddef.h>
@@ -31,7 +31,7 @@ char* MonkeyAsprintf(const char* format, ...);
 /**
  * @brief A collection of strings.
  */
-typedef VECTOR_T(char*) MonkeyStringVector;
+typedef BUFFER_TYPE(char*) MonkeyStringBuffer;
 
 /**
  * @brief A view into a collection of strings.

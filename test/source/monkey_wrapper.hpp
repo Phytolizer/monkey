@@ -1,7 +1,12 @@
 #pragma once
 
+#include "monkey/string.h"
+
+#include <catch2/catch_tostring.hpp>
 #include <cstdlib>
 #include <memory>
+#include <sstream>
+#include <string>
 
 extern "C" {
 #include "monkey/ast.h"
@@ -58,3 +63,18 @@ struct StreamDeleter {
 	}
 };
 using StreamPtr = std::unique_ptr<Stream, StreamDeleter>;
+
+namespace Catch {
+template <> struct StringMaker<MonkeyStringBuffer> {
+	// NOLINTNEXTLINE(readability-identifier-naming): catch2 defined this name
+	static std::string convert(const MonkeyStringBuffer& value) {
+		std::ostringstream result{};
+		result << "{\n";
+		for (size_t i = 0; i < value.length; ++i) {
+			result << "    " << StringMaker<const char*>::convert(value.data[i]) << '\n';
+		}
+		result << '}';
+		return result.str();
+	}
+};
+} // namespace Catch

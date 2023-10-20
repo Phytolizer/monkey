@@ -31,4 +31,4 @@ void DestroyParser(Parser* parser);
  * @param parser The parser to use.
  * @return The list of errors.
  */
-MonkeyStringVector ParserErrors(Parser* parser);
+MonkeyStringBuffer ParserErrors(Parser* parser);

@@ -1,6 +1,7 @@
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
+#include <cstddef>
 #include <cstdint>
 #include <nonstd/variant.hpp>
 #include <ostream>
@@ -125,9 +126,8 @@ void testLetStatement(Statement* statement, const char* name) {
 }
 
 void checkParserErrors(Parser* parser) {
-	const MonkeyStringVector rawErrors = ParserErrors(parser);
-	if (rawErrors.size > 0) {
-		auto errors = std::vector<char*>(rawErrors.data, rawErrors.data + rawErrors.size);
+	const MonkeyStringBuffer errors = ParserErrors(parser);
+	if (errors.length > 0) {
 		CAPTURE(errors);
 		FAIL();
 	}
@@ -176,8 +176,8 @@ TEST_CASE("Let statement errors", "[parser]") {
 
 	const ProgramPtr program{ParseProgram(parser.get())};
 
-	const MonkeyStringVector errors = ParserErrors(parser.get());
-	REQUIRE(errors.size > 0);
+	const MonkeyStringBuffer errors = ParserErrors(parser.get());
+	REQUIRE(errors.length > 0);
 }
 
 TEST_CASE("Return statements are parsed correctly", "[parser]") {
@@ -482,4 +482,27 @@ TEST_CASE("Function literal parameters are parsed correctly", "[parser]") {
 	}
 
 	REQUIRE(lit->body->statements.length == 0);
+}
+
+TEST_CASE("Call expressions are parsed correctly", "[parser]") {
+	constexpr char INPUT[] = "add(1, 2 * 3, 4 + 5)";
+	const MonkeyPtr monkey{CreateMonkey()};
+
+	const LexerPtr lexer{CreateLexer(monkey.get(), INPUT)};
+	const ParserPtr parser{CreateParser(lexer.get())};
+
+	const ProgramPtr program{ParseProgram(parser.get())};
+	checkParserErrors(parser.get());
+	REQUIRE(program != nullptr);
+	REQUIRE(program->statements.length == 1);
+	REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+	auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
+
+	REQUIRE(stmt->expression->type == EXPRESSION_TYPE_CALL);
+	auto* lit = reinterpret_cast<CallExpression*>(stmt->expression);
+	REQUIRE(lit->arguments.length == 3);
+	testLiteralExpression(lit->arguments.begin[0], TestInt{1});
+	testInfixExpression(lit->arguments.begin[1], TestInt{2}, "*", TestInt{3});
+	// NOLINTNEXTLINE(readability-magic-numbers)
+	testInfixExpression(lit->arguments.begin[2], TestInt{4}, "+", TestInt{5});
 }
