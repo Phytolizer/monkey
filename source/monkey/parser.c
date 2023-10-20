@@ -6,7 +6,6 @@
 #include "monkey/macros.h"
 #include "monkey/string.h"
 #include "monkey/token.h"
-#include "monkey/vector.h"
 
 #include <stdbool.h>
 #include <stddef.h>

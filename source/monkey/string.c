@@ -1,6 +1,6 @@
 #include "monkey/string.h"
 
-#include "monkey/vector.h"
+#include "buffer.h"
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -45,11 +45,11 @@ char* MonkeyAsprintf(const char* format, ...) {
 }
 
 char* MonkeyStringJoin(MonkeyStringSpan strings) {
-	VECTOR_T(size_t) lengths = VECTOR_INIT;
+	BUFFER_TYPE(size_t) lengths = BUFFER_INIT;
 	size_t totalLength = 0;
 	for (size_t i = 0; i < strings.length; ++i) {
-		VECTOR_PUSH(&lengths, strlen(strings.begin[i]));
-		totalLength += lengths.data[lengths.size - 1];
+		BUFFER_PUSH(&lengths, strlen(strings.begin[i]));
+		totalLength += lengths.data[lengths.length - 1];
 	}
 	char* result = malloc(totalLength + 1);
 	size_t currentPos = 0;
@@ -58,6 +58,6 @@ char* MonkeyStringJoin(MonkeyStringSpan strings) {
 		currentPos += lengths.data[i];
 	}
 	result[currentPos] = '\0';
-	VECTOR_FREE(&lengths);
+	BUFFER_FREE(lengths);
 	return result;
 }

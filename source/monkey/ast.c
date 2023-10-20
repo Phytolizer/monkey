@@ -1,9 +1,9 @@
 #include "monkey/ast.h"
 
+#include "buffer.h"
 #include "monkey/macros.h"
 #include "monkey/string.h"
 #include "monkey/token.h"
-#include "monkey/vector.h"
 #include "span.h"
 
 #include <assert.h>
