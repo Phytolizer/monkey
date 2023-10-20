@@ -155,6 +155,19 @@ MONKEY_FILE_LOCAL Expression* parsePrefixExpression(Parser* parser) {
 	return (Expression*)CreatePrefixExpression(token, op, right);
 }
 
+MONKEY_FILE_LOCAL Expression* parseGroupedExpression(Parser* parser) {
+	nextToken(parser);
+
+	Expression* exp = parseExpression(parser, PRECEDENCE_LOWEST);
+
+	if (!expectPeek(parser, TOKEN_TYPE_RPAREN)) {
+		DestroyExpression(exp);
+		return NULL;
+	}
+
+	return exp;
+}
+
 MONKEY_FILE_LOCAL Expression* parseInfixExpression(Parser* parser, Expression* left) {
 	Token token = CopyToken(&parser->currentToken);
 	char* op = MonkeyStrdup(token.literal);
@@ -290,6 +303,8 @@ MONKEY_FILE_LOCAL PrefixParseFn* getPrefixParser(TokenType type) {
 		case TOKEN_TYPE_BANG:
 		case TOKEN_TYPE_MINUS:
 			return &parsePrefixExpression;
+		case TOKEN_TYPE_LPAREN:
+			return &parseGroupedExpression;
 		default:
 			return NULL;
 	}

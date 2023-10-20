@@ -58,6 +58,7 @@ typedef struct {
 	ExpressionType type;
 } Expression;
 
+void DestroyExpression(Expression* expression);
 char* ExpressionString(const Expression* expression);
 
 typedef SPAN_TYPE(Statement*) StatementSpan;

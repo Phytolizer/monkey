@@ -16,6 +16,8 @@ extern "C" {
 
 #include "monkey_wrapper.hpp"
 
+// TODO: test the errors, too
+
 // snuff implicit conversions
 struct TestString {
 	const char* value;
@@ -364,6 +366,11 @@ TEST_CASE("Operator precedence is respected", "[parser]") {
 			{"false", "false"},
 			{"3 > 5 == false", "((3 > 5) == false)"},
 			{"3 < 5 == true", "((3 < 5) == true)"},
+			{"1 + (2 + 3) + 4", "((1 + (2 + 3)) + 4)"},
+			{"(5 + 5) * 2", "((5 + 5) * 2)"},
+			{"2 / (5 + 5)", "(2 / (5 + 5))"},
+			{"-(5 + 5)", "(-(5 + 5))"},
+			{"!(true == true)", "(!(true == true))"},
 	};
 
 	const MonkeyPtr monkey{CreateMonkey()};

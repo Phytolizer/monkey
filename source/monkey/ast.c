@@ -23,7 +23,7 @@ MONKEY_FILE_LOCAL void initExpression(Expression* expression, ExpressionType typ
 	expression->type = type;
 }
 
-MONKEY_FILE_LOCAL void destroyExpression(Expression* expression) {
+void DestroyExpression(Expression* expression) {
 	if (expression == NULL) {
 		return;
 	}
@@ -51,19 +51,19 @@ MONKEY_FILE_LOCAL void destroyExpression(Expression* expression) {
 MONKEY_FILE_LOCAL void destroyLetStatement(LetStatement* statement) {
 	DestroyToken(&statement->token);
 	DestroyIdentifier(statement->identifier);
-	destroyExpression(statement->value);
+	DestroyExpression(statement->value);
 	free(statement);
 }
 
 MONKEY_FILE_LOCAL void destroyReturnStatement(ReturnStatement* statement) {
 	DestroyToken(&statement->token);
-	destroyExpression(statement->returnValue);
+	DestroyExpression(statement->returnValue);
 	free(statement);
 }
 
 MONKEY_FILE_LOCAL void destroyExpressionStatement(ExpressionStatement* statement) {
 	DestroyToken(&statement->token);
-	destroyExpression(statement->expression);
+	DestroyExpression(statement->expression);
 	free(statement);
 }
 
@@ -260,7 +260,7 @@ char* PrefixExpressionString(const PrefixExpression* prefix) {
 void DestroyPrefixExpression(PrefixExpression* prefix) {
 	DestroyToken(&prefix->token);
 	free(prefix->op);
-	destroyExpression(prefix->right);
+	DestroyExpression(prefix->right);
 	free(prefix);
 }
 
@@ -297,9 +297,9 @@ char* InfixExpressionString(const InfixExpression* infix) {
 
 void DestroyInfixExpression(InfixExpression* infix) {
 	DestroyToken(&infix->token);
-	destroyExpression(infix->left);
+	DestroyExpression(infix->left);
 	free(infix->op);
-	destroyExpression(infix->right);
+	DestroyExpression(infix->right);
 	free(infix);
 }
 
