@@ -1,9 +1,11 @@
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <cstddef>
+#include <catch2/generators/catch_generators.hpp>
 #include <cstdint>
 #include <nonstd/variant.hpp>
+#include <ostream>
 #include <string>
+#include <tuple>
 #include <vector>
 
 extern "C" {
@@ -31,6 +33,18 @@ struct TestBool {
 
 // generic type for tests
 using TestValue = nonstd::variant<TestString, TestInt, TestBool>;
+std::ostream& operator<<(std::ostream& os, const TestValue& value) {
+	if (const auto* pText = nonstd::get_if<TestString>(&value)) {
+		return os << "TestString{" << pText->value << "}";
+	}
+	if (const auto* pInt = nonstd::get_if<TestInt>(&value)) {
+		return os << "TestInt{" << pInt->value << "}";
+	}
+	if (const auto* pBool = nonstd::get_if<TestBool>(&value)) {
+		return os << "TestBool{" << pBool->value << "}";
+	}
+	return os << "{CORRUPT VALUE}";
+}
 
 namespace {
 void testIdentifierExpression(Expression* expression, const char* name) {
@@ -121,91 +135,74 @@ void checkParserErrors(Parser* parser) {
 } // namespace
 
 TEST_CASE("Let statements are parsed correctly", "[parser]") {
-	constexpr char INPUT[] = R"mk(
-		let x = 5;
-		let y = 10;
-		let foobar = 838383;
-	)mk";
-
 	const MonkeyPtr monkey{CreateMonkey()};
-	const LexerPtr lexer{CreateLexer(monkey.get(), INPUT)};
+
+	const char* input;
+	const char* name;
+	TestValue value;
+	std::tie(input, name, value) = GENERATE(table<const char*, const char*, TestValue>({
+			std::make_tuple("let x = 5;", "x", TestInt{5}),
+			std::make_tuple("let y = 10;", "y", TestInt{10}),
+			std::make_tuple("let foobar = 838383;", "foobar", TestInt{838383}),
+	}));
+
+	CAPTURE(input, name, value);
+	const LexerPtr lexer{CreateLexer(monkey.get(), input)};
 	const ParserPtr parser{CreateParser(lexer.get())};
 
 	const ProgramPtr program{ParseProgram(parser.get())};
-	REQUIRE(program != nullptr);
-
 	checkParserErrors(parser.get());
-
-	REQUIRE(program->statements.length == 3);
-
-	struct Test {
-		const char* expectedIdentifier;
-	};
-
-	constexpr Test TESTS[] = {
-			{"x"},
-			{"y"},
-			{"foobar"},
-	};
-
-	std::size_t i = 0;
-	for (const auto tt : TESTS) {
-		testLetStatement(program->statements.begin[i], tt.expectedIdentifier);
-		i++;
-	}
+	REQUIRE(program != nullptr);
+	REQUIRE(program->statements.length == 1);
+	testLetStatement(program->statements.begin[0], name);
 }
 
 TEST_CASE("Let statement errors", "[parser]") {
-	const auto doTest = [](const char* input) {
-		const MonkeyPtr monkey{CreateMonkey()};
-		const LexerPtr lexer{CreateLexer(monkey.get(), input)};
-		const ParserPtr parser{CreateParser(lexer.get())};
-
-		const ProgramPtr program{ParseProgram(parser.get())};
-
-		const MonkeyStringVector errors = ParserErrors(parser.get());
-		CHECK(errors.size > 0);
-	};
-
-	SECTION("missing variable name") {
-		doTest("let = 5;");
-	}
-	SECTION("missing = sign") {
-		doTest("let x 5;");
-	}
-	// FIXME: below is unimplemented
-	// SECTION("missing value") {
-	// 	doTest("let x = ;");
-	// }
-	// SECTION("missing semicolon") {
-	// 	doTest("let x = 5");
-	// }
-}
-
-TEST_CASE("Return statements are parsed correctly", "[parser]") {
-	constexpr char INPUT[] = R"mk(
-		return 5;
-		return 10;
-		return 993322;
-	)mk";
-
 	const MonkeyPtr monkey{CreateMonkey()};
-	const LexerPtr lexer{CreateLexer(monkey.get(), INPUT)};
+
+	const char* input;
+	const char* description;
+	std::tie(description, input) = GENERATE(table<const char*, const char*>({
+			std::make_tuple("missing variable name", "let = 5;"),
+			std::make_tuple("missing = sign", "let x 5;"),
+			// FIXME: below is unimplemented
+	        // std::make_tuple("missing value", "let x = ;"),
+	        // std::make_tuple("missing semicolon", "let x = 5"),
+	}));
+
+	CAPTURE(description, input);
+	const LexerPtr lexer{CreateLexer(monkey.get(), input)};
 	const ParserPtr parser{CreateParser(lexer.get())};
 
 	const ProgramPtr program{ParseProgram(parser.get())};
-	REQUIRE(program != nullptr);
 
+	const MonkeyStringVector errors = ParserErrors(parser.get());
+	REQUIRE(errors.size > 0);
+}
+
+TEST_CASE("Return statements are parsed correctly", "[parser]") {
+	const MonkeyPtr monkey{CreateMonkey()};
+
+	const char* input;
+	TestValue value;
+	std::tie(input, value) = GENERATE(table<const char*, TestValue>({
+			std::make_tuple("return 5;", TestInt{5}),
+			std::make_tuple("return 10;", TestInt{10}),
+			std::make_tuple("return 993322;", TestInt{993322}),
+	}));
+
+	const LexerPtr lexer{CreateLexer(monkey.get(), input)};
+	const ParserPtr parser{CreateParser(lexer.get())};
+
+	const ProgramPtr program{ParseProgram(parser.get())};
 	checkParserErrors(parser.get());
+	REQUIRE(program != nullptr);
+	REQUIRE(program->statements.length == 1);
 
-	REQUIRE(program->statements.length == 3);
-
-	for (size_t i = 0; i < program->statements.length; i++) {
-		Statement* statement = program->statements.begin[i];
-		REQUIRE(statement->type == STATEMENT_TYPE_RETURN);
-		const StringPtr toklit{StatementTokenLiteral(statement)};
-		REQUIRE(std::string(toklit.get()) == std::string("return"));
-	}
+	Statement* statement = program->statements.begin[0];
+	REQUIRE(statement->type == STATEMENT_TYPE_RETURN);
+	const StringPtr toklit{StatementTokenLiteral(statement)};
+	REQUIRE(std::string(toklit.get()) == std::string("return"));
 }
 
 TEST_CASE("Identifier expressions are parsed correctly", "[parser]") {
@@ -245,145 +242,129 @@ TEST_CASE("Integer literal expressions are parsed correctly", "[parser]") {
 }
 
 TEST_CASE("Boolean literal expressions are parsed correctly", "[parser]") {
-	struct BooleanTest {
-		const char* input;
-		TestBool expected;
-	};
-	constexpr BooleanTest TESTS[] = {
-			{"true;", {true}},
-			{"false;", {false}},
-	};
-
 	const MonkeyPtr monkey{CreateMonkey()};
-	for (auto tt : TESTS) {
-		const LexerPtr lexer{CreateLexer(monkey.get(), tt.input)};
-		const ParserPtr parser{CreateParser(lexer.get())};
 
-		const ProgramPtr program{ParseProgram(parser.get())};
-		REQUIRE(program != nullptr);
+	const char* input;
+	TestBool expected;
+	std::tie(input, expected) = GENERATE(table<const char*, TestBool>({
+			std::make_tuple("true;", TestBool{true}),
+			std::make_tuple("false;", TestBool{false}),
+	}));
 
-		checkParserErrors(parser.get());
+	const LexerPtr lexer{CreateLexer(monkey.get(), input)};
+	const ParserPtr parser{CreateParser(lexer.get())};
 
-		REQUIRE(program->statements.length == 1);
-		REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
-		auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
-		testLiteralExpression(stmt->expression, tt.expected);
-	}
+	const ProgramPtr program{ParseProgram(parser.get())};
+	REQUIRE(program != nullptr);
+
+	checkParserErrors(parser.get());
+
+	REQUIRE(program->statements.length == 1);
+	REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+	auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
+	testLiteralExpression(stmt->expression, expected);
 }
 
 TEST_CASE("Prefix expressions are parsed correctly", "[parser]") {
-	typedef struct {
-		const char* input;
-		const char* op;
-		TestValue value;
-	} PrefixTest;
-
-	const PrefixTest tests[] = {
-			{"!5;", "!", TestInt{5}},
-			{"-15;", "-", TestInt{15}},
-			{"!true;", "!", TestBool{true}},
-			{"!false;", "!", TestBool{false}},
-	};
-
 	const MonkeyPtr monkey{CreateMonkey()};
 
-	for (auto tt : tests) {
-		const LexerPtr lexer{CreateLexer(monkey.get(), tt.input)};
-		const ParserPtr parser{CreateParser(lexer.get())};
+	const char* input;
+	const char* op;
+	TestValue value;
+	std::tie(input, op, value) = GENERATE(table<const char*, const char*, TestValue>({
+			std::make_tuple("!5;", "!", TestInt{5}),
+			std::make_tuple("-15;", "-", TestInt{15}),
+			std::make_tuple("!true;", "!", TestBool{true}),
+			std::make_tuple("!false;", "!", TestBool{false}),
+	}));
 
-		const ProgramPtr program{ParseProgram(parser.get())};
-		REQUIRE(program != nullptr);
+	const LexerPtr lexer{CreateLexer(monkey.get(), input)};
+	const ParserPtr parser{CreateParser(lexer.get())};
 
-		checkParserErrors(parser.get());
+	const ProgramPtr program{ParseProgram(parser.get())};
+	REQUIRE(program != nullptr);
 
-		REQUIRE(program->statements.length == 1);
-		REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
-		auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
-		testPrefixExpression(stmt->expression, tt.op, tt.value);
-	}
+	checkParserErrors(parser.get());
+
+	REQUIRE(program->statements.length == 1);
+	REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+	auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
+	testPrefixExpression(stmt->expression, op, value);
 }
 
 TEST_CASE("Infix expressions are parsed correctly", "[parser]") {
-	typedef struct {
-		const char* input;
-		TestValue left;
-		const char* op;
-		TestValue right;
-	} InfixTest;
-
-	const InfixTest tests[] = {
-			{"5 + 5;", TestInt{5}, "+", TestInt{5}},
-			{"5 - 5;", TestInt{5}, "-", TestInt{5}},
-			{"5 * 5;", TestInt{5}, "*", TestInt{5}},
-			{"5 / 5;", TestInt{5}, "/", TestInt{5}},
-			{"5 > 5;", TestInt{5}, ">", TestInt{5}},
-			{"5 < 5;", TestInt{5}, "<", TestInt{5}},
-			{"5 == 5;", TestInt{5}, "==", TestInt{5}},
-			{"5 != 5;", TestInt{5}, "!=", TestInt{5}},
-			{"true == true;", TestBool{true}, "==", TestBool{true}},
-			{"true != false;", TestBool{true}, "!=", TestBool{false}},
-			{"false == false;", TestBool{false}, "==", TestBool{false}},
-	};
-
 	const MonkeyPtr monkey{CreateMonkey()};
+	const char* input;
+	TestValue left;
+	const char* op;
+	TestValue right;
 
-	for (auto tt : tests) {
-		const LexerPtr lexer{CreateLexer(monkey.get(), tt.input)};
-		const ParserPtr parser{CreateParser(lexer.get())};
+	std::tie(input, left, op, right) =
+			GENERATE(table<const char*, TestValue, const char*, TestValue>({
+					std::make_tuple("5 + 5;", TestInt{5}, "+", TestInt{5}),
+					std::make_tuple("5 - 5;", TestInt{5}, "-", TestInt{5}),
+					std::make_tuple("5 * 5;", TestInt{5}, "*", TestInt{5}),
+					std::make_tuple("5 / 5;", TestInt{5}, "/", TestInt{5}),
+					std::make_tuple("5 > 5;", TestInt{5}, ">", TestInt{5}),
+					std::make_tuple("5 < 5;", TestInt{5}, "<", TestInt{5}),
+					std::make_tuple("5 == 5;", TestInt{5}, "==", TestInt{5}),
+					std::make_tuple("5 != 5;", TestInt{5}, "!=", TestInt{5}),
+					std::make_tuple("true == true;", TestBool{true}, "==", TestBool{true}),
+					std::make_tuple("true != false;", TestBool{true}, "!=", TestBool{false}),
+					std::make_tuple("false == false;", TestBool{false}, "==", TestBool{false}),
+			}));
 
-		const ProgramPtr program{ParseProgram(parser.get())};
-		REQUIRE(program != nullptr);
+	const LexerPtr lexer{CreateLexer(monkey.get(), input)};
+	const ParserPtr parser{CreateParser(lexer.get())};
 
-		checkParserErrors(parser.get());
+	const ProgramPtr program{ParseProgram(parser.get())};
+	REQUIRE(program != nullptr);
 
-		REQUIRE(program->statements.length == 1);
-		REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
-		auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
-		testInfixExpression(stmt->expression, tt.left, tt.op, tt.right);
-	}
+	checkParserErrors(parser.get());
+
+	REQUIRE(program->statements.length == 1);
+	REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+	auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
+	testInfixExpression(stmt->expression, left, op, right);
 }
 
 TEST_CASE("Operator precedence is respected", "[parser]") {
-	typedef struct {
-		const char* input;
-		const char* expected;
-	} PrecedenceTest;
-
-	constexpr PrecedenceTest TESTS[] = {
-			{"-a * b", "((-a) * b)"},
-			{"!-a", "(!(-a))"},
-			{"a + b + c", "((a + b) + c)"},
-			{"a + b - c", "((a + b) - c)"},
-			{"a * b * c", "((a * b) * c)"},
-			{"a * b / c", "((a * b) / c)"},
-			{"a + b / c", "(a + (b / c))"},
-			{"a + b * c + d / e - f", "(((a + (b * c)) + (d / e)) - f)"},
-			{"3 + 4; -5 * 5", "(3 + 4)((-5) * 5)"},
-			{"5 > 4 == 3 < 4", "((5 > 4) == (3 < 4))"},
-			{"5 < 4 != 3 > 4", "((5 < 4) != (3 > 4))"},
-			{"3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"},
-			{"true", "true"},
-			{"false", "false"},
-			{"3 > 5 == false", "((3 > 5) == false)"},
-			{"3 < 5 == true", "((3 < 5) == true)"},
-			{"1 + (2 + 3) + 4", "((1 + (2 + 3)) + 4)"},
-			{"(5 + 5) * 2", "((5 + 5) * 2)"},
-			{"2 / (5 + 5)", "(2 / (5 + 5))"},
-			{"-(5 + 5)", "(-(5 + 5))"},
-			{"!(true == true)", "(!(true == true))"},
-	};
-
 	const MonkeyPtr monkey{CreateMonkey()};
 
-	for (auto tt : TESTS) {
-		const LexerPtr lexer{CreateLexer(monkey.get(), tt.input)};
-		const ParserPtr parser{CreateParser(lexer.get())};
+	const char* input;
+	const char* expected;
 
-		const ProgramPtr program{ParseProgram(parser.get())};
-		checkParserErrors(parser.get());
-		REQUIRE(program != nullptr);
+	std::tie(input, expected) = GENERATE(table<const char*, const char*>({
+			std::make_tuple("-a * b", "((-a) * b)"),
+			std::make_tuple("!-a", "(!(-a))"),
+			std::make_tuple("a + b + c", "((a + b) + c)"),
+			std::make_tuple("a + b - c", "((a + b) - c)"),
+			std::make_tuple("a * b * c", "((a * b) * c)"),
+			std::make_tuple("a * b / c", "((a * b) / c)"),
+			std::make_tuple("a + b / c", "(a + (b / c))"),
+			std::make_tuple("a + b * c + d / e - f", "(((a + (b * c)) + (d / e)) - f)"),
+			std::make_tuple("3 + 4; -5 * 5", "(3 + 4)((-5) * 5)"),
+			std::make_tuple("5 > 4 == 3 < 4", "((5 > 4) == (3 < 4))"),
+			std::make_tuple("5 < 4 != 3 > 4", "((5 < 4) != (3 > 4))"),
+			std::make_tuple("3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"),
+			std::make_tuple("true", "true"),
+			std::make_tuple("false", "false"),
+			std::make_tuple("3 > 5 == false", "((3 > 5) == false)"),
+			std::make_tuple("3 < 5 == true", "((3 < 5) == true)"),
+			std::make_tuple("1 + (2 + 3) + 4", "((1 + (2 + 3)) + 4)"),
+			std::make_tuple("(5 + 5) * 2", "((5 + 5) * 2)"),
+			std::make_tuple("2 / (5 + 5)", "(2 / (5 + 5))"),
+			std::make_tuple("-(5 + 5)", "(-(5 + 5))"),
+			std::make_tuple("!(true == true)", "(!(true == true))"),
+	}));
 
-		const StringPtr actual{ProgramString(program.get())};
-		CHECK(std::string(tt.expected) == actual.get());
-	}
+	const LexerPtr lexer{CreateLexer(monkey.get(), input)};
+	const ParserPtr parser{CreateParser(lexer.get())};
+
+	const ProgramPtr program{ParseProgram(parser.get())};
+	checkParserErrors(parser.get());
+	REQUIRE(program != nullptr);
+
+	const StringPtr actual{ProgramString(program.get())};
+	CHECK(std::string(expected) == actual.get());
 }
