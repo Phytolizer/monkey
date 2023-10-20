@@ -34,6 +34,9 @@ MONKEY_FILE_LOCAL void destroyExpression(Expression* expression) {
 		case EXPRESSION_TYPE_INTEGER_LITERAL:
 			DestroyIntegerLiteral((IntegerLiteral*)expression);
 			return;
+		case EXPRESSION_TYPE_BOOLEAN_LITERAL:
+			DestroyBooleanLiteral((BooleanLiteral*)expression);
+			return;
 		case EXPRESSION_TYPE_PREFIX:
 			DestroyPrefixExpression((PrefixExpression*)expression);
 			return;
@@ -114,6 +117,8 @@ char* ExpressionString(const Expression* expression) {
 			return IdentifierString((const Identifier*)expression);
 		case EXPRESSION_TYPE_INTEGER_LITERAL:
 			return IntegerLiteralString((const IntegerLiteral*)expression);
+		case EXPRESSION_TYPE_BOOLEAN_LITERAL:
+			return BooleanLiteralString((const BooleanLiteral*)expression);
 		case EXPRESSION_TYPE_PREFIX:
 			return PrefixExpressionString((const PrefixExpression*)expression);
 		case EXPRESSION_TYPE_INFIX:
@@ -202,6 +207,27 @@ char* IntegerLiteralString(const IntegerLiteral* integerLiteral) {
 void DestroyIntegerLiteral(IntegerLiteral* integerLiteral) {
 	DestroyToken(&integerLiteral->token);
 	free(integerLiteral);
+}
+
+BooleanLiteral* CreateBooleanLiteral(Token token, int64_t value) {
+	BooleanLiteral* booleanLiteral = calloc(1, sizeof(BooleanLiteral));
+	initExpression(&booleanLiteral->base, EXPRESSION_TYPE_BOOLEAN_LITERAL);
+	booleanLiteral->token = token;
+	booleanLiteral->value = value;
+	return booleanLiteral;
+}
+
+char* BooleanLiteralTokenLiteral(const BooleanLiteral* booleanLiteral) {
+	return MonkeyStrdup(booleanLiteral->token.literal);
+}
+
+char* BooleanLiteralString(const BooleanLiteral* booleanLiteral) {
+	return MonkeyStrdup(booleanLiteral->token.literal);
+}
+
+void DestroyBooleanLiteral(BooleanLiteral* booleanLiteral) {
+	DestroyToken(&booleanLiteral->token);
+	free(booleanLiteral);
 }
 
 PrefixExpression* CreatePrefixExpression(Token token, char* op, Expression* right) {

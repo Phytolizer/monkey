@@ -138,6 +138,12 @@ MONKEY_FILE_LOCAL Expression* parseIntegerLiteral(Parser* parser) {
 	return (Expression*)CreateIntegerLiteral(token, value);
 }
 
+MONKEY_FILE_LOCAL Expression* parseBoolean(Parser* parser) {
+	Token token = CopyToken(&parser->currentToken);
+
+	return (Expression*)CreateBooleanLiteral(token, curTokenIs(parser, TOKEN_TYPE_TRUE));
+}
+
 MONKEY_FILE_LOCAL Expression* parsePrefixExpression(Parser* parser) {
 	Token token = CopyToken(&parser->currentToken);
 	char* op = MonkeyStrdup(token.literal);
@@ -278,6 +284,9 @@ MONKEY_FILE_LOCAL PrefixParseFn* getPrefixParser(TokenType type) {
 			return &parseIdentifier;
 		case TOKEN_TYPE_INT:
 			return &parseIntegerLiteral;
+		case TOKEN_TYPE_TRUE:
+		case TOKEN_TYPE_FALSE:
+			return &parseBoolean;
 		case TOKEN_TYPE_BANG:
 		case TOKEN_TYPE_MINUS:
 			return &parsePrefixExpression;

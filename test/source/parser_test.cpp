@@ -16,7 +16,7 @@ extern "C" {
 
 #include "monkey_wrapper.hpp"
 
-using TestValue = nonstd::variant<const char*, int64_t>;
+using TestValue = nonstd::variant<const char*, int64_t, bool>;
 
 namespace {
 void testIdentifierExpression(Expression* expression, const char* name) {
@@ -39,12 +39,24 @@ void testIntegerLiteralExpression(Expression* expression, int64_t value) {
 	REQUIRE(std::string(toklit.get()) == std::to_string(value));
 }
 
+void testBooleanLiteralExpression(Expression* expression, bool value) {
+	REQUIRE(expression != nullptr);
+	REQUIRE(expression->type == EXPRESSION_TYPE_BOOLEAN_LITERAL);
+	auto* boolLit = reinterpret_cast<BooleanLiteral*>(expression);
+
+	REQUIRE(boolLit->value == value);
+	const StringPtr toklit{BooleanLiteralTokenLiteral(boolLit)};
+	REQUIRE(std::string(toklit.get()) == (value ? "true" : "false"));
+}
+
 void testLiteralExpression(Expression* expression, TestValue value) {
 	REQUIRE(expression != nullptr);
 	if (auto* pText = nonstd::get_if<const char*>(&value)) {
 		testIdentifierExpression(expression, *pText);
 	} else if (auto* pInt = nonstd::get_if<int64_t>(&value)) {
 		testIntegerLiteralExpression(expression, *pInt);
+	} else if (auto* pBool = nonstd::get_if<bool>(&value)) {
+		testBooleanLiteralExpression(expression, *pBool);
 	} else {
 		FAIL("corrupt value");
 	}
@@ -216,6 +228,33 @@ TEST_CASE("Integer literal expressions are parsed correctly", "[parser]") {
 	REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
 	auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
 	testIntegerLiteralExpression(stmt->expression, 5); // NOLINT(readability-magic-numbers)
+}
+
+TEST_CASE("Boolean literal expressions are parsed correctly", "[parser]") {
+	struct BooleanTest {
+		const char* input;
+		bool expected;
+	};
+	constexpr BooleanTest TESTS[] = {
+			{"true;", true},
+			{"false;", false},
+	};
+
+	const MonkeyPtr monkey{CreateMonkey()};
+	for (auto tt : TESTS) {
+		const LexerPtr lexer{CreateLexer(monkey.get(), tt.input)};
+		const ParserPtr parser{CreateParser(lexer.get())};
+
+		const ProgramPtr program{ParseProgram(parser.get())};
+		REQUIRE(program != nullptr);
+
+		checkParserErrors(parser.get());
+
+		REQUIRE(program->statements.length == 1);
+		REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+		auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
+		testLiteralExpression(stmt->expression, tt.expected);
+	}
 }
 
 TEST_CASE("Prefix expressions are parsed correctly", "[parser]") {

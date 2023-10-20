@@ -3,6 +3,7 @@
 #include "monkey/token.h"
 #include "span.h"
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #define NODE_TYPES_X \
@@ -42,6 +43,7 @@ char* StatementString(const Statement* statement);
 #define EXPRESSION_TYPES_X \
 	X(IDENTIFIER) \
 	X(INTEGER_LITERAL) \
+	X(BOOLEAN_LITERAL) \
 	X(PREFIX) \
 	X(INFIX)
 
@@ -91,6 +93,17 @@ IntegerLiteral* CreateIntegerLiteral(Token token, int64_t value);
 char* IntegerLiteralTokenLiteral(const IntegerLiteral* integerLiteral);
 char* IntegerLiteralString(const IntegerLiteral* integerLiteral);
 void DestroyIntegerLiteral(IntegerLiteral* integerLiteral);
+
+typedef struct {
+	Expression base;
+	Token token;
+	bool value;
+} BooleanLiteral;
+
+BooleanLiteral* CreateBooleanLiteral(Token token, int64_t value);
+char* BooleanLiteralTokenLiteral(const BooleanLiteral* booleanLiteral);
+char* BooleanLiteralString(const BooleanLiteral* booleanLiteral);
+void DestroyBooleanLiteral(BooleanLiteral* booleanLiteral);
 
 typedef struct {
 	Expression base;
