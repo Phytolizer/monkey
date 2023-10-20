@@ -356,6 +356,10 @@ TEST_CASE("Operator precedence is respected", "[parser]") {
 			std::make_tuple("2 / (5 + 5)", "(2 / (5 + 5))"),
 			std::make_tuple("-(5 + 5)", "(-(5 + 5))"),
 			std::make_tuple("!(true == true)", "(!(true == true))"),
+			std::make_tuple("a + add(b * c) + d", "((a + add((b * c))) + d)"),
+			std::make_tuple("add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8))",
+					"add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)))"),
+			std::make_tuple("add(a + b + c * d / f + g)", "add((((a + b) + ((c * d) / f)) + g))"),
 	}));
 
 	const LexerPtr lexer{CreateLexer(monkey.get(), input)};
