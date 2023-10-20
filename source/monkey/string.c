@@ -2,7 +2,6 @@
 
 #include "monkey/vector.h"
 
-#include <hedley.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
