@@ -379,12 +379,13 @@ MONKEY_FILE_LOCAL Statement* parseLetStatement(Parser* parser) {
 		return NULL;
 	}
 
-	// TODO: parse expression
-	while (!curTokenIs(parser, TOKEN_TYPE_SEMICOLON)) {
+	nextToken(parser);
+	Expression* value = parseExpression(parser, PRECEDENCE_LOWEST);
+	if (peekTokenIs(parser, TOKEN_TYPE_SEMICOLON)) {
 		nextToken(parser);
 	}
 
-	return (Statement*)CreateLetStatement(token, name, NULL);
+	return (Statement*)CreateLetStatement(token, name, value);
 }
 
 MONKEY_FILE_LOCAL Statement* parseReturnStatement(Parser* parser) {
@@ -392,12 +393,12 @@ MONKEY_FILE_LOCAL Statement* parseReturnStatement(Parser* parser) {
 
 	nextToken(parser);
 
-	// TODO: parse expression
-	while (!curTokenIs(parser, TOKEN_TYPE_SEMICOLON)) {
+	Expression* returnValue = parseExpression(parser, PRECEDENCE_LOWEST);
+	if (peekTokenIs(parser, TOKEN_TYPE_SEMICOLON)) {
 		nextToken(parser);
 	}
 
-	return (Statement*)CreateReturnStatement(token, NULL);
+	return (Statement*)CreateReturnStatement(token, returnValue);
 }
 
 MONKEY_FILE_LOCAL Statement* parseExpressionStatement(Parser* parser) {

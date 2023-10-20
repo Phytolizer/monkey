@@ -114,7 +114,7 @@ void testInfixExpression(Expression* expression, TestValue left, const char* op,
 	testLiteralExpression(infix->right, right);
 }
 
-void testLetStatement(Statement* statement, const char* name) {
+void testLetStatement(Statement* statement, const char* name, TestValue value) {
 	const StringPtr toklit{StatementTokenLiteral(statement)};
 
 	REQUIRE(statement->type == STATEMENT_TYPE_LET);
@@ -123,6 +123,8 @@ void testLetStatement(Statement* statement, const char* name) {
 
 	const StringPtr nameToklit{IdentifierTokenLiteral(letStatement->identifier)};
 	REQUIRE(std::string(nameToklit.get()) == std::string(name));
+
+	testLiteralExpression(letStatement->value, value);
 }
 
 void checkParserErrors(Parser* parser) {
@@ -142,8 +144,8 @@ TEST_CASE("Let statements are parsed correctly", "[parser]") {
 	TestValue value;
 	std::tie(input, name, value) = GENERATE(table<const char*, const char*, TestValue>({
 			std::make_tuple("let x = 5;", "x", TestInt{5}),
-			std::make_tuple("let y = 10;", "y", TestInt{10}),
-			std::make_tuple("let foobar = 838383;", "foobar", TestInt{838383}),
+			std::make_tuple("let y = true;", "y", TestBool{true}),
+			std::make_tuple("let foobar = y;", "foobar", TestString{"y"}),
 	}));
 
 	CAPTURE(input, name, value);
@@ -154,7 +156,7 @@ TEST_CASE("Let statements are parsed correctly", "[parser]") {
 	checkParserErrors(parser.get());
 	REQUIRE(program != nullptr);
 	REQUIRE(program->statements.length == 1);
-	testLetStatement(program->statements.begin[0], name);
+	testLetStatement(program->statements.begin[0], name, value);
 }
 
 TEST_CASE("Let statement errors", "[parser]") {
@@ -165,9 +167,7 @@ TEST_CASE("Let statement errors", "[parser]") {
 	std::tie(description, input) = GENERATE(table<const char*, const char*>({
 			std::make_tuple("missing variable name", "let = 5;"),
 			std::make_tuple("missing = sign", "let x 5;"),
-			// FIXME: below is unimplemented
-	        // std::make_tuple("missing value", "let x = ;"),
-	        // std::make_tuple("missing semicolon", "let x = 5"),
+	        std::make_tuple("missing value", "let x = ;"),
 	}));
 
 	CAPTURE(description, input);
@@ -187,8 +187,8 @@ TEST_CASE("Return statements are parsed correctly", "[parser]") {
 	TestValue value;
 	std::tie(input, value) = GENERATE(table<const char*, TestValue>({
 			std::make_tuple("return 5;", TestInt{5}),
-			std::make_tuple("return 10;", TestInt{10}),
-			std::make_tuple("return 993322;", TestInt{993322}),
+			std::make_tuple("return false;", TestBool{false}),
+			std::make_tuple("return foobar;", TestString{"foobar"}),
 	}));
 
 	const LexerPtr lexer{CreateLexer(monkey.get(), input)};
@@ -201,8 +201,10 @@ TEST_CASE("Return statements are parsed correctly", "[parser]") {
 
 	Statement* statement = program->statements.begin[0];
 	REQUIRE(statement->type == STATEMENT_TYPE_RETURN);
-	const StringPtr toklit{StatementTokenLiteral(statement)};
+	auto* returnStatement = reinterpret_cast<ReturnStatement*>(statement);
+	const StringPtr toklit{ReturnStatementTokenLiteral(returnStatement)};
 	REQUIRE(std::string(toklit.get()) == std::string("return"));
+	testLiteralExpression(returnStatement->returnValue, value);
 }
 
 TEST_CASE("Identifier expressions are parsed correctly", "[parser]") {
