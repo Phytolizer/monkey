@@ -279,6 +279,8 @@ TEST_CASE("Prefix expressions are parsed correctly", "[parser]") {
 	const PrefixTest tests[] = {
 			{"!5;", "!", TestInt{5}},
 			{"-15;", "-", TestInt{15}},
+			{"!true;", "!", TestBool{true}},
+			{"!false;", "!", TestBool{false}},
 	};
 
 	const MonkeyPtr monkey{CreateMonkey()};
