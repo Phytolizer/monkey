@@ -46,6 +46,9 @@ void DestroyExpression(Expression* expression) {
 		case EXPRESSION_TYPE_IF:
 			DestroyIfExpression((IfExpression*)expression);
 			return;
+		case EXPRESSION_TYPE_FUNCTION_LITERAL:
+			DestroyFunctionLiteral((FunctionLiteral*)expression);
+			return;
 	}
 	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
 	assert(false);
@@ -137,6 +140,8 @@ char* ExpressionString(const Expression* expression) {
 			return InfixExpressionString((const InfixExpression*)expression);
 		case EXPRESSION_TYPE_IF:
 			return IfExpressionString((const IfExpression*)expression);
+		case EXPRESSION_TYPE_FUNCTION_LITERAL:
+			return FunctionLiteralString((const FunctionLiteral*)expression);
 	}
 	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
 	assert(false);
@@ -355,6 +360,50 @@ void DestroyIfExpression(IfExpression* exp) {
 	DestroyExpression(exp->condition);
 	DestroyBlockStatement(exp->consequence);
 	DestroyBlockStatement(exp->alternative);
+	free(exp);
+}
+
+FunctionLiteral* CreateFunctionLiteral(
+		Token token, IdentifierSpan parameters, BlockStatement* body) {
+	FunctionLiteral* exp = calloc(1, sizeof(FunctionLiteral));
+	initExpression(&exp->base, EXPRESSION_TYPE_FUNCTION_LITERAL);
+	exp->token = token;
+	exp->parameters = parameters;
+	exp->body = body;
+	return exp;
+}
+
+char* FunctionLiteralTokenLiteral(const FunctionLiteral* exp) {
+	return MonkeyStrdup(exp->token.literal);
+}
+
+char* FunctionLiteralString(const FunctionLiteral* exp) {
+	MonkeyStringVector out = VECTOR_INIT;
+	VECTOR_PUSH(&out, FunctionLiteralTokenLiteral(exp));
+	VECTOR_PUSH(&out, MonkeyStrdup("("));
+	for (size_t i = 0; i < exp->parameters.length; ++i) {
+		if (i > 0) {
+			VECTOR_PUSH(&out, MonkeyStrdup(", "));
+		}
+		VECTOR_PUSH(&out, IdentifierString(exp->parameters.begin[i]));
+	}
+	VECTOR_PUSH(&out, MonkeyStrdup(")"));
+	VECTOR_PUSH(&out, BlockStatementString(exp->body));
+	char* result = MonkeyStringJoin((MonkeyStringSpan)SPAN_WITH_LENGTH(out.data, out.size));
+	for (size_t i = 0; i < out.size; ++i) {
+		free(out.data[i]);
+	}
+	VECTOR_FREE(&out);
+	return result;
+}
+
+void DestroyFunctionLiteral(FunctionLiteral* exp) {
+	DestroyToken(&exp->token);
+	for (size_t i = 0; i < exp->parameters.length; ++i) {
+		DestroyIdentifier(exp->parameters.begin[i]);
+	}
+	free(exp->parameters.begin);
+	DestroyBlockStatement(exp->body);
 	free(exp);
 }
 

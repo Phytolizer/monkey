@@ -1,5 +1,6 @@
 #pragma once
 
+#include "buffer.h"
 #include "monkey/token.h"
 #include "span.h"
 
@@ -47,7 +48,8 @@ char* StatementString(const Statement* statement);
 	X(BOOLEAN_LITERAL) \
 	X(PREFIX) \
 	X(INFIX) \
-	X(IF)
+	X(IF) \
+	X(FUNCTION_LITERAL)
 
 typedef enum {
 #define X(name) EXPRESSION_TYPE_##name,
@@ -85,6 +87,9 @@ Identifier* CreateIdentifier(Token token, char* value);
 char* IdentifierTokenLiteral(const Identifier* identifier);
 char* IdentifierString(const Identifier* identifier);
 void DestroyIdentifier(Identifier* identifier);
+
+typedef BUFFER_TYPE(Identifier*) IdentifierBuffer;
+typedef SPAN_TYPE(Identifier*) IdentifierSpan;
 
 typedef struct {
 	Expression base;
@@ -148,6 +153,19 @@ IfExpression* CreateIfExpression(Token token, Expression* condition,
 char* IfExpressionTokenLiteral(const IfExpression* exp);
 char* IfExpressionString(const IfExpression* exp);
 void DestroyIfExpression(IfExpression* exp);
+
+typedef struct {
+	Expression base;
+	Token token;
+	IdentifierSpan parameters;
+	struct BlockStatement* body;
+} FunctionLiteral;
+
+FunctionLiteral* CreateFunctionLiteral(
+		Token token, IdentifierSpan parameters, struct BlockStatement* body);
+char* FunctionLiteralTokenLiteral(const FunctionLiteral* exp);
+char* FunctionLiteralString(const FunctionLiteral* exp);
+void DestroyFunctionLiteral(FunctionLiteral* exp);
 
 typedef struct {
 	Statement base;

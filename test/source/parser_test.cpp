@@ -421,6 +421,33 @@ TEST_CASE("If/else-expressions are parsed correctly", "[parser]") {
 	REQUIRE(ifExp->alternative != nullptr);
 	REQUIRE(ifExp->alternative->statements.length == 1);
 	REQUIRE(ifExp->alternative->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
-	auto* alternativeBody = reinterpret_cast<ExpressionStatement*>(ifExp->alternative->statements.begin[0]);
+	auto* alternativeBody =
+			reinterpret_cast<ExpressionStatement*>(ifExp->alternative->statements.begin[0]);
 	testIdentifierExpression(alternativeBody->expression, "y");
+}
+
+TEST_CASE("Function literals are parsed correctly", "[parser]") {
+	constexpr char INPUT[] = "fn(x, y) { x + y; }";
+	const MonkeyPtr monkey{CreateMonkey()};
+
+	const LexerPtr lexer{CreateLexer(monkey.get(), INPUT)};
+	const ParserPtr parser{CreateParser(lexer.get())};
+
+	const ProgramPtr program{ParseProgram(parser.get())};
+	checkParserErrors(parser.get());
+	REQUIRE(program != nullptr);
+	REQUIRE(program->statements.length == 1);
+	REQUIRE(program->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+	auto* stmt = reinterpret_cast<ExpressionStatement*>(program->statements.begin[0]);
+
+	REQUIRE(stmt->expression->type == EXPRESSION_TYPE_FUNCTION_LITERAL);
+	auto* lit = reinterpret_cast<FunctionLiteral*>(stmt->expression);
+	REQUIRE(lit->parameters.length == 2);
+	testLiteralExpression(&lit->parameters.begin[0]->base, TestString{"x"});
+	testLiteralExpression(&lit->parameters.begin[1]->base, TestString{"y"});
+
+	REQUIRE(lit->body->statements.length == 1);
+	REQUIRE(lit->body->statements.begin[0]->type == STATEMENT_TYPE_EXPRESSION);
+	auto* bodyStmt = reinterpret_cast<ExpressionStatement*>(lit->body->statements.begin[0]);
+	testInfixExpression(bodyStmt->expression, TestString{"x"}, "+", TestString{"y"});
 }

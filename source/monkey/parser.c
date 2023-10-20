@@ -205,6 +205,67 @@ MONKEY_FILE_LOCAL Expression* parseIfExpression(Parser* parser) {
 	return (Expression*)CreateIfExpression(token, condition, consequence, alternative);
 }
 
+MONKEY_FILE_LOCAL bool parseFunctionParameters(Parser* parser, IdentifierSpan* outParameters) {
+	IdentifierBuffer identifiers = BUFFER_INIT;
+
+	if (peekTokenIs(parser, TOKEN_TYPE_RPAREN)) {
+		nextToken(parser);
+		*outParameters = (IdentifierSpan)BUFFER_AS_SPAN(identifiers);
+		return true;
+	}
+
+	nextToken(parser);
+	BUFFER_PUSH(&identifiers,
+			CreateIdentifier(
+					CopyToken(&parser->currentToken), MonkeyStrdup(parser->currentToken.literal)));
+
+	while (peekTokenIs(parser, TOKEN_TYPE_COMMA)) {
+		nextToken(parser);
+		nextToken(parser);
+		BUFFER_PUSH(&identifiers,
+				CreateIdentifier(CopyToken(&parser->currentToken),
+						MonkeyStrdup(parser->currentToken.literal)));
+	}
+
+	if (!expectPeek(parser, TOKEN_TYPE_RPAREN)) {
+		for (size_t i = 0; i < identifiers.length; ++i) {
+			DestroyIdentifier(identifiers.data[i]);
+		}
+		BUFFER_FREE(identifiers);
+		return false;
+	}
+
+	*outParameters = (IdentifierSpan)BUFFER_AS_SPAN(identifiers);
+	return true;
+}
+
+MONKEY_FILE_LOCAL Expression* parseFunctionLiteral(Parser* parser) {
+	Token token = CopyToken(&parser->currentToken);
+
+	if (!expectPeek(parser, TOKEN_TYPE_LPAREN)) {
+		DestroyToken(&token);
+		return NULL;
+	}
+
+	IdentifierSpan parameters;
+	if (!parseFunctionParameters(parser, &parameters)) {
+		DestroyToken(&token);
+		return NULL;
+	}
+
+	if (!expectPeek(parser, TOKEN_TYPE_LBRACE)) {
+		for (size_t i = 0; i < parameters.length; ++i) {
+			DestroyIdentifier(parameters.begin[i]);
+		}
+		DestroyToken(&token);
+		return NULL;
+	}
+
+	BlockStatement* body = parseBlockStatement(parser);
+
+	return (Expression*)CreateFunctionLiteral(token, parameters, body);
+}
+
 MONKEY_FILE_LOCAL Expression* parseInfixExpression(Parser* parser, Expression* left) {
 	Token token = CopyToken(&parser->currentToken);
 	char* op = MonkeyStrdup(token.literal);
@@ -363,6 +424,8 @@ MONKEY_FILE_LOCAL PrefixParseFn* getPrefixParser(TokenType type) {
 			return &parseGroupedExpression;
 		case TOKEN_TYPE_IF:
 			return &parseIfExpression;
+		case TOKEN_TYPE_FUNCTION:
+			return &parseFunctionLiteral;
 		default:
 			return NULL;
 	}
