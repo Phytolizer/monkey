@@ -114,6 +114,10 @@
             </dt>
             <dd><span></span></dd>
             <dt>
+              struct <a href="structCallExpression.html" class="m-doc">CallExpression</a>
+            </dt>
+            <dd><span></span></dd>
+            <dt>
               struct <a href="structLetStatement.html" class="m-doc">LetStatement</a>
             </dt>
             <dd><span></span></dd>
@@ -166,6 +170,14 @@
             <dd><span></span></dd>
             <dt id="a4faa55b53bf94e825ed3f0b57ba20f35">
               <span class="m-doc-wrap-bumper">auto <a href="#a4faa55b53bf94e825ed3f0b57ba20f35" class="m-doc-self">StatementString</a>(</span><span class="m-doc-wrap">const <a href="structStatement.html" class="m-doc">Statement</a>* statement) -&gt; char*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aeefa9138e898bc1f4644d8ad4bfa85c7">
+              <span class="m-doc-wrap-bumper">auto <a href="#aeefa9138e898bc1f4644d8ad4bfa85c7" class="m-doc-self">BUFFER_TYPE</a>(</span><span class="m-doc-wrap"><a href="structExpression.html" class="m-doc">Expression</a>*) ExpressionBuffer -&gt; typedef</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ab98f52947b4407ab7eb6dddb4395cdbe">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab98f52947b4407ab7eb6dddb4395cdbe" class="m-doc-self">SPAN_TYPE</a>(</span><span class="m-doc-wrap"><a href="structExpression.html" class="m-doc">Expression</a>*) ExpressionSpan -&gt; typedef</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a2fe67ad9bf8aec03c03fe881a74d6919">
@@ -327,6 +339,24 @@
             <dd><span></span></dd>
             <dt id="ad73d5a040fd7d6bcb53b26f511c34188">
               <span class="m-doc-wrap-bumper">void <a href="#ad73d5a040fd7d6bcb53b26f511c34188" class="m-doc-self">DestroyFunctionLiteral</a>(</span><span class="m-doc-wrap"><a href="structFunctionLiteral.html" class="m-doc">FunctionLiteral</a>* exp)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="aa5953e0fba65e89747d92c5073e8ff87">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa5953e0fba65e89747d92c5073e8ff87" class="m-doc-self">CreateCallExpression</a>(</span><span class="m-doc-wrap"><a href="structToken.html" class="m-doc">Token</a> token,
+              <a href="structExpression.html" class="m-doc">Expression</a>* function,
+              ExpressionSpan arguments) -&gt; <a href="structCallExpression.html" class="m-doc">CallExpression</a>*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ab3d1e359e7b75ca8af865a7aec53bb23">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab3d1e359e7b75ca8af865a7aec53bb23" class="m-doc-self">CallExpressionTokenLiteral</a>(</span><span class="m-doc-wrap">const <a href="structCallExpression.html" class="m-doc">CallExpression</a>* exp) -&gt; char*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ab1df4e33d8e0e597e95292e1bcba5129">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab1df4e33d8e0e597e95292e1bcba5129" class="m-doc-self">CallExpressionString</a>(</span><span class="m-doc-wrap">const <a href="structCallExpression.html" class="m-doc">CallExpression</a>* exp) -&gt; char*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a918e19bb887437227dd2812303ef24fb">
+              <span class="m-doc-wrap-bumper">void <a href="#a918e19bb887437227dd2812303ef24fb" class="m-doc-self">DestroyCallExpression</a>(</span><span class="m-doc-wrap"><a href="structCallExpression.html" class="m-doc">CallExpression</a>* exp)</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a856c650d4dbe740d6a2c0276acf323b8">
