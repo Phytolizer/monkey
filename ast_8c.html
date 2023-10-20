@@ -79,6 +79,10 @@
               <span class="m-doc-wrap-bumper">void <a href="#a2fe67ad9bf8aec03c03fe881a74d6919" class="m-doc-self">DestroyExpression</a>(</span><span class="m-doc-wrap"><a href="structExpression.html" class="m-doc">Expression</a>* expression)</span>
             </dt>
             <dd><span></span></dd>
+            <dt id="a82e80d83efdcc0a47e86233d94d896b2">
+              <span class="m-doc-wrap-bumper">auto <a href="#a82e80d83efdcc0a47e86233d94d896b2" class="m-doc-self">destroyStatement</a>(</span><span class="m-doc-wrap"><a href="structStatement.html" class="m-doc">Statement</a>* statement) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> void</span>
+            </dt>
+            <dd><span></span></dd>
             <dt id="a89951d055a1ba55cc0127d70687e8b37">
               <span class="m-doc-wrap-bumper">auto <a href="#a89951d055a1ba55cc0127d70687e8b37" class="m-doc-self">destroyLetStatement</a>(</span><span class="m-doc-wrap"><a href="structLetStatement.html" class="m-doc">LetStatement</a>* statement) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> void</span>
             </dt>
@@ -89,10 +93,6 @@
             <dd><span></span></dd>
             <dt id="ac386828a7c903d47060a38bfbd872780">
               <span class="m-doc-wrap-bumper">auto <a href="#ac386828a7c903d47060a38bfbd872780" class="m-doc-self">destroyExpressionStatement</a>(</span><span class="m-doc-wrap"><a href="structExpressionStatement.html" class="m-doc">ExpressionStatement</a>* statement) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> void</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="a82e80d83efdcc0a47e86233d94d896b2">
-              <span class="m-doc-wrap-bumper">auto <a href="#a82e80d83efdcc0a47e86233d94d896b2" class="m-doc-self">destroyStatement</a>(</span><span class="m-doc-wrap"><a href="structStatement.html" class="m-doc">Statement</a>* statement) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> void</span>
             </dt>
             <dd><span></span></dd>
             <dt id="ad322040f8af883edeca85366231d49bf">
@@ -211,6 +211,25 @@
               <span class="m-doc-wrap-bumper">void <a href="#aa429a09d535eaae1441c7ccb7abc0707" class="m-doc-self">DestroyInfixExpression</a>(</span><span class="m-doc-wrap"><a href="structInfixExpression.html" class="m-doc">InfixExpression</a>* infix)</span>
             </dt>
             <dd><span></span></dd>
+            <dt id="aa790536b04285d6fc5b43ac61d7da978">
+              <span class="m-doc-wrap-bumper">auto <a href="#aa790536b04285d6fc5b43ac61d7da978" class="m-doc-self">CreateIfExpression</a>(</span><span class="m-doc-wrap"><a href="structToken.html" class="m-doc">Token</a> token,
+              <a href="structExpression.html" class="m-doc">Expression</a>* condition,
+              <a href="structBlockStatement.html" class="m-doc">BlockStatement</a>* consequence,
+              <a href="structBlockStatement.html" class="m-doc">BlockStatement</a>* alternative) -&gt; <a href="structIfExpression.html" class="m-doc">IfExpression</a>*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a33c50dbfbf113d40a97594accd8467a6">
+              <span class="m-doc-wrap-bumper">auto <a href="#a33c50dbfbf113d40a97594accd8467a6" class="m-doc-self">IfExpressionTokenLiteral</a>(</span><span class="m-doc-wrap">const <a href="structIfExpression.html" class="m-doc">IfExpression</a>* exp) -&gt; char*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a5592a762e624088bb2e5bbcbd803aaf7">
+              <span class="m-doc-wrap-bumper">auto <a href="#a5592a762e624088bb2e5bbcbd803aaf7" class="m-doc-self">IfExpressionString</a>(</span><span class="m-doc-wrap">const <a href="structIfExpression.html" class="m-doc">IfExpression</a>* exp) -&gt; char*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a3aefbec97ddbe2f52db15148c900777c">
+              <span class="m-doc-wrap-bumper">void <a href="#a3aefbec97ddbe2f52db15148c900777c" class="m-doc-self">DestroyIfExpression</a>(</span><span class="m-doc-wrap"><a href="structIfExpression.html" class="m-doc">IfExpression</a>* exp)</span>
+            </dt>
+            <dd><span></span></dd>
             <dt id="a856c650d4dbe740d6a2c0276acf323b8">
               <span class="m-doc-wrap-bumper">auto <a href="#a856c650d4dbe740d6a2c0276acf323b8" class="m-doc-self">CreateLetStatement</a>(</span><span class="m-doc-wrap"><a href="structToken.html" class="m-doc">Token</a> token,
               <a href="structIdentifier.html" class="m-doc">Identifier</a>* identifier,
@@ -249,6 +268,23 @@
             <dd><span></span></dd>
             <dt id="a40f5851cf604a2b2d3eff69d9212a498">
               <span class="m-doc-wrap-bumper">auto <a href="#a40f5851cf604a2b2d3eff69d9212a498" class="m-doc-self">ExpressionStatementString</a>(</span><span class="m-doc-wrap">const <a href="structExpressionStatement.html" class="m-doc">ExpressionStatement</a>* statement) -&gt; char*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a888e71307f0b87b928327f6ba3f5cf94">
+              <span class="m-doc-wrap-bumper">auto <a href="#a888e71307f0b87b928327f6ba3f5cf94" class="m-doc-self">CreateBlockStatement</a>(</span><span class="m-doc-wrap"><a href="structToken.html" class="m-doc">Token</a> token,
+              StatementSpan statements) -&gt; <a href="structBlockStatement.html" class="m-doc">BlockStatement</a>*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="abc525a2164c5e7f65744b131dd0174de">
+              <span class="m-doc-wrap-bumper">auto <a href="#abc525a2164c5e7f65744b131dd0174de" class="m-doc-self">BlockStatementTokenLiteral</a>(</span><span class="m-doc-wrap">const <a href="structBlockStatement.html" class="m-doc">BlockStatement</a>* statement) -&gt; char*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="af88ef78689d7887b217bdf745981d4a1">
+              <span class="m-doc-wrap-bumper">auto <a href="#af88ef78689d7887b217bdf745981d4a1" class="m-doc-self">BlockStatementString</a>(</span><span class="m-doc-wrap">const <a href="structBlockStatement.html" class="m-doc">BlockStatement</a>* statement) -&gt; char*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a18310de776f9ebd1c558568254e9a7ee">
+              <span class="m-doc-wrap-bumper">void <a href="#a18310de776f9ebd1c558568254e9a7ee" class="m-doc-self">DestroyBlockStatement</a>(</span><span class="m-doc-wrap"><a href="structBlockStatement.html" class="m-doc">BlockStatement</a>* statement)</span>
             </dt>
             <dd><span></span></dd>
           </dl>
