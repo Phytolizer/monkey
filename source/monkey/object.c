@@ -10,6 +10,9 @@
 #include <stdlib.h>
 
 char* InspectObject(const Object* obj) {
+	if (obj == NULL) {
+		return MonkeyStrdup("<NULL>");
+	}
 	switch (obj->type) {
 		case OBJECT_TYPE_INTEGER:
 			return InspectIntegerObject((const IntegerObject*)obj);

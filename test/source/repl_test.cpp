@@ -13,7 +13,7 @@ extern "C" {
 constexpr std::size_t OUTPUT_BUFFER_SIZE = 1024;
 
 TEST_CASE("REPL prints simple output", "[repl]") {
-	char inputText[] = "let five = 6;\n";
+	char inputText[] = "6;\n";
 	std::array<char, OUTPUT_BUFFER_SIZE> outputText;
 
 	const MonkeyReplArgs args = {
@@ -26,6 +26,5 @@ TEST_CASE("REPL prints simple output", "[repl]") {
 	MonkeyRepl(args);
 	args.writer->text[args.writer->textPosition] = '\0';
 
-	REQUIRE(std::string(outputText.data()) ==
-			"> let five = 6;\n> \n");
+	REQUIRE(std::string(outputText.data()) == "> 6\n> \n");
 }

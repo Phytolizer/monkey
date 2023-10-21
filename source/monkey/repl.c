@@ -2,8 +2,10 @@
 
 #include "monkey.h"
 #include "monkey/ast.h"
+#include "monkey/evaluator.h"
 #include "monkey/lexer.h"
 #include "monkey/macros.h"
+#include "monkey/object.h"
 #include "monkey/parser.h"
 #include "monkey/stream.h"
 #include "monkey/string.h"
@@ -49,7 +51,9 @@ void MonkeyRepl(MonkeyReplArgs args) {
 			continue;
 		}
 
-		char* text = ProgramString(program);
+		Object* evaluated = Eval(&program->base);
+		char* text = InspectObject(evaluated);
+		DestroyObject(evaluated);
 		WriteStream(args.writer, text, strlen(text));
 		free(text);
 		WriteStream(args.writer, "\n", 1);
