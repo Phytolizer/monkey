@@ -14,8 +14,22 @@ typedef enum {
 #undef X
 } ObjectType;
 
+typedef enum {
+	OBJECT_ALLOW_FREE,
+	OBJECT_DISALLOW_FREE,
+} ObjectFreeableType;
+
 typedef struct {
 	ObjectType type;
+	/**
+	 * @brief freeable is used to determine if the object should be freed when
+	 * DestroyObject is called.
+	 *
+	 * It is always OBJECT_ALLOW_FREE by default.
+	 * Will be set to OBJECT_DISALLOW_FREE if the object is not freeable
+	 * (the usual case is when the object is a boolean or null).
+	 */
+	ObjectFreeableType freeable;
 } Object;
 
 char* InspectObject(const Object* obj);

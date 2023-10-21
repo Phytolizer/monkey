@@ -51,7 +51,7 @@ void MonkeyRepl(MonkeyReplArgs args) {
 			continue;
 		}
 
-		Object* evaluated = Eval(&program->base);
+		Object* evaluated = Eval(monkey, &program->base);
 		char* text = InspectObject(evaluated);
 		DestroyObject(evaluated);
 		WriteStream(args.writer, text, strlen(text));

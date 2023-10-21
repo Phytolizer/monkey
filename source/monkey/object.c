@@ -29,6 +29,9 @@ void DestroyObject(Object* obj) {
 	if (obj == NULL) {
 		return;
 	}
+	if (obj->freeable == OBJECT_DISALLOW_FREE) {
+		return;
+	}
 	switch (obj->type) {
 		case OBJECT_TYPE_INTEGER:
 			DestroyIntegerObject((IntegerObject*)obj);
@@ -47,6 +50,7 @@ void DestroyObject(Object* obj) {
 IntegerObject* CreateIntegerObject(int64_t value) {
 	IntegerObject* obj = malloc(sizeof(IntegerObject));
 	obj->base.type = OBJECT_TYPE_INTEGER;
+	obj->base.freeable = OBJECT_ALLOW_FREE;
 	obj->value = value;
 	return obj;
 }
@@ -62,6 +66,7 @@ void DestroyIntegerObject(IntegerObject* obj) {
 BooleanObject* CreateBooleanObject(bool value) {
 	BooleanObject* obj = malloc(sizeof(BooleanObject));
 	obj->base.type = OBJECT_TYPE_BOOLEAN;
+	obj->base.freeable = OBJECT_ALLOW_FREE;
 	obj->value = value;
 	return obj;
 }

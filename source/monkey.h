@@ -5,6 +5,7 @@
  * token module.
  */
 #include "monkey/macros.h"
+#include "monkey/object.h"
 typedef struct MonkeyTokenState MonkeyTokenState;
 
 /**
@@ -15,6 +16,15 @@ typedef struct {
 } Monkey;
 
 /**
+ * @private
+ */
+typedef struct {
+	Object* trueObj;
+	Object* falseObj;
+	Object* nullObj;
+} MonkeyInternedObjects;
+
+/**
  * @brief CreateMonkey creates an instance of the library and returns it.
  */
 Monkey* CreateMonkey(void);
@@ -23,6 +33,11 @@ Monkey* CreateMonkey(void);
  * @private
  */
 MONKEY_INTERNAL MonkeyTokenState* MonkeyGetTokenState(Monkey* monkey);
+
+/**
+ * @private
+ */
+MONKEY_INTERNAL MonkeyInternedObjects MonkeyGetInterns(Monkey* monkey);
 
 /**
  * @brief Destroys resources held by the library
