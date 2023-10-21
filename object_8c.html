@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>source/monkey/ directory | monkey</title>
+  <title>source/monkey/object.c file | monkey</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="m-dark+documentation.compiled.css" />
   <link rel="icon" href="favicon-dark.png" type="image/png" />
@@ -48,7 +48,7 @@
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
         <h1>
-          <span class="m-breadcrumb"><a href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html">source</a>/</span>monkey<span class="m-breadcrumb">/</span> <span class="m-thin">directory</span>
+          <span class="m-breadcrumb"><a href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html">source</a>/</span><span class="m-breadcrumb"><a href="dir_e63aed17ca12ecf13a4ba395ed06a5b5.html">monkey</a>/</span>object.c <span class="m-thin">file</span>
         </h1>
         <p><span></span></p>
         <div class="m-block m-default">
@@ -57,55 +57,57 @@
             <li>
               Reference
               <ul>
-                <li><a href="#files">Files</a></li>
+                <li><a href="#func-members">Functions</a></li>
               </ul>
             </li>
           </ul>
         </div>
-        <section id="files">
-          <h2><a href="#files">Files</a></h2>
+        <section id="func-members">
+          <h2><a href="#func-members">Functions</a></h2>
           <dl class="m-doc">
-            <dt>file <a href="ast_8c.html" class="m-doc">ast.c</a></dt>
+            <dt id="a7fa019c8dc51533d63deb7c1110e41e2">
+              <span class="m-doc-wrap-bumper">auto <a href="#a7fa019c8dc51533d63deb7c1110e41e2" class="m-doc-self">InspectObject</a>(</span><span class="m-doc-wrap">const <a href="structObject.html" class="m-doc">Object</a>* obj) -&gt; char*</span>
+            </dt>
             <dd><span></span></dd>
-            <dt>file <a href="ast_8h.html" class="m-doc">ast.h</a></dt>
+            <dt id="a7e2e1e1b0bf0590148184a00b5330c3c">
+              <span class="m-doc-wrap-bumper">void <a href="#a7e2e1e1b0bf0590148184a00b5330c3c" class="m-doc-self">DestroyObject</a>(</span><span class="m-doc-wrap"><a href="structObject.html" class="m-doc">Object</a>* obj)</span>
+            </dt>
             <dd><span></span></dd>
-            <dt>file <a href="evaluator_8c.html" class="m-doc">evaluator.c</a></dt>
+            <dt id="a1c514250f0f5a3de6f6543ca24e40434">
+              <span class="m-doc-wrap-bumper">auto <a href="#a1c514250f0f5a3de6f6543ca24e40434" class="m-doc-self">CreateIntegerObject</a>(</span><span class="m-doc-wrap">int64_t value) -&gt; <a href="structIntegerObject.html" class="m-doc">IntegerObject</a>*</span>
+            </dt>
             <dd><span></span></dd>
-            <dt>file <a href="evaluator_8h.html" class="m-doc">evaluator.h</a></dt>
+            <dt id="ae50db6dccd7e96e7715c353086af4e11">
+              <span class="m-doc-wrap-bumper">auto <a href="#ae50db6dccd7e96e7715c353086af4e11" class="m-doc-self">InspectIntegerObject</a>(</span><span class="m-doc-wrap">const <a href="structIntegerObject.html" class="m-doc">IntegerObject</a>* obj) -&gt; char*</span>
+            </dt>
             <dd><span></span></dd>
-            <dt>file <a href="lexer_8c.html" class="m-doc">lexer.c</a></dt>
+            <dt id="ae71ce62fc1707904763d70bd86b5fd03">
+              <span class="m-doc-wrap-bumper">void <a href="#ae71ce62fc1707904763d70bd86b5fd03" class="m-doc-self">DestroyIntegerObject</a>(</span><span class="m-doc-wrap"><a href="structIntegerObject.html" class="m-doc">IntegerObject</a>* obj)</span>
+            </dt>
             <dd><span></span></dd>
-            <dt>file <a href="lexer_8h.html" class="m-doc">lexer.h</a></dt>
+            <dt id="a7f734193050c4a2538c55642e847207a">
+              <span class="m-doc-wrap-bumper">auto <a href="#a7f734193050c4a2538c55642e847207a" class="m-doc-self">CreateBooleanObject</a>(</span><span class="m-doc-wrap">bool value) -&gt; <a href="structBooleanObject.html" class="m-doc">BooleanObject</a>*</span>
+            </dt>
             <dd><span></span></dd>
-            <dt>file <a href="macros_8h.html" class="m-doc">macros.h</a></dt>
+            <dt id="a49d8a78dd44274891faf3963e3e81754">
+              <span class="m-doc-wrap-bumper">auto <a href="#a49d8a78dd44274891faf3963e3e81754" class="m-doc-self">InspectBooleanObject</a>(</span><span class="m-doc-wrap">const <a href="structBooleanObject.html" class="m-doc">BooleanObject</a>* obj) -&gt; char*</span>
+            </dt>
             <dd><span></span></dd>
-            <dt>file <a href="object_8c.html" class="m-doc">object.c</a></dt>
+            <dt id="a7a32fdc6ae5832fc564068b73b99e27c">
+              <span class="m-doc-wrap-bumper">void <a href="#a7a32fdc6ae5832fc564068b73b99e27c" class="m-doc-self">DestroyBooleanObject</a>(</span><span class="m-doc-wrap"><a href="structBooleanObject.html" class="m-doc">BooleanObject</a>* obj)</span>
+            </dt>
             <dd><span></span></dd>
-            <dt>file <a href="object_8h.html" class="m-doc">object.h</a></dt>
+            <dt id="ab535ee31d076f72424ce3b91e4e793c2">
+              <span class="m-doc-wrap-bumper">auto <a href="#ab535ee31d076f72424ce3b91e4e793c2" class="m-doc-self">CreateNullObject</a>(</span><span class="m-doc-wrap">void) -&gt; <a href="structNullObject.html" class="m-doc">NullObject</a>*</span>
+            </dt>
             <dd><span></span></dd>
-            <dt>file <a href="parser_8c.html" class="m-doc">parser.c</a></dt>
+            <dt id="a07ccd05c8733986f6ac1bae19b30fb38">
+              <span class="m-doc-wrap-bumper">auto <a href="#a07ccd05c8733986f6ac1bae19b30fb38" class="m-doc-self">InspectNullObject</a>(</span><span class="m-doc-wrap">const <a href="structNullObject.html" class="m-doc">NullObject</a>* obj) -&gt; char*</span>
+            </dt>
             <dd><span></span></dd>
-            <dt>file <a href="parser_8h.html" class="m-doc">parser.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="repl_8c.html" class="m-doc">repl.c</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="repl_8h.html" class="m-doc">repl.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="stream_8c.html" class="m-doc">stream.c</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="stream_8h.html" class="m-doc">stream.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="string_8c.html" class="m-doc">string.c</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="string_8h.html" class="m-doc">string.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="token_8c.html" class="m-doc">token.c</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="token_8h.html" class="m-doc">token.h</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="user_8c.html" class="m-doc">user.c</a></dt>
-            <dd><span></span></dd>
-            <dt>file <a href="user_8h.html" class="m-doc">user.h</a></dt>
+            <dt id="a7cc171d239697469e48d1a9a37d5c1e4">
+              <span class="m-doc-wrap-bumper">void <a href="#a7cc171d239697469e48d1a9a37d5c1e4" class="m-doc-self">DestroyNullObject</a>(</span><span class="m-doc-wrap"><a href="structNullObject.html" class="m-doc">NullObject</a>* obj)</span>
+            </dt>
             <dd><span></span></dd>
           </dl>
         </section>
