@@ -21,6 +21,13 @@ void testIntegerObject(Object* object, int64_t expected) {
 	REQUIRE(integer->value == expected);
 }
 
+void testBooleanObject(Object* object, bool expected) {
+	REQUIRE(object != nullptr);
+	REQUIRE(object->type == OBJECT_TYPE_BOOLEAN);
+	auto* boolean = reinterpret_cast<BooleanObject*>(object);
+	REQUIRE(boolean->value == expected);
+}
+
 ObjectPtr testEval(const char* input) {
 	const MonkeyPtr monkey{CreateMonkey()};
 	const LexerPtr lexer{CreateLexer(monkey.get(), input)};
@@ -41,4 +48,16 @@ TEST_CASE("Integer expressions", "[evaluator]") {
 
 	const ObjectPtr evaluated = testEval(input);
 	testIntegerObject(evaluated.get(), expected);
+}
+
+TEST_CASE("Boolean literals", "[evaluator]") {
+	const char* input;
+	bool expected;
+	std::tie(input, expected) = GENERATE(table<const char*, bool>({
+			std::make_tuple("true", true),
+			std::make_tuple("false", false),
+	}));
+
+	const ObjectPtr evaluated = testEval(input);
+	testBooleanObject(evaluated.get(), expected);
 }

@@ -37,8 +37,9 @@ MONKEY_FILE_LOCAL Object* evalExpression(Expression* expression) {
 	switch (expression->type) {
 		case EXPRESSION_TYPE_INTEGER_LITERAL:
 			return (Object*)CreateIntegerObject(((IntegerLiteral*)expression)->value);
-		case EXPRESSION_TYPE_IDENTIFIER:
 		case EXPRESSION_TYPE_BOOLEAN_LITERAL:
+			return (Object*)CreateBooleanObject(((BooleanLiteral*)expression)->value);
+		case EXPRESSION_TYPE_IDENTIFIER:
 		case EXPRESSION_TYPE_PREFIX:
 		case EXPRESSION_TYPE_INFIX:
 		case EXPRESSION_TYPE_IF:
