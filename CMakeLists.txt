@@ -26,6 +26,8 @@ add_library(
 	source/monkey/user.c
 	source/monkey/ast.c
 	source/monkey/parser.c
+	source/monkey/object.c
+	source/monkey/evaluator.c
 )
 
 target_include_directories(

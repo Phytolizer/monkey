@@ -1,7 +1,5 @@
 #pragma once
 
-#include "monkey/string.h"
-
 #include <catch2/catch_tostring.hpp>
 #include <cstdlib>
 #include <memory>
@@ -9,10 +7,12 @@
 #include <string>
 
 extern "C" {
-#include "monkey/ast.h"
-#include "monkey/lexer.h"
-#include "monkey/parser.h"
-#include "monkey/stream.h"
+#include <monkey/ast.h>
+#include <monkey/lexer.h>
+#include <monkey/object.h>
+#include <monkey/parser.h>
+#include <monkey/stream.h>
+#include <monkey/string.h>
 }
 
 struct StringDeleter {
@@ -63,6 +63,13 @@ struct StreamDeleter {
 	}
 };
 using StreamPtr = std::unique_ptr<Stream, StreamDeleter>;
+
+struct ObjectDeleter {
+	void operator()(Object* ptr) {
+		DestroyObject(ptr);
+	}
+};
+using ObjectPtr = std::unique_ptr<Object, ObjectDeleter>;
 
 namespace Catch {
 template <> struct StringMaker<MonkeyStringBuffer> {

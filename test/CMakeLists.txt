@@ -23,6 +23,7 @@ add_executable(
 	source/user_test.cpp
 	source/parser_test.cpp
 	source/ast_test.cpp
+	source/evaluator_test.cpp
 )
 target_link_libraries(monkey_test PRIVATE Catch2::Catch2WithMain nonstd::variant-lite)
 target_link_libraries(monkey_test PRIVATE monkey_lib)
