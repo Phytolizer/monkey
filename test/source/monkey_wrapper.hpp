@@ -3,6 +3,7 @@
 #include <catch2/catch_tostring.hpp>
 #include <cstdlib>
 #include <memory>
+#include <nonstd/variant.hpp>
 #include <sstream>
 #include <string>
 
@@ -82,6 +83,38 @@ template <> struct StringMaker<MonkeyStringBuffer> {
 		}
 		result << '}';
 		return result.str();
+	}
+};
+} // namespace Catch
+
+// snuff implicit conversions
+struct TestString {
+	const char* value;
+};
+struct TestInt {
+	int64_t value;
+};
+struct TestBool {
+	bool value;
+};
+
+// generic type for tests
+using TestValue = nonstd::variant<TestString, TestInt, TestBool>;
+
+namespace Catch {
+template <> struct StringMaker<TestValue> {
+	// NOLINTNEXTLINE(readability-identifier-naming): catch2 defined this name
+	static std::string convert(const TestValue& value) {
+		if (const auto* pText = nonstd::get_if<TestString>(&value)) {
+			return StringMaker<const char*>::convert(pText->value);
+		}
+		if (const auto* pInt = nonstd::get_if<TestInt>(&value)) {
+			return StringMaker<int64_t>::convert(pInt->value);
+		}
+		if (const auto* pBool = nonstd::get_if<TestBool>(&value)) {
+			return pBool->value ? "true" : "false";
+		}
+		return "{CORRUPT VALUE}";
 	}
 };
 } // namespace Catch

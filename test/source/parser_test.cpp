@@ -4,7 +4,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <nonstd/variant.hpp>
-#include <ostream>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -20,32 +19,6 @@ extern "C" {
 #include "monkey_wrapper.hpp"
 
 // TODO: test the errors, too
-
-// snuff implicit conversions
-struct TestString {
-	const char* value;
-};
-struct TestInt {
-	int64_t value;
-};
-struct TestBool {
-	bool value;
-};
-
-// generic type for tests
-using TestValue = nonstd::variant<TestString, TestInt, TestBool>;
-std::ostream& operator<<(std::ostream& os, const TestValue& value) {
-	if (const auto* pText = nonstd::get_if<TestString>(&value)) {
-		return os << "TestString{" << pText->value << "}";
-	}
-	if (const auto* pInt = nonstd::get_if<TestInt>(&value)) {
-		return os << "TestInt{" << pInt->value << "}";
-	}
-	if (const auto* pBool = nonstd::get_if<TestBool>(&value)) {
-		return os << "TestBool{" << pBool->value << "}";
-	}
-	return os << "{CORRUPT VALUE}";
-}
 
 namespace {
 void testIdentifierExpression(Expression* expression, const char* name) {

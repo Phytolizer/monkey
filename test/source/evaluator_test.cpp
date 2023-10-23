@@ -1,6 +1,8 @@
+#include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 #include <cstdint>
+#include <nonstd/variant.hpp>
 #include <tuple>
 
 extern "C" {
@@ -26,6 +28,16 @@ void testBooleanObject(const Object* object, bool expected) {
 	REQUIRE(object->type == OBJECT_TYPE_BOOLEAN);
 	const auto* boolean = reinterpret_cast<const BooleanObject*>(object);
 	REQUIRE(boolean->value == expected);
+}
+
+void testObject(const Object* object, TestValue expected) {
+	if (auto* pInt = nonstd::get_if<TestInt>(&expected)) {
+		testIntegerObject(object, pInt->value);
+	} else if (auto* pBool = nonstd::get_if<TestBool>(&expected)) {
+		testBooleanObject(object, pBool->value);
+	} else {
+		FAIL("corrupt value");
+	}
 }
 
 ObjectPtr testEval(Monkey* monkey, const char* input) {
@@ -61,4 +73,22 @@ TEST_CASE("Boolean literals", "[evaluator]") {
 
 	const ObjectPtr evaluated = testEval(monkey.get(), input);
 	testBooleanObject(evaluated.get(), expected);
+}
+
+TEST_CASE("Prefix expressions", "[evaluator]") {
+	const MonkeyPtr monkey{CreateMonkey()};
+	const char* input;
+	TestValue expected;
+	std::tie(input, expected) = GENERATE(table<const char*, TestValue>({
+			std::make_tuple("!true", TestBool{false}),
+			std::make_tuple("!false", TestBool{true}),
+			std::make_tuple("!5", TestBool{false}),
+			std::make_tuple("!!true", TestBool{true}),
+			std::make_tuple("!!false", TestBool{false}),
+			std::make_tuple("!!5", TestBool{true}),
+	}));
+
+	CAPTURE(input, expected);
+	const ObjectPtr evaluated = testEval(monkey.get(), input);
+	testObject(evaluated.get(), expected);
 }

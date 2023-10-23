@@ -17,6 +17,10 @@ typedef struct {
 
 /**
  * @private
+ *
+ * This struct is retained as "global" state. It enables direct pointer
+ * comparisons with objects of type bool and null, and reduces allocation
+ * for those same common object types.
  */
 typedef struct {
 	Object* trueObj;

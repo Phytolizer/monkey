@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <string.h>
 
 MONKEY_FILE_LOCAL Object* evalProgram(Monkey* monkey, Program* program) {
 	Object* result = NULL;
@@ -19,6 +20,21 @@ MONKEY_FILE_LOCAL Object* evalProgram(Monkey* monkey, Program* program) {
 	}
 
 	return result;
+}
+
+MONKEY_FILE_LOCAL Object* evalBangOperatorExpression(Monkey* monkey, Object* right) {
+	MonkeyInternedObjects interns = MonkeyGetInterns(monkey);
+	if (right == interns.falseObj || right == interns.nullObj) {
+		return interns.trueObj;
+	}
+	return interns.falseObj;
+}
+
+MONKEY_FILE_LOCAL Object* evalPrefixExpression(Monkey* monkey, const char* op, Object* right) {
+	if (strcmp(op, "!") == 0) {
+		return evalBangOperatorExpression(monkey, right);
+	}
+	return MonkeyGetInterns(monkey).nullObj;
 }
 
 MONKEY_FILE_LOCAL Object* evalStatement(Monkey* monkey, Statement* statement) {
@@ -45,8 +61,14 @@ MONKEY_FILE_LOCAL Object* evalExpression(Monkey* monkey, Expression* expression)
 			MonkeyInternedObjects interns = MonkeyGetInterns(monkey);
 			return lit->value ? (interns.trueObj) : (interns.falseObj);
 		}
+		case EXPRESSION_TYPE_PREFIX: {
+			PrefixExpression* prefix = (PrefixExpression*)expression;
+			Object* right = evalExpression(monkey, prefix->right);
+			Object* result = evalPrefixExpression(monkey, prefix->op, right);
+			DestroyObject(right);
+			return result;
+		}
 		case EXPRESSION_TYPE_IDENTIFIER:
-		case EXPRESSION_TYPE_PREFIX:
 		case EXPRESSION_TYPE_INFIX:
 		case EXPRESSION_TYPE_IF:
 		case EXPRESSION_TYPE_FUNCTION_LITERAL:
