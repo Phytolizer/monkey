@@ -70,6 +70,27 @@ void DestroyObject(Object* obj) {
 	assert(false);
 }
 
+Object* CopyObject(Object* obj) {
+	if (obj->freeable == OBJECT_DISALLOW_FREE) {
+		return obj;
+	}
+
+	switch (obj->type) {
+		case OBJECT_TYPE_INTEGER:
+			return (Object*)CreateIntegerObject(((IntegerObject*)obj)->value);
+		case OBJECT_TYPE_BOOLEAN:
+			return (Object*)CreateBooleanObject(((BooleanObject*)obj)->value);
+		case OBJECT_TYPE_NULL:
+			return (Object*)CreateNullObject();
+		case OBJECT_TYPE_RETURN_VALUE:
+			return (Object*)CreateReturnValueObject(CopyObject(((ReturnValueObject*)obj)->value));
+		case OBJECT_TYPE_ERROR:
+			return (Object*)CreateErrorObject(MonkeyStrdup(((ErrorObject*)obj)->message));
+	}
+	(void)fprintf(stderr, "Unknown object type: %d\n", obj->type);
+	assert(false);
+}
+
 IntegerObject* CreateIntegerObject(int64_t value) {
 	IntegerObject* obj = malloc(sizeof(IntegerObject));
 	obj->base.type = OBJECT_TYPE_INTEGER;

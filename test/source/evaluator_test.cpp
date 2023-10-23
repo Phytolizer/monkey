@@ -1,3 +1,4 @@
+
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
@@ -8,6 +9,7 @@
 
 extern "C" {
 #include <monkey.h>
+#include <monkey/environment.h>
 #include <monkey/evaluator.h>
 #include <monkey/lexer.h>
 #include <monkey/object.h>
@@ -49,11 +51,12 @@ void testObject(const Object* object, TestValue expected) {
 }
 
 ObjectPtr testEval(Monkey* monkey, const char* input) {
+	const EnvironmentPtr env{CreateEnvironment()};
 	const LexerPtr lexer{CreateLexer(monkey, input)};
 	const ParserPtr parser{CreateParser(lexer.get())};
 	const ProgramPtr program{ParseProgram(parser.get())};
 
-	return ObjectPtr{Eval(monkey, &program->base)};
+	return ObjectPtr{Eval(monkey, env.get(), &program->base)};
 }
 } // namespace
 
@@ -199,12 +202,29 @@ if (10 > 1) {
 }
 )mk",
 					"unknown operator: BOOLEAN + BOOLEAN"),
+			std::make_tuple("foobar", "identifier not found: foobar"),
 	}));
 
 	CAPTURE(input, expectedMessage);
 	const ObjectPtr evaluated = testEval(monkey.get(), input);
-	REQUIRE(evaluated != nullptr);
+	REQUIRE(evaluated.get() != nullptr);
 	REQUIRE(evaluated->type == OBJECT_TYPE_ERROR);
 	REQUIRE(reinterpret_cast<ErrorObject*>(evaluated.get())->message ==
 			std::string(expectedMessage));
+}
+
+TEST_CASE("Let statements", "[evaluator]") {
+	const MonkeyPtr monkey{CreateMonkey()};
+	const char* input;
+	TestValue expected;
+	std::tie(input, expected) = GENERATE(table<const char*, TestValue>({
+			std::make_tuple("let a = 5; a;", TestInt{5}),
+			std::make_tuple("let a = 5 * 5; a;", TestInt{25}),
+			std::make_tuple("let a = 5; let b = a; b;", TestInt{5}),
+			std::make_tuple("let a = 5; let b = a; let c = a + b + 5; c;", TestInt{15}),
+	}));
+
+	CAPTURE(input, expected);
+	const ObjectPtr evaluated = testEval(monkey.get(), input);
+	testObject(evaluated.get(), expected);
 }

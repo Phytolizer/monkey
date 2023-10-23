@@ -2,6 +2,7 @@
 
 #include "monkey.h"
 #include "monkey/ast.h"
+#include "monkey/environment.h"
 #include "monkey/evaluator.h"
 #include "monkey/lexer.h"
 #include "monkey/macros.h"
@@ -31,6 +32,7 @@ void MonkeyRepl(MonkeyReplArgs args) {
 	char* line = NULL;
 	size_t lineCapacity = 0;
 	Monkey* monkey = CreateMonkey();
+	Environment* env = CreateEnvironment();
 	while (true) {
 		WriteStream(args.writer, "> ", 2);
 		int64_t lineLength = ReadStreamLine(&line, &lineCapacity, args.reader);
@@ -51,7 +53,7 @@ void MonkeyRepl(MonkeyReplArgs args) {
 			continue;
 		}
 
-		Object* evaluated = Eval(monkey, &program->base);
+		Object* evaluated = Eval(monkey, env, &program->base);
 		char* text = InspectObject(evaluated);
 		DestroyObject(evaluated);
 		WriteStream(args.writer, text, strlen(text));
@@ -62,5 +64,6 @@ void MonkeyRepl(MonkeyReplArgs args) {
 		DestroyLexer(lexer);
 	}
 	free(line);
+	DestroyEnvironment(env);
 	DestroyMonkey(monkey);
 }

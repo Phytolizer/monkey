@@ -9,6 +9,7 @@
 
 extern "C" {
 #include <monkey/ast.h>
+#include <monkey/environment.h>
 #include <monkey/lexer.h>
 #include <monkey/object.h>
 #include <monkey/parser.h>
@@ -71,6 +72,13 @@ struct ObjectDeleter {
 	}
 };
 using ObjectPtr = std::unique_ptr<Object, ObjectDeleter>;
+
+struct EnvironmentDeleter {
+	void operator()(Environment* ptr) {
+		DestroyEnvironment(ptr);
+	}
+};
+using EnvironmentPtr = std::unique_ptr<Environment, EnvironmentDeleter>;
 
 namespace Catch {
 template <> struct StringMaker<MonkeyStringBuffer> {

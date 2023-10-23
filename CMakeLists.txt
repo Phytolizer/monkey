@@ -28,6 +28,7 @@ add_library(
 	source/monkey/parser.c
 	source/monkey/object.c
 	source/monkey/evaluator.c
+	source/monkey/environment.c
 )
 
 target_include_directories(

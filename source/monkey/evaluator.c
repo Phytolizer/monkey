@@ -2,6 +2,7 @@
 
 #include "monkey.h"
 #include "monkey/ast.h"
+#include "monkey/environment.h"
 #include "monkey/macros.h"
 #include "monkey/object.h"
 #include "monkey/string.h"
@@ -15,7 +16,13 @@
 #include <stdio.h>
 #include <string.h>
 
-MONKEY_FILE_LOCAL Object* evalExpression(Monkey* monkey, Expression* expression);
+typedef struct {
+	MonkeyInternedObjects interns;
+	Environment* env;
+} EvaluatorState;
+
+MONKEY_FILE_LOCAL Object* evalStatement(EvaluatorState* state, Statement* statement);
+MONKEY_FILE_LOCAL Object* evalExpression(EvaluatorState* state, Expression* expression);
 
 MONKEY_FILE_LOCAL Object* HEDLEY_PRINTF_FORMAT(1, 2) newError(const char* format, ...) {
 	va_list args;
@@ -26,12 +33,12 @@ MONKEY_FILE_LOCAL Object* HEDLEY_PRINTF_FORMAT(1, 2) newError(const char* format
 	return (Object*)CreateErrorObject(message);
 }
 
-MONKEY_FILE_LOCAL Object* evalProgram(Monkey* monkey, Program* program) {
+MONKEY_FILE_LOCAL Object* evalProgram(EvaluatorState* state, Program* program) {
 	Object* result = NULL;
 
 	for (size_t i = 0; i < program->statements.length; i++) {
 		DestroyObject(result);
-		result = Eval(monkey, &program->statements.begin[i]->base);
+		result = evalStatement(state, program->statements.begin[i]);
 		if (result != NULL && result->type == OBJECT_TYPE_RETURN_VALUE) {
 			ReturnValueObject* toFree = (ReturnValueObject*)result;
 			result = toFree->value;
@@ -47,12 +54,12 @@ MONKEY_FILE_LOCAL Object* evalProgram(Monkey* monkey, Program* program) {
 	return result;
 }
 
-MONKEY_FILE_LOCAL Object* evalBlockStatement(Monkey* monkey, BlockStatement* block) {
+MONKEY_FILE_LOCAL Object* evalBlockStatement(EvaluatorState* state, BlockStatement* block) {
 	Object* result = NULL;
 
 	for (size_t i = 0; i < block->statements.length; i++) {
 		DestroyObject(result);
-		result = Eval(monkey, &block->statements.begin[i]->base);
+		result = evalStatement(state, block->statements.begin[i]);
 		if (result != NULL &&
 				(result->type == OBJECT_TYPE_RETURN_VALUE || result->type == OBJECT_TYPE_ERROR)) {
 			return result;
@@ -62,39 +69,46 @@ MONKEY_FILE_LOCAL Object* evalBlockStatement(Monkey* monkey, BlockStatement* blo
 	return result;
 }
 
-MONKEY_FILE_LOCAL bool isTruthy(Monkey* monkey, Object* value) {
-	MonkeyInternedObjects interns = MonkeyGetInterns(monkey);
-	return !(value == interns.falseObj || value == interns.nullObj);
+MONKEY_FILE_LOCAL bool isTruthy(EvaluatorState* state, Object* value) {
+	return !(value == state->interns.falseObj || value == state->interns.nullObj);
 }
 
 MONKEY_FILE_LOCAL bool isError(Object* value) {
 	return value != NULL && value->type == OBJECT_TYPE_ERROR;
 }
 
-MONKEY_FILE_LOCAL Object* nativeBoolToBooleanObject(Monkey* monkey, bool value) {
-	MonkeyInternedObjects interns = MonkeyGetInterns(monkey);
-	return value ? interns.trueObj : interns.falseObj;
+MONKEY_FILE_LOCAL Object* nativeBoolToBooleanObject(EvaluatorState* state, bool value) {
+	return value ? state->interns.trueObj : state->interns.falseObj;
 }
 
-MONKEY_FILE_LOCAL Object* evalIfExpression(Monkey* monkey, IfExpression* exp) {
-	Object* condition = evalExpression(monkey, exp->condition);
+MONKEY_FILE_LOCAL Object* evalIdentifier(EvaluatorState* state, Identifier* identifier) {
+	Object* val = GetEnvironment(state->env, identifier->value);
+	if (val == NULL) {
+		return newError("identifier not found: %s", identifier->value);
+	}
+
+	return CopyObject(val);
+}
+
+MONKEY_FILE_LOCAL Object* evalIfExpression(EvaluatorState* state, IfExpression* exp) {
+	Object* condition = evalExpression(state, exp->condition);
 	if (isError(condition)) {
 		return condition;
 	}
-	bool truthy = isTruthy(monkey, condition);
+	bool truthy = isTruthy(state, condition);
 	DestroyObject(condition);
 
 	if (truthy) {
-		return evalBlockStatement(monkey, exp->consequence);
+		return evalBlockStatement(state, exp->consequence);
 	}
 	if (exp->alternative != NULL) {
-		return evalBlockStatement(monkey, exp->alternative);
+		return evalBlockStatement(state, exp->alternative);
 	}
-	return MonkeyGetInterns(monkey).nullObj;
+	return state->interns.nullObj;
 }
 
-MONKEY_FILE_LOCAL Object* evalBangOperatorExpression(Monkey* monkey, Object* right) {
-	return nativeBoolToBooleanObject(monkey, !isTruthy(monkey, right));
+MONKEY_FILE_LOCAL Object* evalBangOperatorExpression(EvaluatorState* state, Object* right) {
+	return nativeBoolToBooleanObject(state, !isTruthy(state, right));
 }
 
 MONKEY_FILE_LOCAL Object* evalMinusPrefixOperatorExpression(Object* right) {
@@ -106,9 +120,10 @@ MONKEY_FILE_LOCAL Object* evalMinusPrefixOperatorExpression(Object* right) {
 	return (Object*)CreateIntegerObject(-value);
 }
 
-MONKEY_FILE_LOCAL Object* evalPrefixExpression(Monkey* monkey, const char* op, Object* right) {
+MONKEY_FILE_LOCAL Object* evalPrefixExpression(
+		EvaluatorState* state, const char* op, Object* right) {
 	if (strcmp(op, "!") == 0) {
-		return evalBangOperatorExpression(monkey, right);
+		return evalBangOperatorExpression(state, right);
 	}
 	if (strcmp(op, "-") == 0) {
 		return evalMinusPrefixOperatorExpression(right);
@@ -117,7 +132,7 @@ MONKEY_FILE_LOCAL Object* evalPrefixExpression(Monkey* monkey, const char* op, O
 }
 
 MONKEY_FILE_LOCAL Object* evalIntegerInfixExpression(
-		Monkey* monkey, const char* op, IntegerObject* left, IntegerObject* right) {
+		EvaluatorState* state, const char* op, IntegerObject* left, IntegerObject* right) {
 	if (strcmp(op, "+") == 0) {
 		return (Object*)CreateIntegerObject(left->value + right->value);
 	}
@@ -131,30 +146,30 @@ MONKEY_FILE_LOCAL Object* evalIntegerInfixExpression(
 		return (Object*)CreateIntegerObject(left->value / right->value);
 	}
 	if (strcmp(op, "<") == 0) {
-		return nativeBoolToBooleanObject(monkey, left->value < right->value);
+		return nativeBoolToBooleanObject(state, left->value < right->value);
 	}
 	if (strcmp(op, ">") == 0) {
-		return nativeBoolToBooleanObject(monkey, left->value > right->value);
+		return nativeBoolToBooleanObject(state, left->value > right->value);
 	}
 	if (strcmp(op, "==") == 0) {
-		return nativeBoolToBooleanObject(monkey, left->value == right->value);
+		return nativeBoolToBooleanObject(state, left->value == right->value);
 	}
 	if (strcmp(op, "!=") == 0) {
-		return nativeBoolToBooleanObject(monkey, left->value != right->value);
+		return nativeBoolToBooleanObject(state, left->value != right->value);
 	}
 	return newError("unknown operator: INTEGER %s INTEGER", op);
 }
 
 MONKEY_FILE_LOCAL Object* evalInfixExpression(
-		Monkey* monkey, const char* op, Object* left, Object* right) {
+		EvaluatorState* state, const char* op, Object* left, Object* right) {
 	if (left->type == OBJECT_TYPE_INTEGER && right->type == OBJECT_TYPE_INTEGER) {
-		return evalIntegerInfixExpression(monkey, op, (IntegerObject*)left, (IntegerObject*)right);
+		return evalIntegerInfixExpression(state, op, (IntegerObject*)left, (IntegerObject*)right);
 	}
 	if (strcmp(op, "==") == 0) {
-		return nativeBoolToBooleanObject(monkey, left == right);
+		return nativeBoolToBooleanObject(state, left == right);
 	}
 	if (strcmp(op, "!=") == 0) {
-		return nativeBoolToBooleanObject(monkey, left != right);
+		return nativeBoolToBooleanObject(state, left != right);
 	}
 	if (left->type != right->type) {
 		return newError("type mismatch: %s %s %s", ObjectTypeText(left->type), op,
@@ -164,19 +179,28 @@ MONKEY_FILE_LOCAL Object* evalInfixExpression(
 			ObjectTypeText(right->type));
 }
 
-MONKEY_FILE_LOCAL Object* evalStatement(Monkey* monkey, Statement* statement) {
+MONKEY_FILE_LOCAL Object* evalStatement(EvaluatorState* state, Statement* statement) {
 	switch (statement->type) {
 		case STATEMENT_TYPE_EXPRESSION:
-			return Eval(monkey, &((ExpressionStatement*)statement)->expression->base);
+			return evalExpression(state, ((ExpressionStatement*)statement)->expression);
 		case STATEMENT_TYPE_RETURN: {
 			ReturnStatement* ret = (ReturnStatement*)statement;
-			Object* val = evalExpression(monkey, ret->returnValue);
+			Object* val = evalExpression(state, ret->returnValue);
 			if (isError(val)) {
 				return val;
 			}
 			return (Object*)CreateReturnValueObject(val);
 		}
-		case STATEMENT_TYPE_LET:
+		case STATEMENT_TYPE_LET: {
+			LetStatement* let = (LetStatement*)statement;
+			Object* val = evalExpression(state, let->value);
+			if (isError(val)) {
+				return val;
+			}
+
+			PutEnvironment(state->env, MonkeyStrdup(let->identifier->value), val);
+			return state->interns.nullObj;
+		}
 		case STATEMENT_TYPE_BLOCK:
 			return NULL;
 	}
@@ -184,7 +208,7 @@ MONKEY_FILE_LOCAL Object* evalStatement(Monkey* monkey, Statement* statement) {
 	assert(false);
 }
 
-MONKEY_FILE_LOCAL Object* evalExpression(Monkey* monkey, Expression* expression) {
+MONKEY_FILE_LOCAL Object* evalExpression(EvaluatorState* state, Expression* expression) {
 	switch (expression->type) {
 		case EXPRESSION_TYPE_INTEGER_LITERAL: {
 			IntegerLiteral* lit = (IntegerLiteral*)expression;
@@ -192,38 +216,39 @@ MONKEY_FILE_LOCAL Object* evalExpression(Monkey* monkey, Expression* expression)
 		}
 		case EXPRESSION_TYPE_BOOLEAN_LITERAL: {
 			BooleanLiteral* lit = (BooleanLiteral*)expression;
-			return nativeBoolToBooleanObject(monkey, lit->value);
+			return nativeBoolToBooleanObject(state, lit->value);
 		}
 		case EXPRESSION_TYPE_PREFIX: {
 			PrefixExpression* prefix = (PrefixExpression*)expression;
-			Object* right = evalExpression(monkey, prefix->right);
+			Object* right = evalExpression(state, prefix->right);
 			if (isError(right)) {
 				return right;
 			}
-			Object* result = evalPrefixExpression(monkey, prefix->op, right);
+			Object* result = evalPrefixExpression(state, prefix->op, right);
 
 			DestroyObject(right);
 			return result;
 		}
 		case EXPRESSION_TYPE_INFIX: {
 			InfixExpression* infix = (InfixExpression*)expression;
-			Object* left = evalExpression(monkey, infix->left);
+			Object* left = evalExpression(state, infix->left);
 			if (isError(left)) {
 				return left;
 			}
-			Object* right = evalExpression(monkey, infix->right);
+			Object* right = evalExpression(state, infix->right);
 			if (isError(right)) {
 				return right;
 			}
 
-			Object* result = evalInfixExpression(monkey, infix->op, left, right);
+			Object* result = evalInfixExpression(state, infix->op, left, right);
 			DestroyObject(right);
 			DestroyObject(left);
 			return result;
 		}
 		case EXPRESSION_TYPE_IF:
-			return evalIfExpression(monkey, (IfExpression*)expression);
+			return evalIfExpression(state, (IfExpression*)expression);
 		case EXPRESSION_TYPE_IDENTIFIER:
+			return evalIdentifier(state, (Identifier*)expression);
 		case EXPRESSION_TYPE_FUNCTION_LITERAL:
 		case EXPRESSION_TYPE_CALL:
 			return NULL;
@@ -232,14 +257,18 @@ MONKEY_FILE_LOCAL Object* evalExpression(Monkey* monkey, Expression* expression)
 	assert(false);
 }
 
-Object* Eval(Monkey* monkey, Node* node) {
+Object* Eval(Monkey* monkey, Environment* env, Node* node) {
+	EvaluatorState state = {
+			.interns = MonkeyGetInterns(monkey),
+			.env = env,
+	};
 	switch (node->type) {
 		case NODE_TYPE_PROGRAM:
-			return evalProgram(monkey, (Program*)node);
+			return evalProgram(&state, (Program*)node);
 		case NODE_TYPE_STATEMENT:
-			return evalStatement(monkey, (Statement*)node);
+			return evalStatement(&state, (Statement*)node);
 		case NODE_TYPE_EXPRESSION:
-			return evalExpression(monkey, (Expression*)node);
+			return evalExpression(&state, (Expression*)node);
 	}
 	(void)fprintf(stderr, "Unknown node type: %d\n", node->type);
 	assert(false);

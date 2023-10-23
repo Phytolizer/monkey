@@ -38,6 +38,7 @@ typedef struct {
 
 char* InspectObject(const Object* obj);
 void DestroyObject(Object* obj);
+Object* CopyObject(Object* obj);
 
 typedef struct {
 	Object base;
