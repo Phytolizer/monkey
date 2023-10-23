@@ -76,7 +76,7 @@
           <h2><a href="#func-members">Functions</a></h2>
           <dl class="m-doc">
             <dt>
-              <span class="m-doc-wrap-bumper">auto <a href="#a114212356da8accf285e4551f585e936" class="m-doc">CreateEnvironment</a>(</span><span class="m-doc-wrap">void) -&gt; <a href="structEnvironment.html" class="m-doc">Environment</a>*</span>
+              <span class="m-doc-wrap-bumper">auto <a href="#a8e8be8fae519e9d6df58c373908ae396" class="m-doc">CreateEnvironment</a>(</span><span class="m-doc-wrap"><a href="structEnvironment.html" class="m-doc">Environment</a>* outer) -&gt; <a href="structEnvironment.html" class="m-doc">Environment</a>*</span>
             </dt>
             <dd>Create an <a href="structEnvironment.html" class="m-doc">Environment</a> for holding key-value pairs.</dd>
             <dt>
@@ -102,15 +102,24 @@
         </section>
         <section>
           <h2>Function documentation</h2>
-          <section class="m-doc-details" id="a114212356da8accf285e4551f585e936"><div>
+          <section class="m-doc-details" id="a8e8be8fae519e9d6df58c373908ae396"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><a href="structEnvironment.html" class="m-doc">Environment</a>* </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a114212356da8accf285e4551f585e936" class="m-doc-self">CreateEnvironment</a>(</span><span class="m-doc-wrap">void)</span></span>
+              <span class="m-doc-wrap-bumper"><a href="structEnvironment.html" class="m-doc">Environment</a>* </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a8e8be8fae519e9d6df58c373908ae396" class="m-doc-self">CreateEnvironment</a>(</span><span class="m-doc-wrap"><a href="structEnvironment.html" class="m-doc">Environment</a>* outer)</span></span>
             </h3>
             <p>Create an <a href="structEnvironment.html" class="m-doc">Environment</a> for holding key-value pairs.</p>
             <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">outer</td>
+                  <td>the parent environment, or NULL for a root environment</td>
+                </tr>
+              </tbody>
               <tfoot>
                 <tr>
-                  <th style="width: 1%">Returns</th>
+                  <th>Returns</th>
                   <td>Environment* the environment, or NULL if unsuccessful</td>
                 </tr>
               </tfoot>
