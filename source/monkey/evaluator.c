@@ -49,6 +49,31 @@ MONKEY_FILE_LOCAL Object* evalPrefixExpression(Monkey* monkey, const char* op, O
 	return MonkeyGetInterns(monkey).nullObj;
 }
 
+MONKEY_FILE_LOCAL Object* evalIntegerInfixExpression(
+		Monkey* monkey, const char* op, IntegerObject* left, IntegerObject* right) {
+	if (strcmp(op, "+") == 0) {
+		return (Object*)CreateIntegerObject(left->value + right->value);
+	}
+	if (strcmp(op, "-") == 0) {
+		return (Object*)CreateIntegerObject(left->value - right->value);
+	}
+	if (strcmp(op, "*") == 0) {
+		return (Object*)CreateIntegerObject(left->value * right->value);
+	}
+	if (strcmp(op, "/") == 0) {
+		return (Object*)CreateIntegerObject(left->value / right->value);
+	}
+	return MonkeyGetInterns(monkey).nullObj;
+}
+
+MONKEY_FILE_LOCAL Object* evalInfixExpression(
+		Monkey* monkey, const char* op, Object* left, Object* right) {
+	if (left->type == OBJECT_TYPE_INTEGER && right->type == OBJECT_TYPE_INTEGER) {
+		return evalIntegerInfixExpression(monkey, op, (IntegerObject*)left, (IntegerObject*)right);
+	}
+	return MonkeyGetInterns(monkey).nullObj;
+}
+
 MONKEY_FILE_LOCAL Object* evalStatement(Monkey* monkey, Statement* statement) {
 	switch (statement->type) {
 		case STATEMENT_TYPE_EXPRESSION:
@@ -77,11 +102,21 @@ MONKEY_FILE_LOCAL Object* evalExpression(Monkey* monkey, Expression* expression)
 			PrefixExpression* prefix = (PrefixExpression*)expression;
 			Object* right = evalExpression(monkey, prefix->right);
 			Object* result = evalPrefixExpression(monkey, prefix->op, right);
+
 			DestroyObject(right);
 			return result;
 		}
+		case EXPRESSION_TYPE_INFIX: {
+			InfixExpression* infix = (InfixExpression*)expression;
+			Object* left = evalExpression(monkey, infix->left);
+			Object* right = evalExpression(monkey, infix->right);
+
+			Object* result = evalInfixExpression(monkey, infix->op, left, right);
+			DestroyObject(right);
+			DestroyObject(left);
+			return result;
+		}
 		case EXPRESSION_TYPE_IDENTIFIER:
-		case EXPRESSION_TYPE_INFIX:
 		case EXPRESSION_TYPE_IF:
 		case EXPRESSION_TYPE_FUNCTION_LITERAL:
 		case EXPRESSION_TYPE_CALL:

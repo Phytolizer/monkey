@@ -58,8 +58,20 @@ TEST_CASE("Integer expressions", "[evaluator]") {
 			std::make_tuple("10", 10),
 			std::make_tuple("-5", -5),
 			std::make_tuple("-10", -10),
+			std::make_tuple("5 + 5 + 5 + 5 - 10", 10),
+			std::make_tuple("2 * 2 * 2 * 2 * 2", 32),
+			std::make_tuple("-50 + 100 + -50", 0),
+			std::make_tuple("5 * 2 + 10", 20),
+			std::make_tuple("5 + 2 * 10", 25),
+			std::make_tuple("20 + 2 * -10", 0),
+			std::make_tuple("50 / 2 * 2 + 10", 60),
+			std::make_tuple("2 * (5 + 10)", 30),
+			std::make_tuple("3 * 3 * 3 + 10", 37),
+			std::make_tuple("3 * (3 * 3) + 10", 37),
+			std::make_tuple("(5 + 10 * 2 + 15 / 3) * 2 + -10", 50),
 	}));
 
+	CAPTURE(input, expected);
 	const ObjectPtr evaluated = testEval(monkey.get(), input);
 	testIntegerObject(evaluated.get(), expected);
 }
