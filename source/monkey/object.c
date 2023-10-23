@@ -81,11 +81,12 @@ void DestroyObject(Object* obj) {
 	assert(false);
 }
 
-MONKEY_FILE_LOCAL FunctionObject* rawCreateFunctionObject(
+MONKEY_FILE_LOCAL FunctionObject* rawCreateFunctionObject(FunctionAstOwnership astOwnership,
 		IdentifierSpan parameters, BlockStatement* body, Environment* env) {
 	FunctionObject* obj = malloc(sizeof(FunctionObject));
 	obj->base.type = OBJECT_TYPE_FUNCTION;
 	obj->base.freeable = OBJECT_ALLOW_FREE;
+	obj->astOwnership = astOwnership;
 	obj->parameters = parameters;
 	obj->body = body;
 	obj->env = env;
@@ -93,7 +94,8 @@ MONKEY_FILE_LOCAL FunctionObject* rawCreateFunctionObject(
 }
 
 MONKEY_FILE_LOCAL FunctionObject* copyFunctionObject(FunctionObject* obj) {
-	return rawCreateFunctionObject(obj->parameters, obj->body, CopyEnvironment(obj->env));
+	return rawCreateFunctionObject(
+			FUNCTION_AST_BORROWED, obj->parameters, obj->body, CopyEnvironment(obj->env));
 }
 
 Object* CopyObject(Object* obj) {
@@ -202,7 +204,8 @@ void DestroyErrorObject(ErrorObject* obj) {
 }
 
 FunctionObject* CreateFunctionObject(FunctionLiteral* func, Environment* env) {
-	FunctionObject* obj = rawCreateFunctionObject(func->parameters, func->body, env);
+	FunctionObject* obj =
+			rawCreateFunctionObject(FUNCTION_AST_OWNED, func->parameters, func->body, env);
 	func->parameters = (IdentifierSpan)SPAN_EMPTY;
 	func->body = NULL;
 	return obj;
@@ -229,11 +232,13 @@ char* InspectFunctionObject(const FunctionObject* obj) {
 }
 
 void DestroyFunctionObject(FunctionObject* obj) {
-	for (size_t i = 0; i < obj->parameters.length; ++i) {
-		DestroyIdentifier(obj->parameters.begin[i]);
+	if (obj->astOwnership == FUNCTION_AST_OWNED) {
+		for (size_t i = 0; i < obj->parameters.length; ++i) {
+			DestroyIdentifier(obj->parameters.begin[i]);
+		}
+		free(obj->parameters.begin);
+		DestroyBlockStatement(obj->body);
 	}
-	free(obj->parameters.begin);
-	DestroyBlockStatement(obj->body);
 	DestroyEnvironment(obj->env);
 	free(obj);
 }

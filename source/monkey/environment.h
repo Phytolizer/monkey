@@ -9,9 +9,10 @@ typedef struct Environment Environment;
 /**
  * @brief Create an Environment for holding key-value pairs.
  *
+ * @param outer the parent environment, or NULL for a root environment
  * @return Environment* the environment, or NULL if unsuccessful
  */
-Environment* CreateEnvironment(void);
+Environment* CreateEnvironment(Environment* outer);
 
 /**
  * @brief Destroy a created Environment. Frees all internal data.

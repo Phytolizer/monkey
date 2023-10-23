@@ -51,7 +51,7 @@ void testObject(const Object* object, TestValue expected) {
 }
 
 ObjectPtr testEval(Monkey* monkey, const char* input) {
-	const EnvironmentPtr env{CreateEnvironment()};
+	const EnvironmentPtr env{CreateEnvironment(nullptr)};
 	const LexerPtr lexer{CreateLexer(monkey, input)};
 	const ParserPtr parser{CreateParser(lexer.get())};
 	const ProgramPtr program{ParseProgram(parser.get())};
@@ -242,4 +242,22 @@ TEST_CASE("Function object", "[evaluator]") {
 	CHECK(paramStr.get() == std::string("x"));
 	const StringPtr bodyStr{BlockStatementString(func->body)};
 	CHECK(bodyStr.get() == std::string("(x + 2)"));
+}
+
+TEST_CASE("Function application", "[evaluator]") {
+	const MonkeyPtr monkey{CreateMonkey()};
+	const char* input;
+	TestValue expected;
+	std::tie(input, expected) = GENERATE(table<const char*, TestValue>({
+			std::make_tuple("let identity = fn(x) { x; }; identity(5);", TestInt{5}),
+			std::make_tuple("let identity = fn(x) { return x; }; identity(5);", TestInt{5}),
+			std::make_tuple("let double = fn(x) { x * 2; }; double(5);", TestInt{10}),
+			std::make_tuple("let add = fn(x, y) { x + y; }; add(5, 5);", TestInt{10}),
+			std::make_tuple("let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));", TestInt{20}),
+			std::make_tuple("fn(x) { x; }(5)", TestInt{5}),
+	}));
+
+	CAPTURE(input, expected);
+	const ObjectPtr evaluated = testEval(monkey.get(), input);
+	testObject(evaluated.get(), expected);
 }

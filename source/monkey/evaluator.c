@@ -6,6 +6,7 @@
 #include "monkey/macros.h"
 #include "monkey/object.h"
 #include "monkey/string.h"
+#include "span.h"
 
 #include <assert.h>
 #include <hedley.h>
@@ -14,6 +15,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 typedef struct {
@@ -79,6 +81,71 @@ MONKEY_FILE_LOCAL bool isError(Object* value) {
 
 MONKEY_FILE_LOCAL Object* nativeBoolToBooleanObject(EvaluatorState* state, bool value) {
 	return value ? state->interns.trueObj : state->interns.falseObj;
+}
+
+MONKEY_FILE_LOCAL ObjectSpan evalExpressions(EvaluatorState* state, ExpressionSpan exps) {
+	Object** rawResult = calloc(exps.length, sizeof(Object*));
+
+	for (size_t i = 0; i < exps.length; ++i) {
+		Object* evaluated = evalExpression(state, exps.begin[i]);
+		if (isError(evaluated)) {
+			for (size_t j = 0; j < i; ++j) {
+				DestroyObject(rawResult[i]);
+			}
+			free(rawResult);
+			rawResult = malloc(1 * sizeof(Object*));
+			rawResult[0] = evaluated;
+			return (ObjectSpan)SPAN_WITH_LENGTH(rawResult, 1);
+		}
+		rawResult[i] = evaluated;
+	}
+
+	return (ObjectSpan)SPAN_WITH_LENGTH(rawResult, exps.length);
+}
+
+MONKEY_FILE_LOCAL Environment* extendFunctionEnv(FunctionObject* function, ObjectSpan arguments) {
+	Environment* env = CreateEnvironment(function->env);
+
+	for (size_t i = 0; i < function->parameters.length; ++i) {
+		PutEnvironment(env, MonkeyStrdup(function->parameters.begin[i]->value), arguments.begin[i]);
+	}
+
+	return env;
+}
+
+MONKEY_FILE_LOCAL Object* unwrapReturnValue(Object* obj) {
+	if (obj->type == OBJECT_TYPE_RETURN_VALUE) {
+		ReturnValueObject* rv = (ReturnValueObject*)obj;
+		Object* result = rv->value;
+		rv->value = NULL;
+		DestroyObject(&rv->base);
+		return result;
+	}
+	return obj;
+}
+
+MONKEY_FILE_LOCAL Object* applyFunction(
+		EvaluatorState* state, Object* functionObj, ObjectSpan arguments) {
+	if (functionObj->type != OBJECT_TYPE_FUNCTION) {
+		ObjectType funcType = functionObj->type;
+		DestroyObject(functionObj);
+		for (size_t i = 0; i < arguments.length; ++i) {
+			DestroyObject(arguments.begin[i]);
+		}
+		free(arguments.begin);
+		return newError("not a function: %s", ObjectTypeText(funcType));
+	}
+	FunctionObject* function = (FunctionObject*)functionObj;
+
+	Environment* extendedEnv = extendFunctionEnv(function, arguments);
+	Environment* oldEnvironment = state->env;
+	state->env = extendedEnv;
+	Object* result = evalBlockStatement(state, function->body);
+	DestroyObject(functionObj);
+	free(arguments.begin);
+	DestroyEnvironment(extendedEnv);
+	state->env = oldEnvironment;
+	return unwrapReturnValue(result);
 }
 
 MONKEY_FILE_LOCAL Object* evalIdentifier(EvaluatorState* state, Identifier* identifier) {
@@ -253,8 +320,21 @@ MONKEY_FILE_LOCAL Object* evalExpression(EvaluatorState* state, Expression* expr
 			FunctionLiteral* func = (FunctionLiteral*)expression;
 			return (Object*)CreateFunctionObject(func, CopyEnvironment(state->env));
 		}
-		case EXPRESSION_TYPE_CALL:
-			return NULL;
+		case EXPRESSION_TYPE_CALL: {
+			CallExpression* call = (CallExpression*)expression;
+			Object* function = evalExpression(state, call->function);
+			if (isError(function)) {
+				return function;
+			}
+			ObjectSpan args = evalExpressions(state, call->arguments);
+			if (args.length == 1 && isError(args.begin[0])) {
+				Object* result = args.begin[0];
+				free(args.begin);
+				DestroyObject(function);
+				return result;
+			}
+			return applyFunction(state, function, args);
+		}
 	}
 	(void)fprintf(stderr, "Unknown expression type: %d\n", expression->type);
 	assert(false);

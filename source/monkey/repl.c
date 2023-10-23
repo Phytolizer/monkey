@@ -32,7 +32,7 @@ void MonkeyRepl(MonkeyReplArgs args) {
 	char* line = NULL;
 	size_t lineCapacity = 0;
 	Monkey* monkey = CreateMonkey();
-	Environment* env = CreateEnvironment();
+	Environment* env = CreateEnvironment(NULL);
 	while (true) {
 		WriteStream(args.writer, "> ", 2);
 		int64_t lineLength = ReadStreamLine(&line, &lineCapacity, args.reader);

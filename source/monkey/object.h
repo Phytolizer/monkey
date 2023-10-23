@@ -1,6 +1,7 @@
 #pragma once
 
 #include "monkey/ast.h"
+#include "span.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -38,6 +39,8 @@ typedef struct Object {
 	 */
 	ObjectFreeableType freeable;
 } Object;
+
+typedef SPAN_TYPE(Object*) ObjectSpan;
 
 char* InspectObject(const Object* obj);
 void DestroyObject(Object* obj);
@@ -87,8 +90,19 @@ ErrorObject* CreateErrorObject(char* message);
 char* InspectErrorObject(const ErrorObject* obj);
 void DestroyErrorObject(ErrorObject* obj);
 
+#define FUNCTION_AST_OWNERSHIP_X \
+	X(OWNED) \
+	X(BORROWED)
+
+typedef enum {
+#define X(x) FUNCTION_AST_##x,
+	FUNCTION_AST_OWNERSHIP_X
+#undef X
+} FunctionAstOwnership;
+
 typedef struct {
 	Object base;
+	FunctionAstOwnership astOwnership;
 	IdentifierSpan parameters;
 	BlockStatement* body;
 	// avoid cyclic include with environment.h here
