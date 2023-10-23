@@ -65,9 +65,34 @@
         <section id="func-members">
           <h2><a href="#func-members">Functions</a></h2>
           <dl class="m-doc">
+            <dt id="a0da0a370ad47b1ef01fea9899b81b59c">
+              <span class="m-doc-wrap-bumper">auto <a href="#a0da0a370ad47b1ef01fea9899b81b59c" class="m-doc-self">evalExpression</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
+              <a href="structExpression.html" class="m-doc">Expression</a>* expression) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structObject.html" class="m-doc">Object</a>*</span>
+            </dt>
+            <dd><span></span></dd>
             <dt id="a897e2732641997db534ae12621a3efc4">
               <span class="m-doc-wrap-bumper">auto <a href="#a897e2732641997db534ae12621a3efc4" class="m-doc-self">evalProgram</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
               <a href="structProgram.html" class="m-doc">Program</a>* program) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structObject.html" class="m-doc">Object</a>*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac9e5410094e4a00490fa32c3143f9c0d">
+              <span class="m-doc-wrap-bumper">auto <a href="#ac9e5410094e4a00490fa32c3143f9c0d" class="m-doc-self">evalBlockStatement</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
+              <a href="structBlockStatement.html" class="m-doc">BlockStatement</a>* block) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structObject.html" class="m-doc">Object</a>*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="af1122f60de0229d789682387ea37188b">
+              <span class="m-doc-wrap-bumper">auto <a href="#af1122f60de0229d789682387ea37188b" class="m-doc-self">isTruthy</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
+              <a href="structObject.html" class="m-doc">Object</a>* value) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> bool</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="ac22df7c10e3d0dba9c04171e2d06c4be">
+              <span class="m-doc-wrap-bumper">auto <a href="#ac22df7c10e3d0dba9c04171e2d06c4be" class="m-doc-self">nativeBoolToBooleanObject</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
+              bool value) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structObject.html" class="m-doc">Object</a>*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a9369fdbcd341cd12fa1da5f94959308e">
+              <span class="m-doc-wrap-bumper">auto <a href="#a9369fdbcd341cd12fa1da5f94959308e" class="m-doc-self">evalIfExpression</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
+              <a href="structIfExpression.html" class="m-doc">IfExpression</a>* exp) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structObject.html" class="m-doc">Object</a>*</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a1915651247109bf6026bcf2e05a66eb8">
@@ -84,11 +109,6 @@
               <span class="m-doc-wrap-bumper">auto <a href="#a47f2caaf10102831b0277fbd80e7c251" class="m-doc-self">evalPrefixExpression</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
               const char* op,
               <a href="structObject.html" class="m-doc">Object</a>* right) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structObject.html" class="m-doc">Object</a>*</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="ac22df7c10e3d0dba9c04171e2d06c4be">
-              <span class="m-doc-wrap-bumper">auto <a href="#ac22df7c10e3d0dba9c04171e2d06c4be" class="m-doc-self">nativeBoolToBooleanObject</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
-              bool value) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structObject.html" class="m-doc">Object</a>*</span>
             </dt>
             <dd><span></span></dd>
             <dt id="a2a7c5f0bb2bd115f34452505e91f2ae3">
@@ -108,11 +128,6 @@
             <dt id="a2db5468f1a1b4bee27cdad16bb4c9bb5">
               <span class="m-doc-wrap-bumper">auto <a href="#a2db5468f1a1b4bee27cdad16bb4c9bb5" class="m-doc-self">evalStatement</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
               <a href="structStatement.html" class="m-doc">Statement</a>* statement) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structObject.html" class="m-doc">Object</a>*</span>
-            </dt>
-            <dd><span></span></dd>
-            <dt id="afa01229bcbabe295c064be5e692bfae8">
-              <span class="m-doc-wrap-bumper">auto <a href="#afa01229bcbabe295c064be5e692bfae8" class="m-doc-self">evalExpression</a>(</span><span class="m-doc-wrap"><a href="structMonkey.html" class="m-doc">Monkey</a>* monkey,
-              <a href="structExpression.html" class="m-doc">Expression</a>* expression) -&gt; <a href="macros_8h.html#a1eb3f3543eaf6f0a9a9aa46f9d48fd40" class="m-doc">MONKEY_<wbr />FILE_<wbr />LOCAL</a> <a href="structObject.html" class="m-doc">Object</a>*</span>
             </dt>
             <dd><span></span></dd>
             <dt id="adc5066828ed515b4426a6e2ebbcfabb5">
