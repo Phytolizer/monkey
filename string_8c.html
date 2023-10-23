@@ -79,6 +79,11 @@
               ...) -&gt; char*</span>
             </dt>
             <dd>Allocates a new string and formats the given arguments into it.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">auto <a href="#a1cb3976ab599552ef8eacefbe9035296" class="m-doc">MonkeyAvsprintf</a>(</span><span class="m-doc-wrap">const char* format,
+              va_list args) -&gt; char*</span>
+            </dt>
+            <dd>Allocates a new string and formats the given arguments into it.</dd>
             <dt id="ad53c3e01cb6ef647351f8502161ae372">
               <span class="m-doc-wrap-bumper">auto <a href="#ad53c3e01cb6ef647351f8502161ae372" class="m-doc-self">MonkeyStringJoin</a>(</span><span class="m-doc-wrap">MonkeyStringSpan strings) -&gt; char*</span>
             </dt>
@@ -152,6 +157,34 @@
                 <tr>
                   <td style="width: 1%">format</td>
                   <td>The format string.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td>A new string.</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div></section>
+          <section class="m-doc-details" id="a1cb3976ab599552ef8eacefbe9035296"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">char* </span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a1cb3976ab599552ef8eacefbe9035296" class="m-doc-self">MonkeyAvsprintf</a>(</span><span class="m-doc-wrap">const char* format,
+              va_list args)</span></span>
+            </h3>
+            <p>Allocates a new string and formats the given arguments into it.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="width: 1%">format</td>
+                  <td>The format string.</td>
+                </tr>
+                <tr>
+                  <td>args</td>
+                  <td>The arguments to format.</td>
                 </tr>
               </tbody>
               <tfoot>
