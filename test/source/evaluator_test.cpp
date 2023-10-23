@@ -56,6 +56,8 @@ TEST_CASE("Integer expressions", "[evaluator]") {
 	std::tie(input, expected) = GENERATE(table<const char*, int64_t>({
 			std::make_tuple("5", 5),
 			std::make_tuple("10", 10),
+			std::make_tuple("-5", -5),
+			std::make_tuple("-10", -10),
 	}));
 
 	const ObjectPtr evaluated = testEval(monkey.get(), input);

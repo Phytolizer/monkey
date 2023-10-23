@@ -30,9 +30,21 @@ MONKEY_FILE_LOCAL Object* evalBangOperatorExpression(Monkey* monkey, Object* rig
 	return interns.falseObj;
 }
 
+MONKEY_FILE_LOCAL Object* evalMinusPrefixOperatorExpression(Monkey* monkey, Object* right) {
+	if (right->type != OBJECT_TYPE_INTEGER) {
+		return MonkeyGetInterns(monkey).nullObj;
+	}
+
+	int64_t value = ((IntegerObject*)right)->value;
+	return (Object*)CreateIntegerObject(-value);
+}
+
 MONKEY_FILE_LOCAL Object* evalPrefixExpression(Monkey* monkey, const char* op, Object* right) {
 	if (strcmp(op, "!") == 0) {
 		return evalBangOperatorExpression(monkey, right);
+	}
+	if (strcmp(op, "-") == 0) {
+		return evalMinusPrefixOperatorExpression(monkey, right);
 	}
 	return MonkeyGetInterns(monkey).nullObj;
 }
