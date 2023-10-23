@@ -59,6 +59,7 @@
               <ul>
                 <li><a href="#nested-classes">Classes</a></li>
                 <li><a href="#enum-members">Enums</a></li>
+                <li><a href="#typedef-members">Typedefs</a></li>
                 <li><a href="#func-members">Functions</a></li>
                 <li><a href="#define-members">Defines</a></li>
               </ul>
@@ -92,6 +93,10 @@
               struct <a href="structErrorObject.html" class="m-doc">ErrorObject</a>
             </dt>
             <dd><span></span></dd>
+            <dt>
+              struct <a href="structFunctionObject.html" class="m-doc">FunctionObject</a>
+            </dt>
+            <dd><span></span></dd>
           </dl>
         </section>
         <section id="enum-members">
@@ -104,6 +109,15 @@
             <dt id="ac41f5777b643d28e4b8cc829476be900">
               <span class="m-doc-wrap-bumper">enum <a href="#ac41f5777b643d28e4b8cc829476be900" class="m-doc-self">ObjectFreeableType</a> { </span><span class="m-doc-wrap"><a href="#ac41f5777b643d28e4b8cc829476be900a07d4c8994ceb699915a07de4a864eb20" class="m-doc">OBJECT_ALLOW_FREE</a>,
               <a href="#ac41f5777b643d28e4b8cc829476be900abe14ae8d463e89cdd18fd7c690ec6d3a" class="m-doc">OBJECT_DISALLOW_FREE</a> }</span>
+            </dt>
+            <dd><span></span></dd>
+          </dl>
+        </section>
+        <section id="typedef-members">
+          <h2><a href="#typedef-members">Typedefs</a></h2>
+          <dl class="m-doc">
+            <dt id="ab1287b6141419421dc5c14b9f7756b0a">
+              using <a href="#ab1287b6141419421dc5c14b9f7756b0a" class="m-doc-self">Object</a> = struct <a href="structObject.html" class="m-doc">Object</a>
             </dt>
             <dd><span></span></dd>
           </dl>
@@ -185,6 +199,19 @@
             <dd><span></span></dd>
             <dt id="aa0a7a2e8d314afec43f37919ecb44128">
               <span class="m-doc-wrap-bumper">void <a href="#aa0a7a2e8d314afec43f37919ecb44128" class="m-doc-self">DestroyErrorObject</a>(</span><span class="m-doc-wrap"><a href="structErrorObject.html" class="m-doc">ErrorObject</a>* obj)</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="a11c3acd2781f54dc7cf7c93ae30b9384">
+              <span class="m-doc-wrap-bumper">auto <a href="#a11c3acd2781f54dc7cf7c93ae30b9384" class="m-doc-self">CreateFunctionObject</a>(</span><span class="m-doc-wrap"><a href="structFunctionLiteral.html" class="m-doc">FunctionLiteral</a>* func,
+              struct <a href="structEnvironment.html" class="m-doc">Environment</a>* env) -&gt; <a href="structFunctionObject.html" class="m-doc">FunctionObject</a>*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="abcfd125e4f26b3224c026ba167e1cd5c">
+              <span class="m-doc-wrap-bumper">auto <a href="#abcfd125e4f26b3224c026ba167e1cd5c" class="m-doc-self">InspectFunctionObject</a>(</span><span class="m-doc-wrap">const <a href="structFunctionObject.html" class="m-doc">FunctionObject</a>* obj) -&gt; char*</span>
+            </dt>
+            <dd><span></span></dd>
+            <dt id="afab6edd4a877f17c2852b70644ad111f">
+              <span class="m-doc-wrap-bumper">void <a href="#afab6edd4a877f17c2852b70644ad111f" class="m-doc-self">DestroyFunctionObject</a>(</span><span class="m-doc-wrap"><a href="structFunctionObject.html" class="m-doc">FunctionObject</a>* obj)</span>
             </dt>
             <dd><span></span></dd>
           </dl>
