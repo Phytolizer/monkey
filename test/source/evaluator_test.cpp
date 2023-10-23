@@ -30,11 +30,18 @@ void testBooleanObject(const Object* object, bool expected) {
 	REQUIRE(boolean->value == expected);
 }
 
+void testNullObject(const Object* object) {
+	REQUIRE(object != nullptr);
+	REQUIRE(object->type == OBJECT_TYPE_NULL);
+}
+
 void testObject(const Object* object, TestValue expected) {
 	if (auto* pInt = nonstd::get_if<TestInt>(&expected)) {
 		testIntegerObject(object, pInt->value);
 	} else if (auto* pBool = nonstd::get_if<TestBool>(&expected)) {
 		testBooleanObject(object, pBool->value);
+	} else if (nonstd::get_if<TestNull>(&expected) != nullptr) {
+		testNullObject(object);
 	} else {
 		FAIL("corrupt value");
 	}
@@ -118,6 +125,25 @@ TEST_CASE("Prefix expressions", "[evaluator]") {
 			std::make_tuple("!!true", TestBool{true}),
 			std::make_tuple("!!false", TestBool{false}),
 			std::make_tuple("!!5", TestBool{true}),
+	}));
+
+	CAPTURE(input, expected);
+	const ObjectPtr evaluated = testEval(monkey.get(), input);
+	testObject(evaluated.get(), expected);
+}
+
+TEST_CASE("If/else expressions", "[evaluator]") {
+	const MonkeyPtr monkey{CreateMonkey()};
+	const char* input;
+	TestValue expected;
+	std::tie(input, expected) = GENERATE(table<const char*, TestValue>({
+			std::make_tuple("if (true) { 10 }", TestInt{10}),
+			std::make_tuple("if (false) { 10 }", TestNull{}),
+			std::make_tuple("if (1) { 10 }", TestInt{10}),
+			std::make_tuple("if (1 < 2) { 10 }", TestInt{10}),
+			std::make_tuple("if (1 > 2) { 10 }", TestNull{}),
+			std::make_tuple("if (1 > 2) { 10 } else { 20 }", TestInt{20}),
+			std::make_tuple("if (1 < 2) { 10 } else { 20 }", TestInt{10}),
 	}));
 
 	CAPTURE(input, expected);

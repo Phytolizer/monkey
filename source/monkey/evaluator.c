@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <string.h>
 
+MONKEY_FILE_LOCAL Object* evalExpression(Monkey* monkey, Expression* expression);
+
 MONKEY_FILE_LOCAL Object* evalProgram(Monkey* monkey, Program* program) {
 	Object* result = NULL;
 
@@ -23,12 +25,43 @@ MONKEY_FILE_LOCAL Object* evalProgram(Monkey* monkey, Program* program) {
 	return result;
 }
 
-MONKEY_FILE_LOCAL Object* evalBangOperatorExpression(Monkey* monkey, Object* right) {
-	MonkeyInternedObjects interns = MonkeyGetInterns(monkey);
-	if (right == interns.falseObj || right == interns.nullObj) {
-		return interns.trueObj;
+MONKEY_FILE_LOCAL Object* evalBlockStatement(Monkey* monkey, BlockStatement* block) {
+	Object* result = NULL;
+
+	for (size_t i = 0; i < block->statements.length; i++) {
+		DestroyObject(result);
+		result = Eval(monkey, &block->statements.begin[i]->base);
 	}
-	return interns.falseObj;
+
+	return result;
+}
+
+MONKEY_FILE_LOCAL bool isTruthy(Monkey* monkey, Object* value) {
+	MonkeyInternedObjects interns = MonkeyGetInterns(monkey);
+	return !(value == interns.falseObj || value == interns.nullObj);
+}
+
+MONKEY_FILE_LOCAL Object* nativeBoolToBooleanObject(Monkey* monkey, bool value) {
+	MonkeyInternedObjects interns = MonkeyGetInterns(monkey);
+	return value ? interns.trueObj : interns.falseObj;
+}
+
+MONKEY_FILE_LOCAL Object* evalIfExpression(Monkey* monkey, IfExpression* exp) {
+	Object* condition = evalExpression(monkey, exp->condition);
+	bool truthy = isTruthy(monkey, condition);
+	DestroyObject(condition);
+
+	if (truthy) {
+		return evalBlockStatement(monkey, exp->consequence);
+	}
+	if (exp->alternative != NULL) {
+		return evalBlockStatement(monkey, exp->alternative);
+	}
+	return MonkeyGetInterns(monkey).nullObj;
+}
+
+MONKEY_FILE_LOCAL Object* evalBangOperatorExpression(Monkey* monkey, Object* right) {
+	return nativeBoolToBooleanObject(monkey, !isTruthy(monkey, right));
 }
 
 MONKEY_FILE_LOCAL Object* evalMinusPrefixOperatorExpression(Monkey* monkey, Object* right) {
@@ -48,11 +81,6 @@ MONKEY_FILE_LOCAL Object* evalPrefixExpression(Monkey* monkey, const char* op, O
 		return evalMinusPrefixOperatorExpression(monkey, right);
 	}
 	return MonkeyGetInterns(monkey).nullObj;
-}
-
-MONKEY_FILE_LOCAL Object* nativeBoolToBooleanObject(Monkey* monkey, bool value) {
-	MonkeyInternedObjects interns = MonkeyGetInterns(monkey);
-	return value ? interns.trueObj : interns.falseObj;
 }
 
 MONKEY_FILE_LOCAL Object* evalIntegerInfixExpression(
@@ -139,8 +167,9 @@ MONKEY_FILE_LOCAL Object* evalExpression(Monkey* monkey, Expression* expression)
 			DestroyObject(left);
 			return result;
 		}
-		case EXPRESSION_TYPE_IDENTIFIER:
 		case EXPRESSION_TYPE_IF:
+			return evalIfExpression(monkey, (IfExpression*)expression);
+		case EXPRESSION_TYPE_IDENTIFIER:
 		case EXPRESSION_TYPE_FUNCTION_LITERAL:
 		case EXPRESSION_TYPE_CALL:
 			return NULL;

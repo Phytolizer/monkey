@@ -104,9 +104,10 @@ struct TestInt {
 struct TestBool {
 	bool value;
 };
+struct TestNull {};
 
 // generic type for tests
-using TestValue = nonstd::variant<TestString, TestInt, TestBool>;
+using TestValue = nonstd::variant<TestString, TestInt, TestBool, TestNull>;
 
 namespace Catch {
 template <> struct StringMaker<TestValue> {
@@ -120,6 +121,9 @@ template <> struct StringMaker<TestValue> {
 		}
 		if (const auto* pBool = nonstd::get_if<TestBool>(&value)) {
 			return pBool->value ? "true" : "false";
+		}
+		if (nonstd::get_if<TestNull>(&value) != nullptr) {
+			return "null";
 		}
 		return "{CORRUPT VALUE}";
 	}
