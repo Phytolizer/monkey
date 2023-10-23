@@ -35,6 +35,8 @@ char* InspectObject(const Object* obj) {
 			return InspectNullObject((const NullObject*)obj);
 		case OBJECT_TYPE_RETURN_VALUE:
 			return InspectReturnValueObject((const ReturnValueObject*)obj);
+		case OBJECT_TYPE_ERROR:
+			return InspectErrorObject((const ErrorObject*)obj);
 	}
 	(void)fprintf(stderr, "Unknown object type: %d\n", obj->type);
 	assert(false);
@@ -59,6 +61,9 @@ void DestroyObject(Object* obj) {
 			return;
 		case OBJECT_TYPE_RETURN_VALUE:
 			DestroyReturnValueObject((ReturnValueObject*)obj);
+			return;
+		case OBJECT_TYPE_ERROR:
+			DestroyErrorObject((ErrorObject*)obj);
 			return;
 	}
 	(void)fprintf(stderr, "Unknown object type: %d\n", obj->type);
@@ -127,5 +132,22 @@ char* InspectReturnValueObject(const ReturnValueObject* obj) {
 
 void DestroyReturnValueObject(ReturnValueObject* obj) {
 	DestroyObject(obj->value);
+	free(obj);
+}
+
+ErrorObject* CreateErrorObject(char* message) {
+	ErrorObject* obj = malloc(sizeof(ErrorObject));
+	obj->base.type = OBJECT_TYPE_ERROR;
+	obj->base.freeable = OBJECT_ALLOW_FREE;
+	obj->message = message;
+	return obj;
+}
+
+char* InspectErrorObject(const ErrorObject* obj) {
+	return MonkeyAsprintf("ERROR: %s", obj->message);
+}
+
+void DestroyErrorObject(ErrorObject* obj) {
+	free(obj->message);
 	free(obj);
 }

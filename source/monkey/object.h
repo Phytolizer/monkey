@@ -7,7 +7,8 @@
 	X(INTEGER) \
 	X(BOOLEAN) \
 	X(NULL) \
-	X(RETURN_VALUE)
+	X(RETURN_VALUE) \
+	X(ERROR)
 
 typedef enum {
 #define X(x) OBJECT_TYPE_##x,
@@ -72,3 +73,12 @@ typedef struct {
 ReturnValueObject* CreateReturnValueObject(Object* value);
 char* InspectReturnValueObject(const ReturnValueObject* obj);
 void DestroyReturnValueObject(ReturnValueObject* obj);
+
+typedef struct {
+	Object base;
+	char* message;
+} ErrorObject;
+
+ErrorObject* CreateErrorObject(char* message);
+char* InspectErrorObject(const ErrorObject* obj);
+void DestroyErrorObject(ErrorObject* obj);

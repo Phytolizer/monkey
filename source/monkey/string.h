@@ -3,6 +3,7 @@
 #include "buffer.h"
 #include "span.h"
 
+#include <stdarg.h>
 #include <stddef.h>
 
 /**
@@ -27,6 +28,14 @@ char* MonkeyStrndup(const char* str, size_t n);
  * @return A new string.
  */
 char* MonkeyAsprintf(const char* format, ...);
+
+/**
+ * @brief Allocates a new string and formats the given arguments into it.
+ * @param format The format string.
+ * @param args The arguments to format.
+ * @return A new string.
+ */
+char* MonkeyAvsprintf(const char* format, va_list args);
 
 /**
  * @brief A collection of strings.

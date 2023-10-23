@@ -29,17 +29,27 @@ char* MonkeyAsprintf(const char* format, ...) {
 	}
 	va_list args;
 	va_start(args, format);
-	int len = vsnprintf(NULL, 0, format, args);
+	char* result = MonkeyAvsprintf(format, args);
 	va_end(args);
+
+	return result;
+}
+
+char* MonkeyAvsprintf(const char* format, va_list args) {
+	if (format == NULL) {
+		return NULL;
+	}
+	va_list argsCopy;
+	va_copy(argsCopy, args);
+	int len = vsnprintf(NULL, 0, format, argsCopy);
+	va_end(argsCopy);
 
 	if (len < 0) {
 		return NULL;
 	}
 
-	va_start(args, format);
 	char* result = malloc(sizeof(char) * ((size_t)len + 1));
 	(void)vsnprintf(result, (size_t)len + 1, format, args);
-	va_end(args);
 
 	return result;
 }

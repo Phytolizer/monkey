@@ -4,8 +4,11 @@
 #include "monkey/ast.h"
 #include "monkey/macros.h"
 #include "monkey/object.h"
+#include "monkey/string.h"
 
 #include <assert.h>
+#include <hedley.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -13,6 +16,15 @@
 #include <string.h>
 
 MONKEY_FILE_LOCAL Object* evalExpression(Monkey* monkey, Expression* expression);
+
+MONKEY_FILE_LOCAL Object* HEDLEY_PRINTF_FORMAT(1, 2) newError(const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+	char* message = MonkeyAvsprintf(format, args);
+	va_end(args);
+
+	return (Object*)CreateErrorObject(message);
+}
 
 MONKEY_FILE_LOCAL Object* evalProgram(Monkey* monkey, Program* program) {
 	Object* result = NULL;
@@ -27,6 +39,9 @@ MONKEY_FILE_LOCAL Object* evalProgram(Monkey* monkey, Program* program) {
 			DestroyObject(&toFree->base);
 			return result;
 		}
+		if (result != NULL && result->type == OBJECT_TYPE_ERROR) {
+			return result;
+		}
 	}
 
 	return result;
@@ -38,7 +53,8 @@ MONKEY_FILE_LOCAL Object* evalBlockStatement(Monkey* monkey, BlockStatement* blo
 	for (size_t i = 0; i < block->statements.length; i++) {
 		DestroyObject(result);
 		result = Eval(monkey, &block->statements.begin[i]->base);
-		if (result != NULL && result->type == OBJECT_TYPE_RETURN_VALUE) {
+		if (result != NULL &&
+				(result->type == OBJECT_TYPE_RETURN_VALUE || result->type == OBJECT_TYPE_ERROR)) {
 			return result;
 		}
 	}
@@ -74,9 +90,9 @@ MONKEY_FILE_LOCAL Object* evalBangOperatorExpression(Monkey* monkey, Object* rig
 	return nativeBoolToBooleanObject(monkey, !isTruthy(monkey, right));
 }
 
-MONKEY_FILE_LOCAL Object* evalMinusPrefixOperatorExpression(Monkey* monkey, Object* right) {
+MONKEY_FILE_LOCAL Object* evalMinusPrefixOperatorExpression(Object* right) {
 	if (right->type != OBJECT_TYPE_INTEGER) {
-		return MonkeyGetInterns(monkey).nullObj;
+		return newError("unknown operator: -%s", ObjectTypeText(right->type));
 	}
 
 	int64_t value = ((IntegerObject*)right)->value;
@@ -88,9 +104,9 @@ MONKEY_FILE_LOCAL Object* evalPrefixExpression(Monkey* monkey, const char* op, O
 		return evalBangOperatorExpression(monkey, right);
 	}
 	if (strcmp(op, "-") == 0) {
-		return evalMinusPrefixOperatorExpression(monkey, right);
+		return evalMinusPrefixOperatorExpression(right);
 	}
-	return MonkeyGetInterns(monkey).nullObj;
+	return newError("unknown operator: %s%s", op, ObjectTypeText(right->type));
 }
 
 MONKEY_FILE_LOCAL Object* evalIntegerInfixExpression(
@@ -119,7 +135,7 @@ MONKEY_FILE_LOCAL Object* evalIntegerInfixExpression(
 	if (strcmp(op, "!=") == 0) {
 		return nativeBoolToBooleanObject(monkey, left->value != right->value);
 	}
-	return MonkeyGetInterns(monkey).nullObj;
+	return newError("unknown operator: INTEGER %s INTEGER", op);
 }
 
 MONKEY_FILE_LOCAL Object* evalInfixExpression(
@@ -133,7 +149,12 @@ MONKEY_FILE_LOCAL Object* evalInfixExpression(
 	if (strcmp(op, "!=") == 0) {
 		return nativeBoolToBooleanObject(monkey, left != right);
 	}
-	return MonkeyGetInterns(monkey).nullObj;
+	if (left->type != right->type) {
+		return newError("type mismatch: %s %s %s", ObjectTypeText(left->type), op,
+				ObjectTypeText(right->type));
+	}
+	return newError("unknown operator: %s %s %s", ObjectTypeText(left->type), op,
+			ObjectTypeText(right->type));
 }
 
 MONKEY_FILE_LOCAL Object* evalStatement(Monkey* monkey, Statement* statement) {

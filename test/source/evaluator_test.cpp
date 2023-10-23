@@ -3,6 +3,7 @@
 #include <catch2/generators/catch_generators.hpp>
 #include <cstdint>
 #include <nonstd/variant.hpp>
+#include <string>
 #include <tuple>
 
 extern "C" {
@@ -161,13 +162,13 @@ TEST_CASE("Return statements", "[evaluator]") {
 			std::make_tuple("return 2 * 5; 9;", TestInt{10}),
 			std::make_tuple("9; return 2 * 5; 9;", TestInt{10}),
 			std::make_tuple(R"mk(
-				if (10 > 1) {
-					if (10 > 1) {
-						return 10;
-					}
+if (10 > 1) {
+	if (10 > 1) {
+		return 10;
+	}
 
-					return 1;
-				}
+	return 1;
+}
 			)mk",
 					TestInt{10}),
 	}));
@@ -175,4 +176,35 @@ TEST_CASE("Return statements", "[evaluator]") {
 	CAPTURE(input, expected);
 	const ObjectPtr evaluated = testEval(monkey.get(), input);
 	testObject(evaluated.get(), expected);
+}
+
+TEST_CASE("Error handling", "[evaluator]") {
+	const MonkeyPtr monkey{CreateMonkey()};
+	const char* input;
+	const char* expectedMessage;
+	std::tie(input, expectedMessage) = GENERATE(table<const char*, const char*>({
+			std::make_tuple("5 + true;", "type mismatch: INTEGER + BOOLEAN"),
+			std::make_tuple("5 + true; 5;", "type mismatch: INTEGER + BOOLEAN"),
+			std::make_tuple("-true", "unknown operator: -BOOLEAN"),
+			std::make_tuple("true + false;", "unknown operator: BOOLEAN + BOOLEAN"),
+			std::make_tuple("5; true + false; 5", "unknown operator: BOOLEAN + BOOLEAN"),
+			std::make_tuple("if (10 > 1) { true + false; }", "unknown operator: BOOLEAN + BOOLEAN"),
+			std::make_tuple(
+					R"mk(
+if (10 > 1) {
+	if (10 > 1) {
+		return true + false;
+	}
+	return 1;
+}
+)mk",
+					"unknown operator: BOOLEAN + BOOLEAN"),
+	}));
+
+	CAPTURE(input, expectedMessage);
+	const ObjectPtr evaluated = testEval(monkey.get(), input);
+	REQUIRE(evaluated != nullptr);
+	REQUIRE(evaluated->type == OBJECT_TYPE_ERROR);
+	REQUIRE(reinterpret_cast<ErrorObject*>(evaluated.get())->message ==
+			std::string(expectedMessage));
 }
