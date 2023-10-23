@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -49,6 +50,11 @@ MONKEY_FILE_LOCAL Object* evalPrefixExpression(Monkey* monkey, const char* op, O
 	return MonkeyGetInterns(monkey).nullObj;
 }
 
+MONKEY_FILE_LOCAL Object* nativeBoolToBooleanObject(Monkey* monkey, bool value) {
+	MonkeyInternedObjects interns = MonkeyGetInterns(monkey);
+	return value ? interns.trueObj : interns.falseObj;
+}
+
 MONKEY_FILE_LOCAL Object* evalIntegerInfixExpression(
 		Monkey* monkey, const char* op, IntegerObject* left, IntegerObject* right) {
 	if (strcmp(op, "+") == 0) {
@@ -62,6 +68,18 @@ MONKEY_FILE_LOCAL Object* evalIntegerInfixExpression(
 	}
 	if (strcmp(op, "/") == 0) {
 		return (Object*)CreateIntegerObject(left->value / right->value);
+	}
+	if (strcmp(op, "<") == 0) {
+		return nativeBoolToBooleanObject(monkey, left->value < right->value);
+	}
+	if (strcmp(op, ">") == 0) {
+		return nativeBoolToBooleanObject(monkey, left->value > right->value);
+	}
+	if (strcmp(op, "==") == 0) {
+		return nativeBoolToBooleanObject(monkey, left->value == right->value);
+	}
+	if (strcmp(op, "!=") == 0) {
+		return nativeBoolToBooleanObject(monkey, left->value != right->value);
 	}
 	return MonkeyGetInterns(monkey).nullObj;
 }
@@ -95,8 +113,7 @@ MONKEY_FILE_LOCAL Object* evalExpression(Monkey* monkey, Expression* expression)
 		}
 		case EXPRESSION_TYPE_BOOLEAN_LITERAL: {
 			BooleanLiteral* lit = (BooleanLiteral*)expression;
-			MonkeyInternedObjects interns = MonkeyGetInterns(monkey);
-			return lit->value ? (interns.trueObj) : (interns.falseObj);
+			return nativeBoolToBooleanObject(monkey, lit->value);
 		}
 		case EXPRESSION_TYPE_PREFIX: {
 			PrefixExpression* prefix = (PrefixExpression*)expression;

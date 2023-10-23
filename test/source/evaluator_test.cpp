@@ -76,15 +76,24 @@ TEST_CASE("Integer expressions", "[evaluator]") {
 	testIntegerObject(evaluated.get(), expected);
 }
 
-TEST_CASE("Boolean literals", "[evaluator]") {
+TEST_CASE("Boolean expressions", "[evaluator]") {
 	const MonkeyPtr monkey{CreateMonkey()};
 	const char* input;
 	bool expected;
 	std::tie(input, expected) = GENERATE(table<const char*, bool>({
 			std::make_tuple("true", true),
 			std::make_tuple("false", false),
+			std::make_tuple("1 < 2", true),
+			std::make_tuple("1 > 2", false),
+			std::make_tuple("1 < 1", false),
+			std::make_tuple("1 > 1", false),
+			std::make_tuple("1 == 1", true),
+			std::make_tuple("1 != 1", false),
+			std::make_tuple("1 == 2", false),
+			std::make_tuple("1 != 2", true),
 	}));
 
+	CAPTURE(input, expected);
 	const ObjectPtr evaluated = testEval(monkey.get(), input);
 	testBooleanObject(evaluated.get(), expected);
 }
