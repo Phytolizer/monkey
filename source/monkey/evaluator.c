@@ -67,6 +67,10 @@ MONKEY_FILE_LOCAL bool isTruthy(Monkey* monkey, Object* value) {
 	return !(value == interns.falseObj || value == interns.nullObj);
 }
 
+MONKEY_FILE_LOCAL bool isError(Object* value) {
+	return value != NULL && value->type == OBJECT_TYPE_ERROR;
+}
+
 MONKEY_FILE_LOCAL Object* nativeBoolToBooleanObject(Monkey* monkey, bool value) {
 	MonkeyInternedObjects interns = MonkeyGetInterns(monkey);
 	return value ? interns.trueObj : interns.falseObj;
@@ -74,6 +78,9 @@ MONKEY_FILE_LOCAL Object* nativeBoolToBooleanObject(Monkey* monkey, bool value) 
 
 MONKEY_FILE_LOCAL Object* evalIfExpression(Monkey* monkey, IfExpression* exp) {
 	Object* condition = evalExpression(monkey, exp->condition);
+	if (isError(condition)) {
+		return condition;
+	}
 	bool truthy = isTruthy(monkey, condition);
 	DestroyObject(condition);
 
@@ -164,6 +171,9 @@ MONKEY_FILE_LOCAL Object* evalStatement(Monkey* monkey, Statement* statement) {
 		case STATEMENT_TYPE_RETURN: {
 			ReturnStatement* ret = (ReturnStatement*)statement;
 			Object* val = evalExpression(monkey, ret->returnValue);
+			if (isError(val)) {
+				return val;
+			}
 			return (Object*)CreateReturnValueObject(val);
 		}
 		case STATEMENT_TYPE_LET:
@@ -187,6 +197,9 @@ MONKEY_FILE_LOCAL Object* evalExpression(Monkey* monkey, Expression* expression)
 		case EXPRESSION_TYPE_PREFIX: {
 			PrefixExpression* prefix = (PrefixExpression*)expression;
 			Object* right = evalExpression(monkey, prefix->right);
+			if (isError(right)) {
+				return right;
+			}
 			Object* result = evalPrefixExpression(monkey, prefix->op, right);
 
 			DestroyObject(right);
@@ -195,7 +208,13 @@ MONKEY_FILE_LOCAL Object* evalExpression(Monkey* monkey, Expression* expression)
 		case EXPRESSION_TYPE_INFIX: {
 			InfixExpression* infix = (InfixExpression*)expression;
 			Object* left = evalExpression(monkey, infix->left);
+			if (isError(left)) {
+				return left;
+			}
 			Object* right = evalExpression(monkey, infix->right);
+			if (isError(right)) {
+				return right;
+			}
 
 			Object* result = evalInfixExpression(monkey, infix->op, left, right);
 			DestroyObject(right);
