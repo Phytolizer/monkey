@@ -85,6 +85,13 @@ template <> struct StringMaker<MonkeyStringBuffer> {
 		return result.str();
 	}
 };
+
+template <> struct StringMaker<ObjectType> {
+	// NOLINTNEXTLINE(readability-identifier-naming): catch2 defined this name
+	static std::string convert(ObjectType value) {
+		return ObjectTypeText(value);
+	}
+};
 } // namespace Catch
 
 // snuff implicit conversions

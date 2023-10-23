@@ -14,6 +14,8 @@ typedef enum {
 #undef X
 } ObjectType;
 
+const char* ObjectTypeText(ObjectType type);
+
 typedef enum {
 	OBJECT_ALLOW_FREE,
 	OBJECT_DISALLOW_FREE,

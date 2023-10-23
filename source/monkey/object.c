@@ -9,6 +9,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+const char* ObjectTypeText(ObjectType type) {
+	switch (type) {
+#define X(name) \
+	case OBJECT_TYPE_##name: \
+		return #name;
+		OBJECT_TYPES_X
+#undef X
+	}
+	(void)fprintf(stderr, "Unknown object type: %d\n", type);
+	assert(false);
+	return NULL;
+}
+
 char* InspectObject(const Object* obj) {
 	if (obj == NULL) {
 		return MonkeyStrdup("<NULL>");
