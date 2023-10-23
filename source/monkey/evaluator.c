@@ -20,6 +20,13 @@ MONKEY_FILE_LOCAL Object* evalProgram(Monkey* monkey, Program* program) {
 	for (size_t i = 0; i < program->statements.length; i++) {
 		DestroyObject(result);
 		result = Eval(monkey, &program->statements.begin[i]->base);
+		if (result != NULL && result->type == OBJECT_TYPE_RETURN_VALUE) {
+			ReturnValueObject* toFree = (ReturnValueObject*)result;
+			result = toFree->value;
+			toFree->value = NULL;
+			DestroyObject(&toFree->base);
+			return result;
+		}
 	}
 
 	return result;
@@ -31,6 +38,9 @@ MONKEY_FILE_LOCAL Object* evalBlockStatement(Monkey* monkey, BlockStatement* blo
 	for (size_t i = 0; i < block->statements.length; i++) {
 		DestroyObject(result);
 		result = Eval(monkey, &block->statements.begin[i]->base);
+		if (result != NULL && result->type == OBJECT_TYPE_RETURN_VALUE) {
+			return result;
+		}
 	}
 
 	return result;
@@ -130,8 +140,12 @@ MONKEY_FILE_LOCAL Object* evalStatement(Monkey* monkey, Statement* statement) {
 	switch (statement->type) {
 		case STATEMENT_TYPE_EXPRESSION:
 			return Eval(monkey, &((ExpressionStatement*)statement)->expression->base);
+		case STATEMENT_TYPE_RETURN: {
+			ReturnStatement* ret = (ReturnStatement*)statement;
+			Object* val = evalExpression(monkey, ret->returnValue);
+			return (Object*)CreateReturnValueObject(val);
+		}
 		case STATEMENT_TYPE_LET:
-		case STATEMENT_TYPE_RETURN:
 		case STATEMENT_TYPE_BLOCK:
 			return NULL;
 	}

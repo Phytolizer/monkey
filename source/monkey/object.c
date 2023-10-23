@@ -33,6 +33,8 @@ char* InspectObject(const Object* obj) {
 			return InspectBooleanObject((const BooleanObject*)obj);
 		case OBJECT_TYPE_NULL:
 			return InspectNullObject((const NullObject*)obj);
+		case OBJECT_TYPE_RETURN_VALUE:
+			return InspectReturnValueObject((const ReturnValueObject*)obj);
 	}
 	(void)fprintf(stderr, "Unknown object type: %d\n", obj->type);
 	assert(false);
@@ -54,6 +56,9 @@ void DestroyObject(Object* obj) {
 			return;
 		case OBJECT_TYPE_NULL:
 			DestroyNullObject((NullObject*)obj);
+			return;
+		case OBJECT_TYPE_RETURN_VALUE:
+			DestroyReturnValueObject((ReturnValueObject*)obj);
 			return;
 	}
 	(void)fprintf(stderr, "Unknown object type: %d\n", obj->type);
@@ -95,6 +100,7 @@ void DestroyBooleanObject(BooleanObject* obj) {
 NullObject* CreateNullObject(void) {
 	NullObject* obj = malloc(sizeof(NullObject));
 	obj->base.type = OBJECT_TYPE_NULL;
+	obj->base.freeable = OBJECT_ALLOW_FREE;
 	return obj;
 }
 
@@ -104,5 +110,22 @@ char* InspectNullObject(const NullObject* obj) {
 }
 
 void DestroyNullObject(NullObject* obj) {
+	free(obj);
+}
+
+ReturnValueObject* CreateReturnValueObject(Object* value) {
+	ReturnValueObject* obj = malloc(sizeof(ReturnValueObject));
+	obj->base.type = OBJECT_TYPE_RETURN_VALUE;
+	obj->base.freeable = OBJECT_ALLOW_FREE;
+	obj->value = value;
+	return obj;
+}
+
+char* InspectReturnValueObject(const ReturnValueObject* obj) {
+	return InspectObject(obj->value);
+}
+
+void DestroyReturnValueObject(ReturnValueObject* obj) {
+	DestroyObject(obj->value);
 	free(obj);
 }

@@ -6,7 +6,8 @@
 #define OBJECT_TYPES_X \
 	X(INTEGER) \
 	X(BOOLEAN) \
-	X(NULL)
+	X(NULL) \
+	X(RETURN_VALUE)
 
 typedef enum {
 #define X(x) OBJECT_TYPE_##x,
@@ -62,3 +63,12 @@ typedef struct {
 NullObject* CreateNullObject(void);
 char* InspectNullObject(const NullObject* obj);
 void DestroyNullObject(NullObject* obj);
+
+typedef struct {
+	Object base;
+	Object* value;
+} ReturnValueObject;
+
+ReturnValueObject* CreateReturnValueObject(Object* value);
+char* InspectReturnValueObject(const ReturnValueObject* obj);
+void DestroyReturnValueObject(ReturnValueObject* obj);

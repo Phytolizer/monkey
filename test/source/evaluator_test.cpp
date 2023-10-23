@@ -150,3 +150,29 @@ TEST_CASE("If/else expressions", "[evaluator]") {
 	const ObjectPtr evaluated = testEval(monkey.get(), input);
 	testObject(evaluated.get(), expected);
 }
+
+TEST_CASE("Return statements", "[evaluator]") {
+	const MonkeyPtr monkey{CreateMonkey()};
+	const char* input;
+	TestValue expected;
+	std::tie(input, expected) = GENERATE(table<const char*, TestValue>({
+			std::make_tuple("return 10;", TestInt{10}),
+			std::make_tuple("return 10; 9;", TestInt{10}),
+			std::make_tuple("return 2 * 5; 9;", TestInt{10}),
+			std::make_tuple("9; return 2 * 5; 9;", TestInt{10}),
+			std::make_tuple(R"mk(
+				if (10 > 1) {
+					if (10 > 1) {
+						return 10;
+					}
+
+					return 1;
+				}
+			)mk",
+					TestInt{10}),
+	}));
+
+	CAPTURE(input, expected);
+	const ObjectPtr evaluated = testEval(monkey.get(), input);
+	testObject(evaluated.get(), expected);
+}
