@@ -89,6 +89,12 @@ MONKEY_FILE_LOCAL Object* evalInfixExpression(
 	if (left->type == OBJECT_TYPE_INTEGER && right->type == OBJECT_TYPE_INTEGER) {
 		return evalIntegerInfixExpression(monkey, op, (IntegerObject*)left, (IntegerObject*)right);
 	}
+	if (strcmp(op, "==") == 0) {
+		return nativeBoolToBooleanObject(monkey, left == right);
+	}
+	if (strcmp(op, "!=") == 0) {
+		return nativeBoolToBooleanObject(monkey, left != right);
+	}
 	return MonkeyGetInterns(monkey).nullObj;
 }
 
