@@ -1,4 +1,3 @@
-
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
@@ -9,6 +8,7 @@
 
 extern "C" {
 #include <monkey.h>
+#include <monkey/ast.h>
 #include <monkey/environment.h>
 #include <monkey/evaluator.h>
 #include <monkey/lexer.h>
@@ -227,4 +227,19 @@ TEST_CASE("Let statements", "[evaluator]") {
 	CAPTURE(input, expected);
 	const ObjectPtr evaluated = testEval(monkey.get(), input);
 	testObject(evaluated.get(), expected);
+}
+
+TEST_CASE("Function object", "[evaluator]") {
+	const MonkeyPtr monkey{CreateMonkey()};
+	constexpr char INPUT[] = "fn(x) { x + 2; };";
+
+	const ObjectPtr evaluated = testEval(monkey.get(), INPUT);
+	REQUIRE(evaluated.get() != nullptr);
+	REQUIRE(evaluated->type == OBJECT_TYPE_FUNCTION);
+	FunctionObject* func = reinterpret_cast<FunctionObject*>(evaluated.get());
+	REQUIRE(func->parameters.length == 1);
+	const StringPtr paramStr{IdentifierString(func->parameters.begin[0])};
+	CHECK(paramStr.get() == std::string("x"));
+	const StringPtr bodyStr{BlockStatementString(func->body)};
+	CHECK(bodyStr.get() == std::string("(x + 2)"));
 }

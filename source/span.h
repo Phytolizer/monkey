@@ -14,3 +14,6 @@
 
 #define SPAN_WITH_LENGTH(begin, length) \
 	{ (begin), (begin) + (length), (length) }
+
+#define SPAN_EMPTY \
+	{ NULL, NULL, 0 }

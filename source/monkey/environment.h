@@ -21,6 +21,14 @@ Environment* CreateEnvironment(void);
 void DestroyEnvironment(Environment* env);
 
 /**
+ * @brief Copy an Environment, including its data.
+ *
+ * @param env the environment
+ * @return Environment* the copy
+ */
+Environment* CopyEnvironment(Environment* env);
+
+/**
  * @brief Get a value from the Environment.
  *
  * @param env the environment

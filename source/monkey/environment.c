@@ -26,6 +26,17 @@ void DestroyEnvironment(Environment* env) {
 	free(env);
 }
 
+MONKEY_FILE_LOCAL void tblCopyKv(gpointer key, gpointer value, gpointer userData) {
+	GHashTable* dest = userData;
+	g_hash_table_insert(dest, key, value);
+}
+
+Environment* CopyEnvironment(Environment* env) {
+	Environment* result = CreateEnvironment();
+	g_hash_table_foreach(env->store, &tblCopyKv, result->store);
+	return result;
+}
+
 Object* GetEnvironment(Environment* env, const char* name) {
 	return g_hash_table_lookup(env->store, name);
 }

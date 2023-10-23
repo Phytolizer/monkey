@@ -249,7 +249,10 @@ MONKEY_FILE_LOCAL Object* evalExpression(EvaluatorState* state, Expression* expr
 			return evalIfExpression(state, (IfExpression*)expression);
 		case EXPRESSION_TYPE_IDENTIFIER:
 			return evalIdentifier(state, (Identifier*)expression);
-		case EXPRESSION_TYPE_FUNCTION_LITERAL:
+		case EXPRESSION_TYPE_FUNCTION_LITERAL: {
+			FunctionLiteral* func = (FunctionLiteral*)expression;
+			return (Object*)CreateFunctionObject(func, CopyEnvironment(state->env));
+		}
 		case EXPRESSION_TYPE_CALL:
 			return NULL;
 	}

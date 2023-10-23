@@ -1,10 +1,16 @@
 #include "monkey/object.h"
 
+#include "buffer.h"
+#include "monkey/ast.h"
+#include "monkey/environment.h"
+#include "monkey/macros.h"
 #include "monkey/string.h"
+#include "span.h"
 
 #include <assert.h>
 #include <inttypes.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,6 +43,8 @@ char* InspectObject(const Object* obj) {
 			return InspectReturnValueObject((const ReturnValueObject*)obj);
 		case OBJECT_TYPE_ERROR:
 			return InspectErrorObject((const ErrorObject*)obj);
+		case OBJECT_TYPE_FUNCTION:
+			return InspectFunctionObject((const FunctionObject*)obj);
 	}
 	(void)fprintf(stderr, "Unknown object type: %d\n", obj->type);
 	assert(false);
@@ -65,9 +73,27 @@ void DestroyObject(Object* obj) {
 		case OBJECT_TYPE_ERROR:
 			DestroyErrorObject((ErrorObject*)obj);
 			return;
+		case OBJECT_TYPE_FUNCTION:
+			DestroyFunctionObject((FunctionObject*)obj);
+			return;
 	}
 	(void)fprintf(stderr, "Unknown object type: %d\n", obj->type);
 	assert(false);
+}
+
+MONKEY_FILE_LOCAL FunctionObject* rawCreateFunctionObject(
+		IdentifierSpan parameters, BlockStatement* body, Environment* env) {
+	FunctionObject* obj = malloc(sizeof(FunctionObject));
+	obj->base.type = OBJECT_TYPE_FUNCTION;
+	obj->base.freeable = OBJECT_ALLOW_FREE;
+	obj->parameters = parameters;
+	obj->body = body;
+	obj->env = env;
+	return obj;
+}
+
+MONKEY_FILE_LOCAL FunctionObject* copyFunctionObject(FunctionObject* obj) {
+	return rawCreateFunctionObject(obj->parameters, obj->body, CopyEnvironment(obj->env));
 }
 
 Object* CopyObject(Object* obj) {
@@ -86,6 +112,8 @@ Object* CopyObject(Object* obj) {
 			return (Object*)CreateReturnValueObject(CopyObject(((ReturnValueObject*)obj)->value));
 		case OBJECT_TYPE_ERROR:
 			return (Object*)CreateErrorObject(MonkeyStrdup(((ErrorObject*)obj)->message));
+		case OBJECT_TYPE_FUNCTION:
+			return (Object*)copyFunctionObject((FunctionObject*)obj);
 	}
 	(void)fprintf(stderr, "Unknown object type: %d\n", obj->type);
 	assert(false);
@@ -170,5 +198,42 @@ char* InspectErrorObject(const ErrorObject* obj) {
 
 void DestroyErrorObject(ErrorObject* obj) {
 	free(obj->message);
+	free(obj);
+}
+
+FunctionObject* CreateFunctionObject(FunctionLiteral* func, Environment* env) {
+	FunctionObject* obj = rawCreateFunctionObject(func->parameters, func->body, env);
+	func->parameters = (IdentifierSpan)SPAN_EMPTY;
+	func->body = NULL;
+	return obj;
+}
+
+char* InspectFunctionObject(const FunctionObject* obj) {
+	MonkeyStringBuffer out = BUFFER_INIT;
+	BUFFER_PUSH(&out, MonkeyStrdup("fn("));
+	for (size_t i = 0; i < obj->parameters.length; ++i) {
+		if (i > 0) {
+			BUFFER_PUSH(&out, MonkeyStrdup(", "));
+		}
+		BUFFER_PUSH(&out, IdentifierString(obj->parameters.begin[i]));
+	}
+	BUFFER_PUSH(&out, MonkeyStrdup(") {\n"));
+	BUFFER_PUSH(&out, BlockStatementString(obj->body));
+	BUFFER_PUSH(&out, MonkeyStrdup("\n}"));
+	char* result = MonkeyStringJoin((MonkeyStringSpan)BUFFER_AS_SPAN(out));
+	for (size_t i = 0; i < out.length; ++i) {
+		free(out.data[i]);
+	}
+	BUFFER_FREE(out);
+	return result;
+}
+
+void DestroyFunctionObject(FunctionObject* obj) {
+	for (size_t i = 0; i < obj->parameters.length; ++i) {
+		DestroyIdentifier(obj->parameters.begin[i]);
+	}
+	free(obj->parameters.begin);
+	DestroyBlockStatement(obj->body);
+	DestroyEnvironment(obj->env);
 	free(obj);
 }

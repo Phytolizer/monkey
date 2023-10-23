@@ -1,5 +1,7 @@
 #pragma once
 
+#include "monkey/ast.h"
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -8,7 +10,8 @@
 	X(BOOLEAN) \
 	X(NULL) \
 	X(RETURN_VALUE) \
-	X(ERROR)
+	X(ERROR) \
+	X(FUNCTION)
 
 typedef enum {
 #define X(x) OBJECT_TYPE_##x,
@@ -23,7 +26,7 @@ typedef enum {
 	OBJECT_DISALLOW_FREE,
 } ObjectFreeableType;
 
-typedef struct {
+typedef struct Object {
 	ObjectType type;
 	/**
 	 * @brief freeable is used to determine if the object should be freed when
@@ -83,3 +86,15 @@ typedef struct {
 ErrorObject* CreateErrorObject(char* message);
 char* InspectErrorObject(const ErrorObject* obj);
 void DestroyErrorObject(ErrorObject* obj);
+
+typedef struct {
+	Object base;
+	IdentifierSpan parameters;
+	BlockStatement* body;
+	// avoid cyclic include with environment.h here
+	struct Environment* env;
+} FunctionObject;
+
+FunctionObject* CreateFunctionObject(FunctionLiteral* func, struct Environment* env);
+char* InspectFunctionObject(const FunctionObject* obj);
+void DestroyFunctionObject(FunctionObject* obj);

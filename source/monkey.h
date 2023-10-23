@@ -5,7 +5,6 @@
  * token module.
  */
 #include "monkey/macros.h"
-#include "monkey/object.h"
 typedef struct MonkeyTokenState MonkeyTokenState;
 
 /**
@@ -23,9 +22,9 @@ typedef struct {
  * for those same common object types.
  */
 typedef struct {
-	Object* trueObj;
-	Object* falseObj;
-	Object* nullObj;
+	struct Object* trueObj;
+	struct Object* falseObj;
+	struct Object* nullObj;
 } MonkeyInternedObjects;
 
 /**
